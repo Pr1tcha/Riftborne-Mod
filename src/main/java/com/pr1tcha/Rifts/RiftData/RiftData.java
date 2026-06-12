@@ -1,4 +1,4 @@
-package com.kwinta.Rifts.RiftData;
+package com.pr1tcha.Rifts.RiftData;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

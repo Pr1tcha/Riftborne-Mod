@@ -1,7 +1,7 @@
-package com.kwinta.Rifts;
+package com.pr1tcha.Rifts;
 
-import com.kwinta.Rifts.RiftData.RiftBlock;
-import com.kwinta.Rifts.RiftData.RiftBlockEntity;
+import com.pr1tcha.Rifts.RiftData.RiftBlock;
+import com.pr1tcha.Rifts.RiftData.RiftBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;

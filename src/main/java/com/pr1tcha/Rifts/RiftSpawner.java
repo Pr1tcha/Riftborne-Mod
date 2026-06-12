@@ -1,8 +1,8 @@
-package com.kwinta.Rifts;
+package com.pr1tcha.Rifts;
 
 
-import com.kwinta.Rifts.RiftData.RiftBlockEntity;
-import com.kwinta.Rifts.RiftData.RiftData;
+import com.pr1tcha.Rifts.RiftData.RiftBlockEntity;
+import com.pr1tcha.Rifts.RiftData.RiftData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import java.util.List;
 import java.util.Random;
 
-@EventBusSubscriber(modid = com.kwinta.Rifts.Eventmod.MODID)
+@EventBusSubscriber(modid = com.pr1tcha.Rifts.Eventmod.MODID)
 public class RiftSpawner {
     private static final Random RANDOM = new Random();
 

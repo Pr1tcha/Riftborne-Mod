@@ -1,4 +1,4 @@
-package com.kwinta.Rifts;
+package com.pr1tcha.Rifts;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;

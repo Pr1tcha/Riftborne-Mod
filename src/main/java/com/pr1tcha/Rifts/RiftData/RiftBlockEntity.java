@@ -1,6 +1,6 @@
-package com.kwinta.Rifts.RiftData;
+package com.pr1tcha.Rifts.RiftData;
 
-import com.kwinta.Rifts.ModContent;
+import com.pr1tcha.Rifts.ModContent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;

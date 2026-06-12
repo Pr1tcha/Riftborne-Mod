@@ -1,4 +1,4 @@
-package com.kwinta.Rifts;
+package com.pr1tcha.Rifts;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;

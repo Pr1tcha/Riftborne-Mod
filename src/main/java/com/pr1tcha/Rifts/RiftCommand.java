@@ -1,7 +1,7 @@
-package com.kwinta.Rifts;
+package com.pr1tcha.Rifts;
 
-import com.kwinta.Rifts.RiftData.RiftBlockEntity;
-import com.kwinta.Rifts.RiftData.RiftData;
+import com.pr1tcha.Rifts.RiftData.RiftBlockEntity;
+import com.pr1tcha.Rifts.RiftData.RiftData;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
