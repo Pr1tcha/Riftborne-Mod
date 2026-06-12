@@ -1,6 +1,5 @@
 package com.pr1tcha.Rifts;
 
-
 import com.pr1tcha.Rifts.RiftData.RiftBlockEntity;
 import com.pr1tcha.Rifts.RiftData.RiftData;
 import net.minecraft.core.BlockPos;
@@ -15,7 +14,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import java.util.List;
 import java.util.Random;
 
-@EventBusSubscriber(modid = com.pr1tcha.Rifts.RiftborneRift.MODID)
+@EventBusSubscriber(modid = RiftborneRift.MODID)
 public class RiftSpawner {
     private static final Random RANDOM = new Random();
 
@@ -25,15 +24,19 @@ public class RiftSpawner {
             return;
         }
 
-        // Читаем интервал проверки из конфига
+        if (level.getGameRules().getInt(RiftWorldStage.RIFT_STAGE) < RiftWorldStage.STAGE_WEAK_RIFTS_ENABLED) {
+            return;
+        }
+
         if (level.getGameTime() % Config.riftCheckInterval.get() != 0) {
             return;
         }
 
         List<ServerPlayer> players = level.players();
-        if (players.isEmpty()) return;
+        if (players.isEmpty()) {
+            return;
+        }
 
-        // Читаем шанс спавна из конфига
         if (RANDOM.nextDouble() > Config.riftSpawnChance.get()) {
             return;
         }
@@ -41,11 +44,11 @@ public class RiftSpawner {
         ServerPlayer targetPlayer = players.get(RANDOM.nextInt(players.size()));
         BlockPos playerPos = targetPlayer.blockPosition();
 
-        // Читаем радиусы из конфига
         int minR = Config.riftMinRadius.get();
         int maxR = Config.riftMaxRadius.get();
-
-        if (maxR <= minR) maxR = minR + 10; // Защита от неправильной настройки конфига игроком
+        if (maxR <= minR) {
+            maxR = minR + 10;
+        }
 
         int offsetX = (RANDOM.nextBoolean() ? 1 : -1) * (minR + RANDOM.nextInt(maxR - minR));
         int offsetZ = (RANDOM.nextBoolean() ? 1 : -1) * (minR + RANDOM.nextInt(maxR - minR));
@@ -80,6 +83,5 @@ public class RiftSpawner {
             data.radius = 6.0f + RANDOM.nextFloat() * 4.0f;
             rift.setChanged();
         }
-
     }
 }

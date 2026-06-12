@@ -57,7 +57,7 @@ neoForge {
         data {
             data()
 
-            // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
+            // Uncomment to override the workingDirectory set in configureEach above.
             // gameDirectory = project.file('run-data')
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.

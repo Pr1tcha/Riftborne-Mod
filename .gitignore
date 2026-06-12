@@ -1,0 +1,18 @@
+# Gradle
+.gradle/
+build/
+
+# Minecraft run directory
+run/
+
+# IDE/editor state
+.idea/
+.vscode/
+*.iml
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
