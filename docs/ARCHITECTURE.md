@@ -47,6 +47,12 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Handles collapse behavior.
   - Saves and loads `RiftData`.
 
+- `RiftBlockEntityRenderer`
+  - Client-side renderer for the visible rift.
+  - Draws layered translucent/emissive vertical tear planes.
+  - Uses `story_rift.png` as a temporary purple story-rift texture.
+  - Scales and pulses by rift stage.
+
 - `RiftData`
   - Serializable rift state:
     - id
@@ -81,6 +87,18 @@ This document describes the current v0.1 rift implementation as it exists in cod
 6. After three cleared waves, the rift enters `COLLAPSING`.
 7. On successful collapse, it drops `Rift Shard` items and turns into obsidian as a simple scar.
 8. If lifetime expires before completion, the rift disappears and cleans up its minions.
+
+## Visual Direction
+
+The first visual pass is a purple story rift inspired by Vitalik:
+
+- dark vertical tear;
+- purple/white edges;
+- translucent layered cross-planes;
+- pulsing stage-dependent scale;
+- stronger flicker and lightning slash during `UNSTABLE` / `COLLAPSING`.
+
+This is intentionally shader-free for now. Future rift types can swap texture/color/scale behavior before adding optional screen-space distortion.
 
 ## Config
 
