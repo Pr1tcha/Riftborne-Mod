@@ -3,6 +3,7 @@ package com.pr1tcha.Rifts.RiftData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+
 import java.util.UUID;
 
 public class RiftData {
@@ -12,13 +13,13 @@ public class RiftData {
     public float radius = 5.0f;
     public RiftStage stage = RiftStage.OPENING;
     public int ticksExisted = 0;
-    public int maxLifetimeTicks = 6000; // 5 минут по умолчанию
+    public int maxLifetimeTicks = 6000;
     public float instability = 0.0f;
     public boolean isCommandSpawned = false;
     public boolean isQuestRelated = false;
-    public int wavesCleared = 0;       // Сколько волн зачищено
-    public int currentWaveMobsLeft = 0; // Сколько мобов осталось убить в текущей волне
-    public int spawnCooldown = 0;       // Задержка между спавном мобов
+    public int wavesCleared = 0;
+    public int currentWaveMobsLeft = 0;
+    public int spawnCooldown = 0;
 
     public CompoundTag save(CompoundTag tag) {
         tag.putUUID("Id", id);
@@ -38,11 +39,14 @@ public class RiftData {
     }
 
     public void load(CompoundTag tag) {
-        if (tag.hasUUID("Id")) this.id = tag.getUUID("Id");
+        if (tag.hasUUID("Id")) {
+            this.id = tag.getUUID("Id");
+        }
+
         this.riftType = ResourceLocation.parse(tag.getString("Type"));
         this.centerPos = BlockPos.of(tag.getLong("Pos"));
         this.radius = tag.getFloat("Radius");
-        this.stage = RiftStage.valueOf(tag.getString("Stage"));
+        this.stage = loadStage(tag.getString("Stage"));
         this.ticksExisted = tag.getInt("TicksExisted");
         this.maxLifetimeTicks = tag.getInt("MaxLifetime");
         this.instability = tag.getFloat("Instability");
@@ -51,5 +55,17 @@ public class RiftData {
         this.wavesCleared = tag.getInt("WavesCleared");
         this.currentWaveMobsLeft = tag.getInt("MobsLeft");
         this.spawnCooldown = tag.getInt("SpawnCooldown");
+    }
+
+    private static RiftStage loadStage(String rawStage) {
+        if ("COLLAPSE".equals(rawStage)) {
+            return RiftStage.COLLAPSING;
+        }
+
+        try {
+            return RiftStage.valueOf(rawStage);
+        } catch (IllegalArgumentException ignored) {
+            return RiftStage.OPENING;
+        }
     }
 }

@@ -13,7 +13,9 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,6 +24,9 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 
 public class RiftBlockEntity extends BlockEntity {
+    private static final int REQUIRED_WAVES = 3;
+    private static final int UNSTABLE_LIFETIME_PERCENT = 80;
+
     private final RiftData data = new RiftData();
 
     public RiftBlockEntity(BlockPos pos, BlockState state) {
@@ -34,78 +39,103 @@ public class RiftBlockEntity extends BlockEntity {
         rift.ticksExisted++;
 
         if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
-            String minionTag = "rift_minion_" + pos.toShortString();
-
-            // 1. ПРОВЕРКА НА ТАЙМАУТ (Провал)
-            if (rift.stage != RiftStage.COLLAPSE && rift.ticksExisted >= rift.maxLifetimeTicks) {
-                cleanupMinions(serverLevel, pos, rift, minionTag);
-                serverLevel.playSound(null, pos, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1.0f, 0.5f);
-                level.removeBlock(pos, false);
-                return;
-            }
-
-            AABB triggerArea = new AABB(pos).inflate(rift.radius);
-            List<Player> playersNear = level.getEntitiesOfClass(Player.class, triggerArea);
-
-            // 2. СТАДИЯ OPENING (Ожидание игрока)
-            if (rift.stage == RiftStage.OPENING) {
-                if (!playersNear.isEmpty()) {
-                    rift.stage = RiftStage.ACTIVE;
-                    rift.spawnCooldown = 40;
-                    for (Player player : playersNear) {
-                        player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 80, 0, false, false));
-                    }
-                    serverLevel.playSound(null, pos, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1.0f, 1.0f);
-                    blockEntity.sync(); // Синхроним смену стадии
-                }
-            }
-
-            // 3. СТАДИЯ ACTIVE (Бой)
-            if (rift.stage == RiftStage.ACTIVE) {
-                if (rift.spawnCooldown > 0) {
-                    rift.spawnCooldown--;
-                }
-
-                // Если мобы текущей волны кончились и кулдаун прошел — спавним новых или завершаем
-                if (rift.currentWaveMobsLeft <= 0 && rift.spawnCooldown <= 0) {
-                    if (rift.wavesCleared >= 3) {
-                        rift.stage = RiftStage.COLLAPSE;
-                        blockEntity.sync();
-                    } else {
-                        spawnWave(serverLevel, pos, rift, minionTag);
-                        rift.wavesCleared++;
-                        blockEntity.sync();
-                    }
-                }
-                // Проверка живых мобов каждые 20 тиков (1 сек)
-                else if (level.getGameTime() % 20 == 0 && rift.currentWaveMobsLeft > 0) {
-                    AABB scanArea = new AABB(pos).inflate(rift.radius + 15);
-                    List<Endermite> aliveMites = serverLevel.getEntities(EntityType.ENDERMITE, scanArea, m -> m.getTags().contains(minionTag));
-
-                    rift.currentWaveMobsLeft = aliveMites.size();
-                    if (rift.currentWaveMobsLeft <= 0) {
-                        rift.spawnCooldown = 60; // Пауза перед следующей волной
-                        blockEntity.sync();
-                    }
-                }
-            }
-
-            // 4. СТАДИЯ COLLAPSE (Победа)
-            if (rift.stage == RiftStage.COLLAPSE) {
-                serverLevel.playSound(null, pos, SoundEvents.WITHER_DEATH, SoundSource.BLOCKS, 1.0f, 1.0f);
-                level.setBlock(pos, Blocks.OBSIDIAN.defaultBlockState(), 3);
-                return; // BlockEntity удалится сам, так как блок заменен
-            }
+            tickServer(serverLevel, pos, blockEntity, rift);
         }
 
-        // КЛИЕНТСКАЯ ЛОГИКА (Визуал)
         if (level.isClientSide) {
             spawnParticles(level, pos, rift);
         }
     }
 
+    private static void tickServer(ServerLevel level, BlockPos pos, RiftBlockEntity blockEntity, RiftData rift) {
+        String minionTag = "rift_minion_" + pos.toShortString();
+
+        if (rift.stage != RiftStage.COLLAPSING && rift.ticksExisted >= rift.maxLifetimeTicks) {
+            failRift(level, pos, rift, minionTag);
+            return;
+        }
+
+        AABB triggerArea = new AABB(pos).inflate(rift.radius);
+        List<Player> playersNear = level.getEntitiesOfClass(Player.class, triggerArea);
+
+        if (rift.stage == RiftStage.OPENING && !playersNear.isEmpty()) {
+            activateRift(level, pos, blockEntity, rift, playersNear);
+        }
+
+        if (rift.stage == RiftStage.ACTIVE && isNearLifetimeLimit(rift)) {
+            rift.stage = RiftStage.UNSTABLE;
+            blockEntity.sync();
+        }
+
+        if (rift.stage == RiftStage.ACTIVE || rift.stage == RiftStage.UNSTABLE) {
+            tickCombat(level, pos, blockEntity, rift, minionTag);
+        }
+
+        if (rift.stage == RiftStage.COLLAPSING) {
+            completeRift(level, pos);
+        }
+    }
+
+    private static void activateRift(ServerLevel level, BlockPos pos, RiftBlockEntity blockEntity, RiftData rift, List<Player> playersNear) {
+        rift.stage = RiftStage.ACTIVE;
+        rift.spawnCooldown = 40;
+
+        for (Player player : playersNear) {
+            player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 80, 0, false, false));
+        }
+
+        level.playSound(null, pos, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1.0f, 1.0f);
+        blockEntity.sync();
+    }
+
+    private static boolean isNearLifetimeLimit(RiftData rift) {
+        return rift.maxLifetimeTicks > 0
+                && rift.ticksExisted >= (rift.maxLifetimeTicks * UNSTABLE_LIFETIME_PERCENT) / 100;
+    }
+
+    private static void tickCombat(ServerLevel level, BlockPos pos, RiftBlockEntity blockEntity, RiftData rift, String minionTag) {
+        if (rift.spawnCooldown > 0) {
+            rift.spawnCooldown--;
+        }
+
+        if (rift.currentWaveMobsLeft <= 0 && rift.spawnCooldown <= 0) {
+            if (rift.wavesCleared >= REQUIRED_WAVES) {
+                rift.stage = RiftStage.COLLAPSING;
+                blockEntity.sync();
+            } else {
+                spawnWave(level, pos, rift, minionTag);
+                rift.wavesCleared++;
+                blockEntity.sync();
+            }
+            return;
+        }
+
+        if (level.getGameTime() % 20 == 0 && rift.currentWaveMobsLeft > 0) {
+            AABB scanArea = new AABB(pos).inflate(rift.radius + 15);
+            List<Endermite> aliveMites = level.getEntities(EntityType.ENDERMITE, scanArea, m -> m.getTags().contains(minionTag));
+
+            rift.currentWaveMobsLeft = aliveMites.size();
+            if (rift.currentWaveMobsLeft <= 0) {
+                rift.spawnCooldown = 60;
+                blockEntity.sync();
+            }
+        }
+    }
+
+    private static void failRift(ServerLevel level, BlockPos pos, RiftData rift, String minionTag) {
+        cleanupMinions(level, pos, rift, minionTag);
+        level.playSound(null, pos, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1.0f, 0.5f);
+        level.removeBlock(pos, false);
+    }
+
+    private static void completeRift(ServerLevel level, BlockPos pos) {
+        level.playSound(null, pos, SoundEvents.WITHER_DEATH, SoundSource.BLOCKS, 1.0f, 1.0f);
+        Block.popResource(level, pos, new ItemStack(ModContent.RIFT_SHARD.get(), 1 + level.random.nextInt(3)));
+        level.setBlock(pos, Blocks.OBSIDIAN.defaultBlockState(), 3);
+    }
+
     private static void spawnWave(ServerLevel level, BlockPos pos, RiftData rift, String tag) {
-        int count = 3 + level.random.nextInt(3); // 3-5 эндермитов
+        int count = 3 + level.random.nextInt(3);
         for (int i = 0; i < count; i++) {
             Endermite mite = EntityType.ENDERMITE.create(level);
             if (mite != null) {
@@ -128,17 +158,19 @@ public class RiftBlockEntity extends BlockEntity {
     private static void spawnParticles(Level level, BlockPos pos, RiftData rift) {
         if (rift.stage == RiftStage.OPENING && level.random.nextFloat() < 0.05f) {
             level.addParticle(ParticleTypes.PORTAL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
-        } else if (rift.stage == RiftStage.ACTIVE) {
-            for (int i = 0; i < 2; i++) {
+        } else if (rift.stage == RiftStage.ACTIVE || rift.stage == RiftStage.UNSTABLE) {
+            int count = rift.stage == RiftStage.UNSTABLE ? 5 : 2;
+            for (int i = 0; i < count; i++) {
                 double x = pos.getX() + 0.5 + (level.random.nextDouble() - 0.5) * 1.5;
                 double y = pos.getY() + 0.5 + (level.random.nextDouble() - 0.5) * 1.5;
                 double z = pos.getZ() + 0.5 + (level.random.nextDouble() - 0.5) * 1.5;
                 level.addParticle(ParticleTypes.REVERSE_PORTAL, x, y, z, 0, 0.05, 0);
             }
+        } else if (rift.stage == RiftStage.COLLAPSING) {
+            level.addParticle(ParticleTypes.EXPLOSION, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
         }
     }
 
-    // ВАЖНО: Метод для принудительной синхронизации клиента и сервера
     public void sync() {
         setChanged();
         if (level != null && !level.isClientSide) {
@@ -168,5 +200,7 @@ public class RiftBlockEntity extends BlockEntity {
         data.load(tag);
     }
 
-    public RiftData getData() { return data; }
+    public RiftData getData() {
+        return data;
+    }
 }

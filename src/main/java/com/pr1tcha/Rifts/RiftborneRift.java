@@ -21,6 +21,7 @@ public class RiftborneRift {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public RiftborneRift(IEventBus modEventBus, ModContainer modContainer) {
+        RiftWorldStage.init();
         modEventBus.addListener(this::commonSetup);
 
         NeoForge.EVENT_BUS.register(this);

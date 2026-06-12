@@ -64,7 +64,9 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Current stages are:
     - `OPENING`
     - `ACTIVE`
-    - `COLLAPSE`
+    - `UNSTABLE`
+    - `COLLAPSING`
+    - `SCAR`
 
 ## Current Gameplay Flow
 
@@ -75,9 +77,10 @@ This document describes the current v0.1 rift implementation as it exists in cod
    - the player receives darkness;
    - the rift starts combat behavior.
 4. During `ACTIVE`, the rift spawns waves of tagged endermites.
-5. After three cleared waves, the rift enters `COLLAPSE`.
-6. On collapse, it plays a sound and turns into obsidian.
-7. If lifetime expires before completion, the rift disappears and cleans up its minions.
+5. Near the end of its lifetime, an active rift enters `UNSTABLE`.
+6. After three cleared waves, the rift enters `COLLAPSING`.
+7. On successful collapse, it drops `Rift Shard` items and turns into obsidian as a simple scar.
+8. If lifetime expires before completion, the rift disappears and cleans up its minions.
 
 ## Config
 
@@ -94,8 +97,8 @@ Config keys live under `rifts`:
 
 - World stage gating currently controls natural spawning.
 - Stage changes are command-driven and ready for FTB Quests command actions.
-- Rift stages do not yet match the design document exactly (`UNSTABLE`, `SCAR`, etc. are not implemented).
-- Rewards are currently represented by collapse behavior, not a dedicated reward table.
+- `SCAR` exists as a stage enum, but the current scar implementation is still represented by an obsidian block after collapse.
+- Rewards are currently hardcoded as `Rift Shard`, not a dedicated reward table.
 - Command messages and comments still need cleanup/localization.
 - FTB Quests integration is not formalized yet, but commands are already usable as quest actions.
 

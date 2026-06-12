@@ -14,7 +14,7 @@ The current version is the first working foundation for rift events: a server-dr
 - Applies effects to nearby players.
 - Shows rift info through commands.
 - Removes rifts through commands.
-- Leaves rewards or scar behavior after collapse.
+- Drops `Rift Shard` rewards and leaves a simple scar after successful collapse.
 
 ## Commands
 
@@ -41,6 +41,8 @@ The common config controls the current natural rift spawning behavior:
 - `rifts.maxRadiusFromPlayer`
 - `rifts.defaultLifetimeTicks`
 - `rifts.lifetimeVariationPercent`
+
+Successful rift collapse currently drops `Rift Shard` items. Failed/expired rifts disappear without rewards.
 
 Natural spawning is gated behind the persistent `riftborneRiftStage` gamerule:
 

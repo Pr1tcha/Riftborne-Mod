@@ -1,7 +1,7 @@
 package com.pr1tcha.Rifts.RiftData;
 
-import com.pr1tcha.Rifts.ModContent;
 import com.mojang.serialization.MapCodec;
+import com.pr1tcha.Rifts.ModContent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -26,13 +26,11 @@ public class RiftBlock extends BaseEntityBlock {
         return null;
     }
 
-    // Делаем блок невидимым
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
     }
 
-    // Сквозь блок можно спокойно проходить
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return Shapes.empty();
@@ -43,15 +41,12 @@ public class RiftBlock extends BaseEntityBlock {
         return Shapes.empty();
     }
 
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new RiftBlockEntity(pos, state); // Передаем только pos и state
+        return new RiftBlockEntity(pos, state);
     }
 
-
-    // Запускаем тикер для серверов и клиентов
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {

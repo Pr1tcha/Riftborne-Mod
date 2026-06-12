@@ -1,4 +1,5 @@
 {
   "itemGroup.riftborne_rift": "Riftborne Rift",
-  "block.riftborne_rift.rift": "Rift Anchor"
+  "block.riftborne_rift.rift": "Rift Anchor",
+  "item.riftborne_rift.rift_shard": "Rift Shard"
 }

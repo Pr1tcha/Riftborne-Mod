@@ -24,7 +24,7 @@ public class RiftSpawner {
             return;
         }
 
-        if (level.getGameRules().getInt(RiftWorldStage.RIFT_STAGE) < RiftWorldStage.STAGE_WEAK_RIFTS_ENABLED) {
+        if (RiftWorldStage.getStage(level) < RiftWorldStage.STAGE_WEAK_RIFTS_ENABLED) {
             return;
         }
 

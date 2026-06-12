@@ -91,14 +91,18 @@ public class RiftCommand {
     }
 
     private static int getStage(CommandSourceStack source) {
-        int stage = source.getLevel().getGameRules().getInt(RiftWorldStage.RIFT_STAGE);
+        int stage = RiftWorldStage.getStage(source.getLevel());
         source.sendSuccess(() -> Component.literal("Riftborne rift stage: " + stage), false);
         return stage;
     }
 
     private static int setStage(CommandSourceStack source, int stage) {
         MinecraftServer server = source.getServer();
-        source.getLevel().getGameRules().getRule(RiftWorldStage.RIFT_STAGE).set(stage, server);
+        if (!RiftWorldStage.setStage(source.getLevel(), stage, server)) {
+            source.sendFailure(Component.literal("Riftborne rift stage gamerule is not registered yet."));
+            return 0;
+        }
+
         source.sendSuccess(() -> Component.literal("Riftborne rift stage set to " + stage), true);
         return stage;
     }
