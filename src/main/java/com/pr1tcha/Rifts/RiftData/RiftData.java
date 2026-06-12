@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class RiftData {
     public UUID id = UUID.randomUUID();
-    public ResourceLocation riftType = ResourceLocation.fromNamespaceAndPath("eventmod", "small_spatial");
+    public ResourceLocation riftType = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "small_spatial");
     public BlockPos centerPos = BlockPos.ZERO;
     public float radius = 5.0f;
     public RiftStage stage = RiftStage.OPENING;

@@ -7,7 +7,7 @@ forgedatadev
 --assetIndex
 17
 --assetsDir
-C:\\Users\\79609\\.gradle\\caches\\neoformruntime\\assets
+C:\\Users\\PR1TCHA\\.gradle\\caches\\neoformruntime\\assets
 --gameDir
 .
 --fml.fmlVersion
@@ -24,6 +24,6 @@ C:\\Users\\79609\\.gradle\\caches\\neoformruntime\\assets
 eventmod
 --all
 --output
-D:\\Modding\\EventMod\\src\\generated\\resources
+"C:\\Users\\PR1TCHA\\Documents\\Riftborne Mod\\src\\generated\\resources"
 --existing
-D:\\Modding\\EventMod\\src\\main\\resources
+"C:\\Users\\PR1TCHA\\Documents\\Riftborne Mod\\src\\main\\resources"

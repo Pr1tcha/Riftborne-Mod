@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import java.util.List;
 import java.util.Random;
 
-@EventBusSubscriber(modid = com.pr1tcha.Rifts.Eventmod.MODID)
+@EventBusSubscriber(modid = com.pr1tcha.Rifts.RiftborneRift.MODID)
 public class RiftSpawner {
     private static final Random RANDOM = new Random();
 

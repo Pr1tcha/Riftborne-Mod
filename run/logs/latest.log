@@ -1,178 +1,132 @@
-[12июн.2026 13:44:33.037] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientdev, --version, 21.1.233, --assetIndex, 17, --assetsDir, C:\\Users\\79609\\.gradle\\caches\\neoformruntime\\assets, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.233, --fml.neoFormVersion, 20240808.144430]
-[12июн.2026 13:44:33.041] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: JVM identified as Eclipse Adoptium OpenJDK 64-Bit Server VM 21+35-LTS
-[12июн.2026 13:44:33.043] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21 by Eclipse Adoptium; OS Windows 10 arch amd64 version 10.0
-[12июн.2026 13:44:33.208] [main/INFO] [net.neoforged.fml.loading.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
-[12июн.2026 13:44:33.355] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
-[12июн.2026 13:44:33.577] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.6 got version 4.6
-[12июн.2026 13:44:33.716] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/79609/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%23138!/ Service=ModLauncher Env=CLIENT
-[12июн.2026 13:44:34.041] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: NVIDIA GeForce GTX 1060 6GB/PCIe/SSE2 GL version 4.6.0 NVIDIA 560.94, NVIDIA Corporation
-[12июн.2026 13:44:34.385] [main/INFO] [net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
-[12июн.2026 13:44:34.388] [main/INFO] [net.neoforged.fml.loading.moddiscovery.ModDiscoverer/]: 
+[12июн.2026 17:10:19.887] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientdev, --version, 21.1.233, --assetIndex, 17, --assetsDir, C:\\Users\\PR1TCHA\\.gradle\\caches\\neoformruntime\\assets, --gameDir, ., --fml.fmlVersion, 4.0.42, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.233, --fml.neoFormVersion, 20240808.144430]
+[12июн.2026 17:10:19.891] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: JVM identified as Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[12июн.2026 17:10:19.893] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
+[12июн.2026 17:10:20.010] [main/INFO] [net.neoforged.fml.loading.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
+[12июн.2026 17:10:20.137] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
+[12июн.2026 17:10:20.359] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.6 got version 4.6
+[12июн.2026 17:10:20.473] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/PR1TCHA/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%23138!/ Service=ModLauncher Env=CLIENT
+[12июн.2026 17:10:20.593] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: NVIDIA GeForce RTX 4060 Ti/PCIe/SSE2 GL version 4.6.0 NVIDIA 610.47, NVIDIA Corporation
+[12июн.2026 17:10:20.856] [main/WARN] [net.neoforged.jarjar.selection.JarSelector/]: Attempted to select a dependency jar for JarJar which was passed in as source: library:mixinextras.neoforge. Using Mod File: C:\Users\PR1TCHA\.gradle\caches\modules-2\files-2.1\io.github.llamalad7\mixinextras-neoforge\0.5.3\a0919957808de97707c5fb4ce073e66aeef3e187\mixinextras-neoforge-0.5.3.jar
+[12июн.2026 17:10:20.857] [main/INFO] [net.neoforged.fml.loading.moddiscovery.locators.JarInJarDependencyLocator/]: Found 1 dependencies adding them to mods collection
+[12июн.2026 17:10:20.858] [main/INFO] [net.neoforged.fml.loading.moddiscovery.ModDiscoverer/]: 
      Mod List:
 		Name Version (Mod Id)
 
-		EventMod 1.0-SNAPSHOT (eventmod)
 		Minecraft 1.21.1 (minecraft)
 		NeoForge 21.1.233 (neoforge)
-[12июн.2026 13:44:35.845] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientdev' with arguments [--version, 21.1.233, --gameDir, ., --assetsDir, C:\Users\79609\.gradle\caches\neoformruntime\assets, --assetIndex, 17]
-[12июн.2026 13:44:38.177] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 229 Datafixer optimizations took 604 milliseconds
-[12июн.2026 13:44:38.371] [pool-7-thread-1/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
-[12июн.2026 13:44:44.882] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
-[12июн.2026 13:44:44.885] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
-[12июн.2026 13:44:44.889] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
-[12июн.2026 13:44:44.891] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
-[12июн.2026 13:44:44.893] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
-[12июн.2026 13:44:45.049] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/Modding/EventMod/build/moddev/artifacts/neoforge-21.1.233.jar%23189!/assets/.mcassetsroot' uses unexpected schema
-[12июн.2026 13:44:45.050] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/Modding/EventMod/build/moddev/artifacts/neoforge-21.1.233.jar%23189!/data/.mcassetsroot' uses unexpected schema
-[12июн.2026 13:44:45.082] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
-[12июн.2026 13:44:45.093] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Setting user: Dev
-[12июн.2026 13:44:45.253] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Backend library: LWJGL version 3.3.3+5
-[12июн.2026 13:44:45.757] [modloading-worker-0/INFO] [net.neoforged.neoforge.common.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.233, for MC 1.21.1
-[12июн.2026 13:44:47.120] [Render thread/INFO] [net.neoforged.neoforge.gametest.GameTestHooks/]: Enabled Gametest Namespaces: [eventmod]
-[12июн.2026 13:44:47.278] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources, mod/eventmod, mod/neoforge
-[12июн.2026 13:44:47.293] [Worker-Main-1/INFO] [com.kwinta.eventmod.Eventmod/]: HELLO FROM COMMON SETUP
-[12июн.2026 13:44:47.293] [Worker-Main-1/INFO] [com.kwinta.eventmod.Eventmod/]: DIRT BLOCK >> minecraft:dirt
-[12июн.2026 13:44:47.293] [Worker-Main-1/INFO] [com.kwinta.eventmod.Eventmod/]: The magic number is... 42
-[12июн.2026 13:44:47.294] [Worker-Main-1/INFO] [com.kwinta.eventmod.Eventmod/]: ITEM >> minecraft:iron_ingot
-[12июн.2026 13:44:47.417] [Worker-Main-2/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.1.05.hex, loading
-[12июн.2026 13:44:47.678] [Worker-Main-11/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_jp_patch-15.1.05.hex, loading
-[12июн.2026 13:44:47.702] [Worker-Main-8/INFO] [com.kwinta.eventmod.Eventmod/]: HELLO FROM CLIENT SETUP
-[12июн.2026 13:44:47.702] [Worker-Main-8/INFO] [com.kwinta.eventmod.Eventmod/]: MINECRAFT NAME >> Dev
-[12июн.2026 13:44:48.717] [Worker-Main-9/WARN] [net.minecraft.client.resources.model.BlockStateModelLoader/]: Exception loading blockstate definition: 'eventmod:blockstates/example_block.json' missing model for variant: 'eventmod:example_block#'
-[12июн.2026 13:44:48.718] [Worker-Main-9/WARN] [net.minecraft.client.resources.model.BlockStateModelLoader/]: Exception loading blockstate definition: 'eventmod:blockstates/rift.json' missing model for variant: 'eventmod:rift#'
-[12июн.2026 13:44:48.723] [Worker-Main-9/WARN] [net.minecraft.client.resources.model.ModelBakery/]: Unable to load model: 'eventmod:item/example_block' referenced from: eventmod:item/example_block: java.io.FileNotFoundException: eventmod:models/item/example_block.json
-[12июн.2026 13:44:48.726] [Worker-Main-9/WARN] [net.minecraft.client.resources.model.ModelBakery/]: Unable to load model: 'eventmod:item/example_item' referenced from: eventmod:item/example_item: java.io.FileNotFoundException: eventmod:models/item/example_item.json
-[12июн.2026 13:44:49.897] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
-[12июн.2026 13:44:49.898] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
-[12июн.2026 13:44:50.333] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on Динамики (2- USB Audio Device)
-[12июн.2026 13:44:50.335] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
-[12июн.2026 13:44:50.545] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
-[12июн.2026 13:44:50.561] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[12июн.2026 13:44:50.562] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[12июн.2026 13:44:50.563] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[12июн.2026 13:44:50.565] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[12июн.2026 13:44:50.575] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[12июн.2026 13:44:50.576] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[12июн.2026 13:44:50.576] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[12июн.2026 13:44:50.577] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[12июн.2026 13:44:51.002] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
-[12июн.2026 13:44:51.004] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
-[12июн.2026 13:44:51.005] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[12июн.2026 13:44:51.006] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 64x64x0 minecraft:textures/atlas/map_decorations.png-atlas
-[12июн.2026 13:44:51.006] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x0 minecraft:textures/atlas/gui.png-atlas
-[12июн.2026 13:44:51.072] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[12июн.2026 13:44:51.294] [Render thread/INFO] [net.neoforged.neoforge.client.entity.animation.json.AnimationLoader/]: Loaded 0 entity animations
-[12июн.2026 13:46:27.561] [Render thread/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 1290 recipes
-[12июн.2026 13:46:27.766] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 1399 advancements
-[12июн.2026 13:46:28.483] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Starting integrated minecraft server version 1.21.1
-[12июн.2026 13:46:28.484] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
-[12июн.2026 13:46:29.939] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
-[12июн.2026 13:46:30.289] [progressListener/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Подготовка области возрождения: 0%
-[12июн.2026 13:46:30.453] [Server thread/INFO] [net.neoforged.neoforge.server.permission.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
-[12июн.2026 13:46:30.453] [Server thread/INFO] [com.kwinta.eventmod.Eventmod/]: HELLO from server starting
-[12июн.2026 13:46:30.463] [progressListener/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 501 ms
-[12июн.2026 13:46:30.538] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing view distance to 8, from 10
-[12июн.2026 13:46:30.538] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing simulation distance to 5, from 0
-[12июн.2026 13:46:31.519] [Server thread/INFO] [net.minecraft.server.players.PlayerList/]: Dev[local:E:4920d976] logged in with entity id 58 at (158.21901602485306, 65.0, -68.12051589173797)
-[12июн.2026 13:46:31.601] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev присоединился к игре
-[12июн.2026 13:46:31.837] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 68 advancements
-[12июн.2026 13:46:37.376] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Творческий режим]
-[12июн.2026 13:46:37.390] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Творческий режим
-[12июн.2026 13:46:42.421] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Режим выживания]
-[12июн.2026 13:46:42.434] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Режим выживания
-[12июн.2026 13:46:59.472] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 172, 69, -69. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 13:46:59.484] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 172, 69, -69. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков
-[12июн.2026 13:47:06.313] [Server thread/ERROR] [net.minecraft.world.level.chunk.ChunkAccess/]: Unprimed heightmap: WORLD_SURFACE_WG 12 3
-[12июн.2026 13:47:45.509] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 13:47:45.554] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 13:47:45.574] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 13:47:45.574] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 13:48:00.004] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Творческий режим]
-[12июн.2026 13:48:00.016] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Творческий режим
-[12июн.2026 13:48:01.036] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Режим выживания]
-[12июн.2026 13:48:01.050] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Режим выживания
-[12июн.2026 13:48:26.117] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 171, 70, -68. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 13:48:26.132] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 171, 70, -68. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков
-[12июн.2026 13:48:58.932] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 70 advancements
-[12июн.2026 13:49:18.862] [Server thread/ERROR] [net.minecraft.world.level.chunk.ChunkAccess/]: Unprimed heightmap: WORLD_SURFACE_WG 7 2
-[12июн.2026 13:49:22.858] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 13:49:22.966] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 13:49:22.974] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 13:49:22.974] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 13:55:23.175] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Творческий режим]
-[12июн.2026 13:55:23.188] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Творческий режим
-[12июн.2026 13:55:30.072] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 81 advancements
-[12июн.2026 13:55:42.573] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 177, 70, -66. Время жизни: 400 t (20,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 13:55:42.588] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 177, 70, -66. Время жизни: 400 t (20,0 sec), Радиус: 5,0 блоков
-[12июн.2026 13:55:46.511] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Режим выживания]
-[12июн.2026 13:55:46.521] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Режим выживания
-[12июн.2026 13:56:10.358] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 13:56:10.400] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 13:56:10.408] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 13:56:10.408] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:07:28.661] [Server thread/ERROR] [net.minecraft.world.level.chunk.ChunkAccess/]: Unprimed heightmap: WORLD_SURFACE_WG 6 1
-[12июн.2026 14:07:35.859] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:07:35.899] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:07:35.909] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:07:35.910] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:08:35.458] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:08:35.561] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:08:35.569] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:08:35.569] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:09:01.187] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 241, 75, 27. Время жизни: 400 t (20,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 14:09:01.202] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 241, 75, 27. Время жизни: 400 t (20,0 sec), Радиус: 5,0 блоков
-[12июн.2026 14:09:25.874] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 257, 75, 28. Время жизни: 600 t (30,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 14:09:25.884] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 257, 75, 28. Время жизни: 600 t (30,0 sec), Радиус: 5,0 блоков
-[12июн.2026 14:09:53.061] [Server thread/ERROR] [net.minecraft.world.level.chunk.ChunkAccess/]: Unprimed heightmap: WORLD_SURFACE_WG 3 15
-[12июн.2026 14:09:58.059] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:09:58.096] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:09:58.102] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:09:58.103] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:10:34.633] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 269, 76, 32. Время жизни: 600 t (30,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 14:10:34.649] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 269, 76, 32. Время жизни: 600 t (30,0 sec), Радиус: 5,0 блоков
-[12июн.2026 14:11:09.950] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 285, 76, 32. Время жизни: 800 t (40,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 14:11:09.965] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 285, 76, 32. Время жизни: 800 t (40,0 sec), Радиус: 5,0 блоков
-[12июн.2026 14:11:26.861] [Server thread/ERROR] [net.minecraft.world.level.chunk.ChunkAccess/]: Unprimed heightmap: WORLD_SURFACE_WG 1 15
-[12июн.2026 14:11:44.685] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Творческий режим]
-[12июн.2026 14:11:44.697] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Творческий режим
-[12июн.2026 14:11:49.708] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:11:49.740] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:11:49.746] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:11:49.746] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:12:49.680] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 81 advancements
-[12июн.2026 14:12:58.809] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:12:58.845] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:12:58.853] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:12:58.853] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:24:06.812] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 269, 94, 32. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 14:24:06.827] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 269, 94, 32. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков
-[12июн.2026 14:24:26.111] [Server thread/ERROR] [net.minecraft.world.level.chunk.ChunkAccess/]: Unprimed heightmap: WORLD_SURFACE_WG 1 1
-[12июн.2026 14:24:27.263] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev получил достижение «[Две стихии]»
-[12июн.2026 14:24:27.294] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Dev получил достижение «[Две стихии]»
-[12июн.2026 14:24:27.327] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 88 advancements
-[12июн.2026 14:24:34.408] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:24:34.429] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:24:34.434] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:24:34.435] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:26:51.559] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:26:51.708] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:26:51.760] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:26:51.761] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
-[12июн.2026 14:27:12.389] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 222, 68, -222. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков
-[12июн.2026 14:27:12.389] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 222, 68, -222. Время жизни: 8000 t (400,0 sec), Радиус: 5,0 блоков]
-[12июн.2026 14:27:17.591] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Режим выживания]
-[12июн.2026 14:27:17.604] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Режим выживания
-[12июн.2026 14:27:18.543] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Творческий режим]
-[12июн.2026 14:27:18.555] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Творческий режим
-[12июн.2026 14:27:23.814] [Server thread/ERROR] [net.minecraft.world.level.chunk.ChunkAccess/]: Unprimed heightmap: WORLD_SURFACE_WG 9 12
-[12июн.2026 14:27:27.607] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Режим выживания]
-[12июн.2026 14:27:27.621] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Режим выживания
-[12июн.2026 14:27:29.963] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Ваш режим игры изменён на Творческий режим]
-[12июн.2026 14:27:29.972] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Ваш режим игры изменён на Творческий режим
-[12июн.2026 14:28:10.734] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev получил достижение «[Каменный век]»
-[12июн.2026 14:28:10.739] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Dev получил достижение «[Каменный век]»
-[12июн.2026 14:28:10.788] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 102 advancements
-[12июн.2026 14:28:12.959] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[12июн.2026 14:28:12.994] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:overworld
-[12июн.2026 14:28:12.998] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_end
-[12июн.2026 14:28:12.999] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Новый мир]'/minecraft:the_nether
+		Riftborne Rift 1.0-SNAPSHOT (riftborne_rift)
+[12июн.2026 17:10:21.860] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientdev' with arguments [--version, 21.1.233, --gameDir, ., --assetsDir, C:\Users\PR1TCHA\.gradle\caches\neoformruntime\assets, --assetIndex, 17]
+[12июн.2026 17:10:23.499] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 229 Datafixer optimizations took 371 milliseconds
+[12июн.2026 17:10:23.553] [pool-7-thread-1/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[12июн.2026 17:10:28.330] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[12июн.2026 17:10:28.331] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[12июн.2026 17:10:28.333] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[12июн.2026 17:10:28.335] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[12июн.2026 17:10:28.336] [main/WARN] [net.minecraft.commands.Commands/]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[12июн.2026 17:10:28.452] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/PR1TCHA/Documents/Riftborne%20Mod/build/moddev/artifacts/neoforge-21.1.233.jar%23189!/assets/.mcassetsroot' uses unexpected schema
+[12июн.2026 17:10:28.453] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/PR1TCHA/Documents/Riftborne%20Mod/build/moddev/artifacts/neoforge-21.1.233.jar%23189!/data/.mcassetsroot' uses unexpected schema
+[12июн.2026 17:10:28.479] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[12июн.2026 17:10:28.487] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Setting user: Dev
+[12июн.2026 17:10:28.576] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Backend library: LWJGL version 3.3.3+5
+[12июн.2026 17:10:28.792] [modloading-worker-0/INFO] [net.neoforged.neoforge.common.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.233, for MC 1.21.1
+[12июн.2026 17:10:29.588] [Render thread/INFO] [net.neoforged.neoforge.gametest.GameTestHooks/]: Enabled Gametest Namespaces: [eventmod]
+[12июн.2026 17:10:29.722] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources, mod/riftborne_rift, mod/neoforge
+[12июн.2026 17:10:29.737] [Worker-Main-1/INFO] [com.pr1tcha.Rifts.RiftborneRift/]: HELLO FROM COMMON SETUP
+[12июн.2026 17:10:29.737] [Worker-Main-1/INFO] [com.pr1tcha.Rifts.RiftborneRift/]: DIRT BLOCK >> minecraft:dirt
+[12июн.2026 17:10:29.737] [Worker-Main-1/INFO] [com.pr1tcha.Rifts.RiftborneRift/]: The magic number is... 42
+[12июн.2026 17:10:29.737] [Worker-Main-1/INFO] [com.pr1tcha.Rifts.RiftborneRift/]: ITEM >> minecraft:iron_ingot
+[12июн.2026 17:10:29.779] [Worker-Main-10/INFO] [com.pr1tcha.Rifts.RiftborneRift/]: HELLO FROM CLIENT SETUP
+[12июн.2026 17:10:29.780] [Worker-Main-10/INFO] [com.pr1tcha.Rifts.RiftborneRift/]: MINECRAFT NAME >> Dev
+[12июн.2026 17:10:29.833] [Worker-Main-9/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.1.05.hex, loading
+[12июн.2026 17:10:29.921] [Worker-Main-4/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_jp_patch-15.1.05.hex, loading
+[12июн.2026 17:10:30.781] [Worker-Main-1/WARN] [net.minecraft.client.resources.model.BlockStateModelLoader/]: Exception loading blockstate definition: 'riftborne_rift:blockstates/riftborne_rift_block.json' missing model for variant: 'riftborne_rift:riftborne_rift_block#'
+[12июн.2026 17:10:30.781] [Worker-Main-1/WARN] [net.minecraft.client.resources.model.BlockStateModelLoader/]: Exception loading blockstate definition: 'riftborne_rift:blockstates/rift.json' missing model for variant: 'riftborne_rift:rift#'
+[12июн.2026 17:10:30.782] [Worker-Main-1/WARN] [net.minecraft.client.resources.model.ModelBakery/]: Unable to load model: 'riftborne_rift:item/riftborne_rift_block' referenced from: riftborne_rift:item/riftborne_rift_block: java.io.FileNotFoundException: riftborne_rift:models/item/riftborne_rift_block.json
+[12июн.2026 17:10:30.785] [Worker-Main-1/WARN] [net.minecraft.client.resources.model.ModelBakery/]: Unable to load model: 'riftborne_rift:item/riftborne_rift_item' referenced from: riftborne_rift:item/riftborne_rift_item: java.io.FileNotFoundException: riftborne_rift:models/item/riftborne_rift_item.json
+[12июн.2026 17:10:31.628] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
+[12июн.2026 17:10:31.629] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[12июн.2026 17:10:31.731] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on Динамики (picun G2)
+[12июн.2026 17:10:31.732] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
+[12июн.2026 17:10:31.868] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
+[12июн.2026 17:10:31.883] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[12июн.2026 17:10:31.884] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[12июн.2026 17:10:31.885] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[12июн.2026 17:10:31.886] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[12июн.2026 17:10:31.893] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[12июн.2026 17:10:31.893] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[12июн.2026 17:10:31.893] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[12июн.2026 17:10:31.894] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[12июн.2026 17:10:32.059] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[12июн.2026 17:10:32.061] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[12июн.2026 17:10:32.061] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[12июн.2026 17:10:32.061] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 64x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[12июн.2026 17:10:32.062] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x0 minecraft:textures/atlas/gui.png-atlas
+[12июн.2026 17:10:32.084] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[12июн.2026 17:10:32.152] [Render thread/INFO] [net.neoforged.neoforge.client.entity.animation.json.AnimationLoader/]: Loaded 0 entity animations
+[12июн.2026 17:10:35.287] [Render thread/WARN] [net.neoforged.neoforge.common.CommonHooks/WP]: The following mods have version differences that were not resolved:
+eventmod (version 1.0-SNAPSHOT -> MISSING)
+Things may not work well.
+[12июн.2026 17:10:36.101] [Render thread/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 1290 recipes
+[12июн.2026 17:10:36.301] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 1399 advancements
+[12июн.2026 17:10:36.847] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Starting integrated minecraft server version 1.21.1
+[12июн.2026 17:10:36.848] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[12июн.2026 17:10:37.982] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[12июн.2026 17:10:38.272] [progressListener/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Подготовка области возрождения: 0%
+[12июн.2026 17:10:38.338] [Server thread/INFO] [net.neoforged.neoforge.server.permission.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[12июн.2026 17:10:38.338] [Server thread/INFO] [com.pr1tcha.Rifts.RiftborneRift/]: HELLO from server starting
+[12июн.2026 17:10:38.352] [progressListener/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 357 ms
+[12июн.2026 17:10:38.463] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing view distance to 8, from 10
+[12июн.2026 17:10:38.464] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing simulation distance to 5, from 0
+[12июн.2026 17:10:39.121] [Server thread/WARN] [net.minecraft.stats.ServerStatsCounter/]: Invalid statistic in .\saves\Мои Тесты\stats\380df991-f603-344c-a090-369bad2a924a.json: Don't know what eventmod:example_item is
+[12июн.2026 17:10:39.181] [Server thread/INFO] [net.minecraft.server.players.PlayerList/]: Dev[local:E:091f6de7] logged in with entity id 79 at (8.538640388105744, 76.0, 7.35037714032977)
+[12июн.2026 17:10:39.252] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev присоединился к игре
+[12июн.2026 17:10:39.393] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 22 advancements
+[12июн.2026 17:10:52.234] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Поблизости (в радиусе 5 б.) не найдено ни одного разлома!
+[12июн.2026 17:10:55.178] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Разлом открыт на 9, 86, 7. Время жизни: 2000 t (100,0 sec), Радиус: 20,0 блоков]
+[12июн.2026 17:10:55.182] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Разлом открыт на 9, 86, 7. Время жизни: 2000 t (100,0 sec), Радиус: 20,0 блоков
+[12июн.2026 17:10:56.624] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Поблизости (в радиусе 5 б.) не найдено ни одного разлома!
+[12июн.2026 17:11:00.932] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] ID: eb48810f-88cf-4f84-84e0-3c76b2785868
+[12июн.2026 17:11:00.933] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Позиция: 9, 86, 7
+[12июн.2026 17:11:00.933] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Тип: riftborne_rift:small_spatial
+[12июн.2026 17:11:00.933] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Стадия: ACTIVE
+[12июн.2026 17:11:00.934] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Радиус: 20.0 блоков
+[12июн.2026 17:11:00.934] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Время жизни: 115 / 2000 t (Осталось: 94,3 сек)
+[12июн.2026 17:11:00.934] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Тип разлома: Квестовый (команда)
+[12июн.2026 17:11:07.914] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] ID: eb48810f-88cf-4f84-84e0-3c76b2785868
+[12июн.2026 17:11:07.914] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Позиция: 9, 86, 7
+[12июн.2026 17:11:07.915] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Тип: riftborne_rift:small_spatial
+[12июн.2026 17:11:07.915] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Стадия: ACTIVE
+[12июн.2026 17:11:07.915] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Радиус: 20.0 блоков
+[12июн.2026 17:11:07.915] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Время жизни: 255 / 2000 t (Осталось: 87,3 сек)
+[12июн.2026 17:11:07.915] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Тип разлома: Квестовый (команда)
+[12июн.2026 17:11:20.593] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
+[12июн.2026 17:11:20.608] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:overworld
+[12июн.2026 17:11:20.621] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:the_nether
+[12июн.2026 17:11:20.621] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:the_end
+[12июн.2026 17:11:34.478] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Not Secure] <Dev> [eq
+[12июн.2026 17:11:34.494] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [CHAT] <Dev> [eq
+[12июн.2026 17:11:40.410] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] ID: eb48810f-88cf-4f84-84e0-3c76b2785868
+[12июн.2026 17:11:40.410] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Позиция: 9, 86, 7
+[12июн.2026 17:11:40.411] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Тип: riftborne_rift:small_spatial
+[12июн.2026 17:11:40.411] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Стадия: ACTIVE
+[12июн.2026 17:11:40.411] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Радиус: 20.0 блоков
+[12июн.2026 17:11:40.411] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Время жизни: 824 / 2000 t (Осталось: 58,8 сек)
+[12июн.2026 17:11:40.411] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Тип разлома: Квестовый (команда)
+[12июн.2026 17:15:02.892] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
+[12июн.2026 17:15:02.906] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:overworld
+[12июн.2026 17:15:02.922] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:the_nether
+[12июн.2026 17:15:02.922] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:the_end
+[12июн.2026 17:15:03.696] [Server thread/INFO] [net.minecraft.server.network.ServerGamePacketListenerImpl/]: Dev lost connection: Отключение
+[12июн.2026 17:15:03.698] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev покинул игру
+[12июн.2026 17:15:03.709] [Server thread/INFO] [net.minecraft.server.network.ServerCommonPacketListenerImpl/]: Stopping singleplayer server as player logged out
+[12июн.2026 17:15:03.742] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
+[12июн.2026 17:15:03.743] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
+[12июн.2026 17:15:03.743] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
+[12июн.2026 17:15:04.004] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:overworld
+[12июн.2026 17:15:04.288] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:the_nether
+[12июн.2026 17:15:04.297] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[Мои Тесты]'/minecraft:the_end
+[12июн.2026 17:15:04.311] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (Мои Тесты): All chunks are saved
+[12июн.2026 17:15:04.312] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[12июн.2026 17:15:04.312] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[12июн.2026 17:15:04.312] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage: All dimensions are saved
+[12июн.2026 17:15:04.704] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Stopping!

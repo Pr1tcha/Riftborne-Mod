@@ -1,0 +1,37 @@
+#Whether to log the dirt block on common setup
+logDirtBlock = true
+#A magic number
+# Default: 42
+# Range: > 0
+magicNumber = 42
+#What you want the introduction message to be for the magic number
+magicNumberIntroduction = "The magic number is... "
+#A list of items to log on common setup.
+items = ["minecraft:iron_ingot"]
+
+#Rift system settings
+[rifts]
+	#Rift spawn check interval in ticks
+	# Default: 1200
+	# Range: 20 ~ 72000
+	checkInterval = 1200
+	#Rift spawn chance per check (from 0.0 to 1.0, where 0.15 = 15%)
+	# Default: 0.01
+	# Range: 0.0 ~ 1.0
+	spawnChance = 0.01
+	#Minimum distance in blocks from the player where a rift can open
+	# Default: 30
+	# Range: 10 ~ 128
+	minRadiusFromPlayer = 30
+	#Maximum distance in blocks from the player for a rift to open
+	# Default: 70
+	# Range: 20 ~ 256
+	maxRadiusFromPlayer = 70
+	#Default rift lifetime in ticks
+	# Default: 8000
+	# Range: 200 ~ 1200000
+	defaultLifetimeTicks = 8000
+	#Rift lifetime variance percentage (from 0 to 100) For example, 20 means a random deviation of ±20% from the base lifetime
+	# Default: 20
+	# Range: 0 ~ 100
+	lifetimeVariationPercent = 20
