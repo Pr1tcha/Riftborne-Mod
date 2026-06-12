@@ -1,0 +1,49 @@
+/rift spawn
+/rift spawn ~ ~ ~ 1 ticks
+/rift spawn ~ ~ ~
+/rift spawn ~ ~ ~ 4
+/rift spawn ~ ~ ~ 3
+/rift spawn ~ ~ ~
+/tp ~ ~ ~
+/rift spawn ~ ~ ~ 300 seconds
+/tp ~ ~ ~
+/rift spawn ~ ~ ~-4 4 seconds
+/rift info
+/rift info 500
+/rift kill 9
+/rift ~ ~ ~-8 40 sec
+/rift info
+/rift ~ ~ ~ 200 t
+/rift spawn ~ ~ ~ 10 sec 8
+/rift spawn ~ ~3 ~ 40 sec 1
+/rift info
+/rift spawn ~ ~4 ~ 19 sec 1
+/rift info
+/rift spawn ~ ~4 ~ 59 sec 1
+/rift info
+/reload\
+/reload
+/rift spawn
+/rift spawn ~ ~ ~ 98 sec 9
+/rift info
+/rift info 190
+/rift info 100
+/tp 1000 ~ ~
+/rift info 100
+/tp 1000 ~ ~
+/rift info 100
+/rift kill 100
+/rift info 100
+/reload
+/rift
+/rift spawn ~ ~ ~ 100 sec 3
+/locate biome minecraft:plains
+/tp @s 127 92 -91
+/rift spawn ~5 ~4 ~ 500 sec 4
+/reload
+/rift spawn ~15 ~4 ~ 400 sec 5
+/rift spawn ~15 ~5 ~ 400 sec 5
+/rift spawn ~15 ~5 ~ 20 sec 5
+/rift spawn ~15 ~5 ~ 30 sec 5
+/rift spawn ~15 ~5 ~ 40 sec 5
+/rift spawn ~15 ~5 ~ 8000 t

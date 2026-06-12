@@ -1,0 +1,37 @@
+#Whether to log the dirt block on common setup
+logDirtBlock = true
+#A magic number
+# Default: 42
+# Range: > 0
+magicNumber = 42
+#What you want the introduction message to be for the magic number
+magicNumberIntroduction = "The magic number is... "
+#A list of items to log on common setup.
+items = ["minecraft:iron_ingot"]
+
+#Настройки системы разломов
+[rifts]
+	#Интервал проверки спавна разлома в тиках
+	# Default: 1200
+	# Range: 20 ~ 72000
+	checkInterval = 1200
+	#Шанс появления разлома при каждой проверке (от 0.0 до 1.0, где 0.15 = 15%)
+	# Default: 0.01
+	# Range: 0.0 ~ 1.0
+	spawnChance = 0.4
+	#Минимальное расстояние в блоках от игрока, на котором может открыться разлом
+	# Default: 30
+	# Range: 10 ~ 128
+	minRadiusFromPlayer = 10
+	#Максимальное расстояние в блоках от игрока для открытия разлома
+	# Default: 70
+	# Range: 20 ~ 256
+	maxRadiusFromPlayer = 20
+	#Стандартное время жизни натурального разлома в тиках
+	# Default: 8000
+	# Range: 200 ~ 1200000
+	defaultLifetimeTicks = 800
+	#Разброс времени жизни разлома в процентах (от 0 до 100) Например, 20 означает случайное отклонение на ±20% от базового времени.
+	# Default: 20
+	# Range: 0 ~ 100
+	lifetimeVariationPercent = 20
