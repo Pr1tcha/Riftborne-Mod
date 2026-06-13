@@ -1,0 +1,11 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "riftborne_rift:rift_distortion",
+      "in": "minecraft:main",
+      "clear": false
+    }
+  ],
+  "renderStage": "after_block_entities"
+}

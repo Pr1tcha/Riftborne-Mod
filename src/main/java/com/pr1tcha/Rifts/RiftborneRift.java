@@ -3,6 +3,7 @@ package com.pr1tcha.Rifts;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import com.pr1tcha.Rifts.client.RiftBlockEntityRenderer;
+import com.pr1tcha.Rifts.client.VeilRiftDistortion;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -46,6 +47,7 @@ public class RiftborneRift {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             LOGGER.info("Riftborne Rift client setup for {}", Minecraft.getInstance().getUser().getName());
+            event.enqueueWork(VeilRiftDistortion::registerIfPresent);
         }
 
         @SubscribeEvent

@@ -2,7 +2,6 @@ package com.pr1tcha.Rifts.RiftData;
 
 import com.pr1tcha.Rifts.ModContent;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -42,9 +41,7 @@ public class RiftBlockEntity extends BlockEntity {
             tickServer(serverLevel, pos, blockEntity, rift);
         }
 
-        if (level.isClientSide) {
-            spawnParticles(level, pos, rift);
-        }
+        // The rift visual is handled by the block entity renderer. Vanilla particles read as large square sprites at distance.
     }
 
     private static void tickServer(ServerLevel level, BlockPos pos, RiftBlockEntity blockEntity, RiftData rift) {
@@ -84,7 +81,7 @@ public class RiftBlockEntity extends BlockEntity {
             player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 80, 0, false, false));
         }
 
-        level.playSound(null, pos, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1.0f, 1.0f);
+        level.playSound(null, pos, ModContent.RIFT_OPENING.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
         blockEntity.sync();
     }
 
@@ -153,22 +150,6 @@ public class RiftBlockEntity extends BlockEntity {
         AABB scanArea = new AABB(pos).inflate(rift.radius + 15);
         level.getEntities(EntityType.ENDERMITE, scanArea, m -> m.getTags().contains(tag))
                 .forEach(Endermite::discard);
-    }
-
-    private static void spawnParticles(Level level, BlockPos pos, RiftData rift) {
-        if (rift.stage == RiftStage.OPENING && level.random.nextFloat() < 0.05f) {
-            level.addParticle(ParticleTypes.PORTAL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
-        } else if (rift.stage == RiftStage.ACTIVE || rift.stage == RiftStage.UNSTABLE) {
-            int count = rift.stage == RiftStage.UNSTABLE ? 5 : 2;
-            for (int i = 0; i < count; i++) {
-                double x = pos.getX() + 0.5 + (level.random.nextDouble() - 0.5) * 1.5;
-                double y = pos.getY() + 0.5 + (level.random.nextDouble() - 0.5) * 1.5;
-                double z = pos.getZ() + 0.5 + (level.random.nextDouble() - 0.5) * 1.5;
-                level.addParticle(ParticleTypes.REVERSE_PORTAL, x, y, z, 0, 0.05, 0);
-            }
-        } else if (rift.stage == RiftStage.COLLAPSING) {
-            level.addParticle(ParticleTypes.EXPLOSION, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
-        }
     }
 
     public void sync() {

@@ -4,6 +4,7 @@ build/
 
 # Minecraft run directory
 run/
+libs/*.jar
 
 # IDE/editor state
 .idea/
@@ -15,4 +16,3 @@ run/
 Thumbs.db
 *.log
 *.tmp
-

@@ -3,6 +3,8 @@ package com.pr1tcha.Rifts;
 import com.pr1tcha.Rifts.RiftData.RiftBlock;
 import com.pr1tcha.Rifts.RiftData.RiftBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -16,6 +18,7 @@ public class ModContent {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, RiftborneRift.MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, RiftborneRift.MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, RiftborneRift.MODID);
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, RiftborneRift.MODID);
 
     public static final Supplier<Block> RIFT_BLOCK = BLOCKS.register("rift",
             () -> new RiftBlock(BlockBehaviour.Properties.of().noCollission().noLootTable().strength(-1.0F, 3600000.0F)));
@@ -26,9 +29,13 @@ public class ModContent {
     public static final Supplier<Item> RIFT_SHARD = ITEMS.register("rift_shard",
             () -> new Item(new Item.Properties()));
 
+    public static final Supplier<SoundEvent> RIFT_OPENING = SOUND_EVENTS.register("rift_opening",
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(RiftborneRift.MODID, "rift_opening")));
+
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
         ITEMS.register(modEventBus);
+        SOUND_EVENTS.register(modEventBus);
     }
 }

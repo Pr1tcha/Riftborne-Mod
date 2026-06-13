@@ -17,6 +17,7 @@ public class RiftData {
     public float instability = 0.0f;
     public boolean isCommandSpawned = false;
     public boolean isQuestRelated = false;
+    public boolean useProceduralVisual = false;
     public int wavesCleared = 0;
     public int currentWaveMobsLeft = 0;
     public int spawnCooldown = 0;
@@ -32,6 +33,7 @@ public class RiftData {
         tag.putFloat("Instability", instability);
         tag.putBoolean("CommandSpawned", isCommandSpawned);
         tag.putBoolean("QuestRelated", isQuestRelated);
+        tag.putBoolean("ProceduralVisual", useProceduralVisual);
         tag.putInt("WavesCleared", wavesCleared);
         tag.putInt("MobsLeft", currentWaveMobsLeft);
         tag.putInt("SpawnCooldown", spawnCooldown);
@@ -52,6 +54,7 @@ public class RiftData {
         this.instability = tag.getFloat("Instability");
         this.isCommandSpawned = tag.getBoolean("CommandSpawned");
         this.isQuestRelated = tag.getBoolean("QuestRelated");
+        this.useProceduralVisual = tag.getBoolean("ProceduralVisual");
         this.wavesCleared = tag.getInt("WavesCleared");
         this.currentWaveMobsLeft = tag.getInt("MobsLeft");
         this.spawnCooldown = tag.getInt("SpawnCooldown");

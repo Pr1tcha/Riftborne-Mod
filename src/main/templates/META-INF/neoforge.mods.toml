@@ -72,6 +72,22 @@ versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies."${mod_id}"]]
+modId = "veil"
+type = "optional"
+reason = "Enables advanced Riftborne Rift visual effects when present in the modpack."
+versionRange = "[4.0.2,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies."${mod_id}"]]
+modId = "geckolib"
+type = "optional"
+reason = "Reserved for animated Riftborne Rift entities, artifacts, and block visuals."
+versionRange = "[4.8.4,)"
+ordering = "AFTER"
+side = "BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This placeholder declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for instance.

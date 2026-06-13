@@ -1,6 +1,7 @@
 package com.pr1tcha.Rifts;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -52,38 +53,42 @@ public class RiftCommand {
                         .executes(context -> getRiftInfo(context.getSource(), 5))
                 )
 
-                .then(Commands.literal("spawn")
-                        .executes(context -> spawnRift(context.getSource(), BlockPos.containing(context.getSource().getPosition()), 20, 5.0f))
+                .then(spawnCommand("spawn", false))
+                .then(spawnCommand("spawn_procedural", true))
+        );
+    }
 
-                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
-                                .executes(context -> spawnRift(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "pos"), 20, 5.0f))
+    private static LiteralArgumentBuilder<CommandSourceStack> spawnCommand(String name, boolean proceduralVisual) {
+        return Commands.literal(name)
+                .executes(context -> spawnRift(context.getSource(), BlockPos.containing(context.getSource().getPosition()), 20, 5.0f, proceduralVisual))
 
-                                .then(Commands.argument("amount", IntegerArgumentType.integer(1))
-                                        .then(Commands.argument("unit", StringArgumentType.word())
-                                                .suggests((context, builder) -> SharedSuggestionProvider.suggest(TIME_UNITS, builder))
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(context -> spawnRift(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "pos"), 20, 5.0f, proceduralVisual))
+
+                        .then(Commands.argument("amount", IntegerArgumentType.integer(1))
+                                .then(Commands.argument("unit", StringArgumentType.word())
+                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(TIME_UNITS, builder))
+                                        .executes(context -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
+                                            int amount = IntegerArgumentType.getInteger(context, "amount");
+                                            String unit = StringArgumentType.getString(context, "unit");
+                                            int lifetimeTicks = toTicks(amount, unit);
+                                            return spawnRift(context.getSource(), pos, lifetimeTicks, 5.0f, proceduralVisual);
+                                        })
+
+                                        .then(Commands.argument("radius", FloatArgumentType.floatArg(1.0f, 50.0f))
                                                 .executes(context -> {
                                                     BlockPos pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
                                                     int amount = IntegerArgumentType.getInteger(context, "amount");
                                                     String unit = StringArgumentType.getString(context, "unit");
+                                                    float radius = FloatArgumentType.getFloat(context, "radius");
                                                     int lifetimeTicks = toTicks(amount, unit);
-                                                    return spawnRift(context.getSource(), pos, lifetimeTicks, 5.0f);
+                                                    return spawnRift(context.getSource(), pos, lifetimeTicks, radius, proceduralVisual);
                                                 })
-
-                                                .then(Commands.argument("radius", FloatArgumentType.floatArg(1.0f, 50.0f))
-                                                        .executes(context -> {
-                                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
-                                                            int amount = IntegerArgumentType.getInteger(context, "amount");
-                                                            String unit = StringArgumentType.getString(context, "unit");
-                                                            float radius = FloatArgumentType.getFloat(context, "radius");
-                                                            int lifetimeTicks = toTicks(amount, unit);
-                                                            return spawnRift(context.getSource(), pos, lifetimeTicks, radius);
-                                                        })
-                                                )
                                         )
                                 )
                         )
-                )
-        );
+                );
     }
 
     private static int toTicks(int amount, String unit) {
@@ -107,7 +112,7 @@ public class RiftCommand {
         return stage;
     }
 
-    private static int spawnRift(CommandSourceStack source, BlockPos pos, int lifetimeTicks, float radius) {
+    private static int spawnRift(CommandSourceStack source, BlockPos pos, int lifetimeTicks, float radius, boolean proceduralVisual) {
         ServerLevel level = source.getLevel();
         if (lifetimeTicks < 20) {
             lifetimeTicks = 20;
@@ -121,13 +126,14 @@ public class RiftCommand {
             data.maxLifetimeTicks = lifetimeTicks;
             data.radius = radius;
             data.isCommandSpawned = true;
+            data.useProceduralVisual = proceduralVisual;
             rift.setChanged();
         }
 
         int finalTicks = lifetimeTicks;
         source.sendSuccess(() -> Component.literal(String.format(
-                "Rift opened at %s. Lifetime: %d t (%.1f sec), radius: %.1f blocks",
-                pos.toShortString(), finalTicks, finalTicks / 20.0f, radius
+                "%s rift opened at %s. Lifetime: %d t (%.1f sec), radius: %.1f blocks",
+                proceduralVisual ? "Procedural" : "Classic", pos.toShortString(), finalTicks, finalTicks / 20.0f, radius
         )), true);
 
         return 1;

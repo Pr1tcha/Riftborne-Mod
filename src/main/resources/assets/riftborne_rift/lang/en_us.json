@@ -1,5 +1,6 @@
 {
   "itemGroup.riftborne_rift": "Riftborne Rift",
   "block.riftborne_rift.rift": "Rift Anchor",
-  "item.riftborne_rift.rift_shard": "Rift Shard"
+  "item.riftborne_rift.rift_shard": "Rift Shard",
+  "subtitles.riftborne_rift.rift_opening": "Rift opens"
 }
