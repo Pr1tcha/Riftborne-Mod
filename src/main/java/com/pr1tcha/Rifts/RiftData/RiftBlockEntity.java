@@ -1,6 +1,7 @@
 package com.pr1tcha.Rifts.RiftData;
 
 import com.pr1tcha.Rifts.ModContent;
+import com.pr1tcha.Rifts.entity.RiftSplinterEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -9,8 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -109,9 +108,9 @@ public class RiftBlockEntity extends BlockEntity {
 
         if (level.getGameTime() % 20 == 0 && rift.currentWaveMobsLeft > 0) {
             AABB scanArea = new AABB(pos).inflate(rift.radius + 15);
-            List<Endermite> aliveMites = level.getEntities(EntityType.ENDERMITE, scanArea, m -> m.getTags().contains(minionTag));
+            List<RiftSplinterEntity> aliveSplinters = level.getEntities(ModContent.RIFT_SPLINTER.get(), scanArea, m -> m.getTags().contains(minionTag));
 
-            rift.currentWaveMobsLeft = aliveMites.size();
+            rift.currentWaveMobsLeft = aliveSplinters.size();
             if (rift.currentWaveMobsLeft <= 0) {
                 rift.spawnCooldown = 60;
                 blockEntity.sync();
@@ -134,13 +133,13 @@ public class RiftBlockEntity extends BlockEntity {
     private static void spawnWave(ServerLevel level, BlockPos pos, RiftData rift, String tag) {
         int count = 3 + level.random.nextInt(3);
         for (int i = 0; i < count; i++) {
-            Endermite mite = EntityType.ENDERMITE.create(level);
-            if (mite != null) {
+            RiftSplinterEntity splinter = ModContent.RIFT_SPLINTER.get().create(level);
+            if (splinter != null) {
                 double rx = pos.getX() + 0.5 + (level.random.nextDouble() - 0.5) * 4;
                 double rz = pos.getZ() + 0.5 + (level.random.nextDouble() - 0.5) * 4;
-                mite.moveTo(rx, pos.getY(), rz, level.random.nextFloat() * 360, 0);
-                mite.addTag(tag);
-                level.addFreshEntity(mite);
+                splinter.moveTo(rx, pos.getY(), rz, level.random.nextFloat() * 360, 0);
+                splinter.addTag(tag);
+                level.addFreshEntity(splinter);
             }
         }
         rift.currentWaveMobsLeft = count;
@@ -148,8 +147,8 @@ public class RiftBlockEntity extends BlockEntity {
 
     private static void cleanupMinions(ServerLevel level, BlockPos pos, RiftData rift, String tag) {
         AABB scanArea = new AABB(pos).inflate(rift.radius + 15);
-        level.getEntities(EntityType.ENDERMITE, scanArea, m -> m.getTags().contains(tag))
-                .forEach(Endermite::discard);
+        level.getEntities(ModContent.RIFT_SPLINTER.get(), scanArea, m -> m.getTags().contains(tag))
+                .forEach(RiftSplinterEntity::discard);
     }
 
     public void sync() {

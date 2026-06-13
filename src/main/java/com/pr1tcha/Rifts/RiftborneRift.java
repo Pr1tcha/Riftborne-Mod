@@ -3,6 +3,7 @@ package com.pr1tcha.Rifts;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import com.pr1tcha.Rifts.client.RiftBlockEntityRenderer;
+import com.pr1tcha.Rifts.client.RiftSplinterRenderer;
 import com.pr1tcha.Rifts.client.VeilRiftDistortion;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -26,6 +27,7 @@ public class RiftborneRift {
     public RiftborneRift(IEventBus modEventBus, ModContainer modContainer) {
         RiftWorldStage.init();
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(ModContent::registerEntityAttributes);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);
@@ -53,6 +55,7 @@ public class RiftborneRift {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModContent.RIFT_BE_TYPE.get(), RiftBlockEntityRenderer::new);
+            event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
         }
     }
 }

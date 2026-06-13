@@ -80,6 +80,7 @@ public class RiftSpawner {
 
             data.maxLifetimeTicks = randomLifetime;
             data.isCommandSpawned = false;
+            data.useProceduralVisual = true;
             data.radius = 6.0f + RANDOM.nextFloat() * 4.0f;
             rift.setChanged();
         }

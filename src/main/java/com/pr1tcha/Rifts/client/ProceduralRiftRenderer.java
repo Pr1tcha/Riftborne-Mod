@@ -11,8 +11,10 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 public final class ProceduralRiftRenderer {
     private static final ResourceLocation SOLID_TEXTURE = ResourceLocation.fromNamespaceAndPath(
@@ -41,14 +43,12 @@ public final class ProceduralRiftRenderer {
         float baseWidth = 0.5F * stageScale;
         float alpha = getAlpha(stage);
 
-        VeilRiftDistortion.recordRift(rift, height, baseWidth, alpha);
-
         poseStack.pushPose();
         poseStack.translate(0.5F, 0.1F, 0.5F);
-        poseStack.mulPose(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(getYawToCamera(rift) + 180.0F));
 
         PoseStack.Pose pose = poseStack.last();
+        VeilRiftDistortion.recordRenderedRift(rift, pose, height, baseWidth, alpha);
 
         VertexConsumer solidBody = buffer.getBuffer(RenderType.entityCutoutNoCull(SOLID_TEXTURE));
         renderSolidBody(pose, solidBody, seed, height, baseWidth, age, stage);
@@ -66,6 +66,14 @@ public final class ProceduralRiftRenderer {
         renderVeins(pose, energy, seed, height, baseWidth, alpha, age, stage);
 
         poseStack.popPose();
+    }
+
+    private static float getYawToCamera(RiftBlockEntity rift) {
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        BlockPos blockPos = rift.getBlockPos();
+        double dx = cameraPos.x - (blockPos.getX() + 0.5D);
+        double dz = cameraPos.z - (blockPos.getZ() + 0.5D);
+        return (float) Math.toDegrees(Math.atan2(dx, dz));
     }
 
     private static void renderSolidBody(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float age, RiftStage stage) {
@@ -183,7 +191,7 @@ public final class ProceduralRiftRenderer {
                 outerA, a.y(), -0.035F, 0.72F, t0,
                 outerB, b.y(), -0.035F, 0.72F, t1,
                 midB, b.y(), -0.035F, 0.24F, t1,
-                156, 213, 255, innerAlpha);
+                184, 126, 255, innerAlpha);
 
         texturedQuad(consumer, pose,
                 edgeA, a.y(), -0.047F, 0.18F, t0,
@@ -201,7 +209,7 @@ public final class ProceduralRiftRenderer {
                     glintX + side * (0.055F + shimmer * 0.045F), glintY0 + 0.025F, -0.028F, 0.72F, 0.0F,
                     glintX + side * (0.047F + shimmer * 0.04F), glintY1, -0.028F, 0.72F, 1.0F,
                     glintX - side * 0.01F, glintY1 - 0.018F, -0.028F, 0.35F, 1.0F,
-                    215, 245, 255, Mth.clamp((int) (alpha * strength * 105.0F), 0, 145));
+                    235, 210, 255, Mth.clamp((int) (alpha * strength * 105.0F), 0, 145));
         }
     }
 
