@@ -1,0 +1,25 @@
+{
+  "type": "riftborne:discard_contour",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "minecraft:the_void",
+      "features": false,
+      "lakes": false,
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        },
+        {
+          "block": "riftborne_rift:contour_stone",
+          "height": 69
+        },
+        {
+          "block": "riftborne_rift:contour_surface",
+          "height": 1
+        }
+      ]
+    }
+  }
+}

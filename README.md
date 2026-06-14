@@ -22,6 +22,14 @@ The current version is the first working foundation for rift events: a server-dr
 - `/rift spawn <pos>`
 - `/rift spawn <pos> <amount> <sec|t>`
 - `/rift spawn <pos> <amount> <sec|t> <radius>`
+- `/rift spawn_portal`
+- `/rift spawn_portal <pos>`
+- `/rift spawn_portal <pos> <amount> <sec|t>`
+- `/rift spawn_portal <pos> <amount> <sec|t> <radius>`
+- `/rift spawn_archived`
+- `/rift spawn_archived <pos>`
+- `/rift spawn_archived <pos> <amount> <sec|t>`
+- `/rift spawn_archived <pos> <amount> <sec|t> <radius>`
 - `/rift info`
 - `/rift info <searchRadius>`
 - `/rift kill`
@@ -30,6 +38,12 @@ The current version is the first working foundation for rift events: a server-dr
 - `/rift stage set <stage>`
 
 All commands require operator permission level 2.
+
+`/rift spawn` now uses the current procedural visual and saves as `riftborne_rift:rift`.
+`/rift spawn_portal` creates a large portal rift that leads to `riftborne:discard_contour`.
+`/rift spawn_archived` keeps the old classic visual available as `riftborne_rift:rift_archived`.
+
+Rift spawn commands search for a valid clear volume near the source when no position is provided. Explicit positions are also validated so rifts do not appear inside solid blocks, liquids, ceilings, or cramped spaces.
 
 ## Config
 

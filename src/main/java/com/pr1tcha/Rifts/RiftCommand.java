@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.pr1tcha.Rifts.RiftData.RiftBlockEntity;
 import com.pr1tcha.Rifts.RiftData.RiftData;
+import com.pr1tcha.Rifts.RiftData.RiftStage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -20,9 +21,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RiftCommand {
     private static final List<String> TIME_UNITS = List.of("sec", "t");
+    private static final int DEFAULT_COMMAND_LIFETIME_TICKS = 6000;
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("rift")
@@ -53,17 +56,18 @@ public class RiftCommand {
                         .executes(context -> getRiftInfo(context.getSource(), 5))
                 )
 
-                .then(spawnCommand("spawn", false))
-                .then(spawnCommand("spawn_procedural", true))
+                .then(spawnCommand("spawn", RiftSpawnProfile.NORMAL, true))
+                .then(spawnCommand("spawn_portal", RiftSpawnProfile.PORTAL, true))
+                .then(spawnCommand("spawn_archived", RiftSpawnProfile.NORMAL, false))
         );
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> spawnCommand(String name, boolean proceduralVisual) {
+    private static LiteralArgumentBuilder<CommandSourceStack> spawnCommand(String name, RiftSpawnProfile profile, boolean proceduralVisual) {
         return Commands.literal(name)
-                .executes(context -> spawnRift(context.getSource(), BlockPos.containing(context.getSource().getPosition()), 20, 5.0f, proceduralVisual))
+                .executes(context -> spawnRiftNearSource(context.getSource(), DEFAULT_COMMAND_LIFETIME_TICKS, 5.0f, profile, proceduralVisual))
 
                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
-                        .executes(context -> spawnRift(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "pos"), 20, 5.0f, proceduralVisual))
+                        .executes(context -> spawnRift(context.getSource(), BlockPosArgument.getLoadedBlockPos(context, "pos"), DEFAULT_COMMAND_LIFETIME_TICKS, 5.0f, profile, proceduralVisual))
 
                         .then(Commands.argument("amount", IntegerArgumentType.integer(1))
                                 .then(Commands.argument("unit", StringArgumentType.word())
@@ -73,7 +77,7 @@ public class RiftCommand {
                                             int amount = IntegerArgumentType.getInteger(context, "amount");
                                             String unit = StringArgumentType.getString(context, "unit");
                                             int lifetimeTicks = toTicks(amount, unit);
-                                            return spawnRift(context.getSource(), pos, lifetimeTicks, 5.0f, proceduralVisual);
+                                            return spawnRift(context.getSource(), pos, lifetimeTicks, 5.0f, profile, proceduralVisual);
                                         })
 
                                         .then(Commands.argument("radius", FloatArgumentType.floatArg(1.0f, 50.0f))
@@ -83,7 +87,7 @@ public class RiftCommand {
                                                     String unit = StringArgumentType.getString(context, "unit");
                                                     float radius = FloatArgumentType.getFloat(context, "radius");
                                                     int lifetimeTicks = toTicks(amount, unit);
-                                                    return spawnRift(context.getSource(), pos, lifetimeTicks, radius, proceduralVisual);
+                                                    return spawnRift(context.getSource(), pos, lifetimeTicks, radius, profile, proceduralVisual);
                                                 })
                                         )
                                 )
@@ -112,10 +116,27 @@ public class RiftCommand {
         return stage;
     }
 
-    private static int spawnRift(CommandSourceStack source, BlockPos pos, int lifetimeTicks, float radius, boolean proceduralVisual) {
+    private static int spawnRiftNearSource(CommandSourceStack source, int lifetimeTicks, float radius, RiftSpawnProfile profile, boolean proceduralVisual) {
+        ServerLevel level = source.getLevel();
+        BlockPos playerPos = BlockPos.containing(source.getPosition());
+        Optional<BlockPos> foundPos = RiftSpawnLocator.findValidRiftPosition(level, playerPos, profile);
+        if (foundPos.isEmpty()) {
+            source.sendFailure(Component.literal("No valid rift space found nearby."));
+            return 0;
+        }
+
+        return spawnRift(source, foundPos.get(), lifetimeTicks, radius, profile, proceduralVisual);
+    }
+
+    private static int spawnRift(CommandSourceStack source, BlockPos pos, int lifetimeTicks, float radius, RiftSpawnProfile profile, boolean proceduralVisual) {
         ServerLevel level = source.getLevel();
         if (lifetimeTicks < 20) {
             lifetimeTicks = 20;
+        }
+
+        if (!RiftSpawnLocator.isValidRiftPosition(level, pos, profile)) {
+            source.sendFailure(Component.literal("That position does not have enough clear space for this rift."));
+            return 0;
         }
 
         level.setBlock(pos, ModContent.RIFT_BLOCK.get().defaultBlockState(), 3);
@@ -127,16 +148,30 @@ public class RiftCommand {
             data.radius = radius;
             data.isCommandSpawned = true;
             data.useProceduralVisual = proceduralVisual;
+            data.riftType = proceduralVisual ? profile.type().id() : RiftData.ARCHIVED_RIFT_TYPE;
+            data.stage = proceduralVisual ? RiftStage.DORMANT : RiftStage.OPENING;
+            data.stageTicks = 0;
             rift.setChanged();
         }
 
         int finalTicks = lifetimeTicks;
         source.sendSuccess(() -> Component.literal(String.format(
                 "%s rift opened at %s. Lifetime: %d t (%.1f sec), radius: %.1f blocks",
-                proceduralVisual ? "Procedural" : "Classic", pos.toShortString(), finalTicks, finalTicks / 20.0f, radius
+                getSpawnLabel(profile, proceduralVisual), pos.toShortString(), finalTicks, finalTicks / 20.0f, radius
         )), true);
 
         return 1;
+    }
+
+    private static String getSpawnLabel(RiftSpawnProfile profile, boolean proceduralVisual) {
+        if (!proceduralVisual) {
+            return "Archived";
+        }
+        if (profile.type() == RiftType.PORTAL_RIFT) {
+            return "Portal";
+        }
+
+        return "Rift";
     }
 
     private static int killRifts(CommandSourceStack source, int radius) {

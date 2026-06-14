@@ -1,5 +1,6 @@
 package com.pr1tcha.Rifts.RiftData;
 
+import com.pr1tcha.Rifts.Config;
 import com.pr1tcha.Rifts.ModContent;
 import com.pr1tcha.Rifts.entity.RiftSplinterEntity;
 import net.minecraft.core.BlockPos;
@@ -35,6 +36,7 @@ public class RiftBlockEntity extends BlockEntity {
     public static void tick(Level level, BlockPos pos, BlockState state, RiftBlockEntity blockEntity) {
         RiftData rift = blockEntity.data;
         rift.ticksExisted++;
+        rift.stageTicks++;
 
         if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
             tickServer(serverLevel, pos, blockEntity, rift);
@@ -54,13 +56,14 @@ public class RiftBlockEntity extends BlockEntity {
         AABB triggerArea = new AABB(pos).inflate(rift.radius);
         List<Player> playersNear = level.getEntitiesOfClass(Player.class, triggerArea);
 
-        if (rift.stage == RiftStage.OPENING && !playersNear.isEmpty()) {
+        if ((RiftData.RIFT_TYPE.equals(rift.riftType) || RiftData.PORTAL_RIFT_TYPE.equals(rift.riftType)) && rift.useProceduralVisual) {
+            tickProceduralRiftAwakening(level, pos, blockEntity, rift);
+        } else if (rift.stage == RiftStage.OPENING && !playersNear.isEmpty()) {
             activateRift(level, pos, blockEntity, rift, playersNear);
         }
 
         if (rift.stage == RiftStage.ACTIVE && isNearLifetimeLimit(rift)) {
-            rift.stage = RiftStage.UNSTABLE;
-            blockEntity.sync();
+            setStage(blockEntity, rift, RiftStage.UNSTABLE);
         }
 
         if (rift.stage == RiftStage.ACTIVE || rift.stage == RiftStage.UNSTABLE) {
@@ -72,16 +75,79 @@ public class RiftBlockEntity extends BlockEntity {
         }
     }
 
+    private static void tickProceduralRiftAwakening(ServerLevel level, BlockPos pos, RiftBlockEntity blockEntity, RiftData rift) {
+        if (rift.stage == RiftStage.ACTIVE || rift.stage == RiftStage.UNSTABLE || rift.stage == RiftStage.COLLAPSING || rift.stage == RiftStage.SCAR) {
+            return;
+        }
+
+        if (rift.stage == RiftStage.OPENING) {
+            if (rift.stageTicks >= Config.riftOpeningDurationTicks.get()) {
+                activateRift(level, pos, blockEntity, rift, level.getEntitiesOfClass(Player.class, new AABB(pos).inflate(rift.radius)));
+            }
+            return;
+        }
+
+        double nearestDistance = nearestPlayerDistance(level, pos, Config.riftReactingRadius.get());
+        RiftStage nextStage = rift.stage;
+        if (nearestDistance <= Config.riftOpeningRadius.get()) {
+            nextStage = RiftStage.OPENING;
+        } else if (nearestDistance <= Config.riftCrackingRadius.get()) {
+            nextStage = RiftStage.CRACKING;
+        } else if (nearestDistance <= Config.riftReactingRadius.get()) {
+            nextStage = RiftStage.REACTING;
+        }
+
+        if (isAwakeningProgression(nextStage, rift.stage)) {
+            setStage(blockEntity, rift, nextStage);
+            playStageSound(level, pos, nextStage);
+        }
+    }
+
+    private static boolean isAwakeningProgression(RiftStage nextStage, RiftStage currentStage) {
+        return awakeningRank(nextStage) > awakeningRank(currentStage);
+    }
+
+    private static int awakeningRank(RiftStage stage) {
+        return switch (stage) {
+            case DORMANT -> 0;
+            case REACTING -> 1;
+            case CRACKING -> 2;
+            case OPENING -> 3;
+            case ACTIVE, UNSTABLE, COLLAPSING, SCAR -> 4;
+        };
+    }
+
+    private static double nearestPlayerDistance(ServerLevel level, BlockPos pos, double maxDistance) {
+        AABB scanArea = new AABB(pos).inflate(maxDistance);
+        double nearest = Double.MAX_VALUE;
+        for (Player player : level.getEntitiesOfClass(Player.class, scanArea)) {
+            nearest = Math.min(nearest, player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
+        }
+
+        return nearest == Double.MAX_VALUE ? Double.MAX_VALUE : Math.sqrt(nearest);
+    }
+
+    private static void playStageSound(ServerLevel level, BlockPos pos, RiftStage stage) {
+        switch (stage) {
+            case REACTING -> level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.35f, 0.55f);
+            case CRACKING -> level.playSound(null, pos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.55f, 0.72f);
+            case OPENING -> level.playSound(null, pos, ModContent.RIFT_OPENING.get(), SoundSource.BLOCKS, 1.05f, 0.88f);
+            default -> {
+            }
+        }
+    }
+
     private static void activateRift(ServerLevel level, BlockPos pos, RiftBlockEntity blockEntity, RiftData rift, List<Player> playersNear) {
-        rift.stage = RiftStage.ACTIVE;
+        setStage(blockEntity, rift, RiftStage.ACTIVE);
         rift.spawnCooldown = 40;
 
         for (Player player : playersNear) {
             player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 80, 0, false, false));
         }
 
-        level.playSound(null, pos, ModContent.RIFT_OPENING.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
-        blockEntity.sync();
+        if (!RiftData.RIFT_TYPE.equals(rift.riftType) || !rift.useProceduralVisual) {
+            level.playSound(null, pos, ModContent.RIFT_OPENING.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+        }
     }
 
     private static boolean isNearLifetimeLimit(RiftData rift) {
@@ -96,8 +162,7 @@ public class RiftBlockEntity extends BlockEntity {
 
         if (rift.currentWaveMobsLeft <= 0 && rift.spawnCooldown <= 0) {
             if (rift.wavesCleared >= REQUIRED_WAVES) {
-                rift.stage = RiftStage.COLLAPSING;
-                blockEntity.sync();
+                setStage(blockEntity, rift, RiftStage.COLLAPSING);
             } else {
                 spawnWave(level, pos, rift, minionTag);
                 rift.wavesCleared++;
@@ -143,6 +208,16 @@ public class RiftBlockEntity extends BlockEntity {
             }
         }
         rift.currentWaveMobsLeft = count;
+    }
+
+    private static void setStage(RiftBlockEntity blockEntity, RiftData rift, RiftStage stage) {
+        if (rift.stage == stage) {
+            return;
+        }
+
+        rift.stage = stage;
+        rift.stageTicks = 0;
+        blockEntity.sync();
     }
 
     private static void cleanupMinions(ServerLevel level, BlockPos pos, RiftData rift, String tag) {

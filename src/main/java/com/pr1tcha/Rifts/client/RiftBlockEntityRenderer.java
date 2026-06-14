@@ -67,6 +67,9 @@ public class RiftBlockEntityRenderer implements BlockEntityRenderer<RiftBlockEnt
 
     private static float getStageScale(RiftStage stage) {
         return switch (stage) {
+            case DORMANT -> 0.22F;
+            case REACTING -> 0.36F;
+            case CRACKING -> 0.58F;
             case OPENING -> 0.62F;
             case ACTIVE -> 1.0F;
             case UNSTABLE -> 1.18F;
@@ -77,6 +80,9 @@ public class RiftBlockEntityRenderer implements BlockEntityRenderer<RiftBlockEnt
 
     private static float getPulseAmount(RiftStage stage) {
         return switch (stage) {
+            case DORMANT -> 0.02F;
+            case REACTING -> 0.04F;
+            case CRACKING -> 0.07F;
             case OPENING -> 0.05F;
             case ACTIVE -> 0.09F;
             case UNSTABLE -> 0.17F;
@@ -87,6 +93,9 @@ public class RiftBlockEntityRenderer implements BlockEntityRenderer<RiftBlockEnt
 
     private static float getTurbulence(RiftStage stage) {
         return switch (stage) {
+            case DORMANT -> 0.01F;
+            case REACTING -> 0.02F;
+            case CRACKING -> 0.04F;
             case OPENING -> 0.025F;
             case ACTIVE -> 0.045F;
             case UNSTABLE -> 0.085F;
@@ -97,6 +106,9 @@ public class RiftBlockEntityRenderer implements BlockEntityRenderer<RiftBlockEnt
 
     private static float getAlpha(RiftStage stage) {
         return switch (stage) {
+            case DORMANT -> 0.42F;
+            case REACTING -> 0.62F;
+            case CRACKING -> 0.78F;
             case OPENING -> 0.62F;
             case ACTIVE -> 0.9F;
             case UNSTABLE -> 1.0F;
@@ -118,6 +130,9 @@ public class RiftBlockEntityRenderer implements BlockEntityRenderer<RiftBlockEnt
 
     private static void renderDistortionHaze(PoseStack poseStack, MultiBufferSource buffer, float width, float height, float alpha, float age, float shiver, RiftStage stage) {
         float stageAlpha = switch (stage) {
+            case DORMANT -> 0.08F;
+            case REACTING -> 0.18F;
+            case CRACKING -> 0.32F;
             case OPENING -> 0.38F;
             case ACTIVE -> 0.48F;
             case UNSTABLE -> 0.72F;

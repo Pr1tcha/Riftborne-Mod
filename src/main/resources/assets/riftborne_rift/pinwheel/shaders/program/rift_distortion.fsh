@@ -2,6 +2,7 @@ uniform sampler2D DiffuseSampler0;
 uniform vec2 OutSize;
 uniform vec4 RiftParams;
 uniform float RiftStrength;
+uniform float RiftMode;
 uniform float RiftTime;
 
 in vec2 texCoord;
@@ -45,7 +46,6 @@ void main() {
         return;
     }
 
-    float verticalFade = smoothstep(0.0, 0.09, local.y) * (1.0 - smoothstep(0.91, 1.0, local.y));
     float body = sin(clamp(local.y, 0.0, 1.0) * 3.14159265);
     float centerNoise = noise(vec2(local.y * 7.0 + RiftTime * 0.12, RiftTime * 0.18)) - 0.5;
     float centerWave = sin(local.y * 18.0 + RiftTime * 1.7) * 0.035;
@@ -53,18 +53,30 @@ void main() {
     float tearNoise = noise(vec2(local.y * 24.0 - RiftTime * 0.35, local.x * 6.0 + RiftTime * 0.2));
     float tearWidth = 0.1 + body * 0.26 + (tearNoise - 0.5) * 0.05;
     float edge = abs(local.x - tearCenter);
+    float verticalFade = smoothstep(0.0, 0.09, local.y) * (1.0 - smoothstep(0.91, 1.0, local.y));
     float outerMask = 1.0 - smoothstep(tearWidth + 0.04, tearWidth + 0.23, edge);
     float innerCutout = 1.0 - smoothstep(tearWidth * 0.72, tearWidth + 0.035, edge);
-    float mask = outerMask * (1.0 - innerCutout) * verticalFade;
+    float normalMask = outerMask * (1.0 - innerCutout) * verticalFade;
+
+    vec2 ellipse = (local - vec2(0.5, 0.5)) / vec2(0.49, 0.5);
+    float ellipseDistance = dot(ellipse, ellipse);
+    float portalBody = 1.0 - smoothstep(0.78, 1.0, ellipseDistance);
+    float portalEdge = 1.0 - smoothstep(0.98, 1.08, ellipseDistance);
+    float portalMask = max(portalBody, portalEdge * 0.72);
+    portalMask *= smoothstep(-0.02, 0.06, local.y) * (1.0 - smoothstep(0.94, 1.04, local.y));
+
+    float portalMode = step(0.5, RiftMode);
+    float mask = mix(normalMask, portalMask, portalMode);
 
     if (mask <= 0.001) {
         fragColor = base;
         return;
     }
 
+    float distortionCenter = mix(tearCenter, 0.5, portalMode);
     float wave = sin(local.y * 82.0 + RiftTime * 4.0 + tearNoise * 4.4);
     vec2 offset = vec2(wave * 0.0065, (tearNoise - 0.5) * 0.0035) * strength * mask;
-    offset += vec2(local.x - tearCenter, 0.0) * (tearNoise - 0.5) * 0.009 * strength * mask;
+    offset += vec2(local.x - distortionCenter, 0.0) * (tearNoise - 0.5) * 0.009 * strength * mask;
 
     vec2 warpedUv = clamp(uv + offset, vec2(0.001), vec2(0.999));
     vec4 warped = texture(DiffuseSampler0, warpedUv);

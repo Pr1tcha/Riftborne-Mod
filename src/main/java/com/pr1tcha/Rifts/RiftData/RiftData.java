@@ -7,17 +7,22 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.UUID;
 
 public class RiftData {
+    public static final ResourceLocation RIFT_TYPE = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "rift");
+    public static final ResourceLocation PORTAL_RIFT_TYPE = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "rift_portal");
+    public static final ResourceLocation ARCHIVED_RIFT_TYPE = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "rift_archived");
+
     public UUID id = UUID.randomUUID();
-    public ResourceLocation riftType = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "small_spatial");
+    public ResourceLocation riftType = RIFT_TYPE;
     public BlockPos centerPos = BlockPos.ZERO;
     public float radius = 5.0f;
-    public RiftStage stage = RiftStage.OPENING;
+    public RiftStage stage = RiftStage.DORMANT;
     public int ticksExisted = 0;
+    public int stageTicks = 0;
     public int maxLifetimeTicks = 6000;
     public float instability = 0.0f;
     public boolean isCommandSpawned = false;
     public boolean isQuestRelated = false;
-    public boolean useProceduralVisual = false;
+    public boolean useProceduralVisual = true;
     public int wavesCleared = 0;
     public int currentWaveMobsLeft = 0;
     public int spawnCooldown = 0;
@@ -29,6 +34,7 @@ public class RiftData {
         tag.putFloat("Radius", radius);
         tag.putString("Stage", stage.name());
         tag.putInt("TicksExisted", ticksExisted);
+        tag.putInt("StageTicks", stageTicks);
         tag.putInt("MaxLifetime", maxLifetimeTicks);
         tag.putFloat("Instability", instability);
         tag.putBoolean("CommandSpawned", isCommandSpawned);
@@ -45,16 +51,20 @@ public class RiftData {
             this.id = tag.getUUID("Id");
         }
 
-        this.riftType = ResourceLocation.parse(tag.getString("Type"));
+        String rawType = tag.getString("Type");
+        boolean legacyType = isLegacyRiftType(rawType);
+        ResourceLocation loadedType = loadRiftType(rawType);
         this.centerPos = BlockPos.of(tag.getLong("Pos"));
         this.radius = tag.getFloat("Radius");
         this.stage = loadStage(tag.getString("Stage"));
         this.ticksExisted = tag.getInt("TicksExisted");
+        this.stageTicks = tag.getInt("StageTicks");
         this.maxLifetimeTicks = tag.getInt("MaxLifetime");
         this.instability = tag.getFloat("Instability");
         this.isCommandSpawned = tag.getBoolean("CommandSpawned");
         this.isQuestRelated = tag.getBoolean("QuestRelated");
-        this.useProceduralVisual = tag.getBoolean("ProceduralVisual");
+        this.useProceduralVisual = tag.contains("ProceduralVisual") ? tag.getBoolean("ProceduralVisual") : !ARCHIVED_RIFT_TYPE.equals(loadedType);
+        this.riftType = legacyType && !this.useProceduralVisual ? ARCHIVED_RIFT_TYPE : loadedType;
         this.wavesCleared = tag.getInt("WavesCleared");
         this.currentWaveMobsLeft = tag.getInt("MobsLeft");
         this.spawnCooldown = tag.getInt("SpawnCooldown");
@@ -68,7 +78,19 @@ public class RiftData {
         try {
             return RiftStage.valueOf(rawStage);
         } catch (IllegalArgumentException ignored) {
-            return RiftStage.OPENING;
+            return RiftStage.DORMANT;
         }
+    }
+
+    private static ResourceLocation loadRiftType(String rawType) {
+        if (isLegacyRiftType(rawType)) {
+            return RIFT_TYPE;
+        }
+
+        return ResourceLocation.parse(rawType);
+    }
+
+    private static boolean isLegacyRiftType(String rawType) {
+        return rawType == null || rawType.isBlank() || "riftborne_rift:small_spatial".equals(rawType);
     }
 }

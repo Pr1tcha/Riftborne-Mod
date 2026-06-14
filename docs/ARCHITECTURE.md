@@ -19,6 +19,8 @@ This document describes the current v0.1 rift implementation as it exists in cod
     - `/rift spawn <pos>`
     - `/rift spawn <pos> <amount> <sec|t>`
     - `/rift spawn <pos> <amount> <sec|t> <radius>`
+    - `/rift spawn_portal`
+    - `/rift spawn_archived`
     - `/rift info [searchRadius]`
     - `/rift kill [radius]`
     - `/rift stage get`
@@ -46,6 +48,16 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Spawns and tracks rift minions.
   - Handles collapse behavior.
   - Saves and loads `RiftData`.
+  - Current rifts use type `riftborne_rift:rift`; archived classic-visual rifts use `riftborne_rift:rift_archived`.
+  - Portal rifts use type `riftborne_rift:rift_portal` and lead to `riftborne:discard_contour`.
+
+- `RiftSpawnLocator`
+  - Shared volume validator and position finder for normal rifts and portal rifts.
+  - Rejects solid blocks, liquids, ceilings, cramped spaces, and unsupported placement.
+
+- `RiftPortalTeleporter`
+  - Handles portal-rift entry and return.
+  - Builds a temporary anchor platform and exit portal inside the Discard Contour.
 
 - `RiftBlockEntityRenderer`
   - Client-side renderer for the visible rift.

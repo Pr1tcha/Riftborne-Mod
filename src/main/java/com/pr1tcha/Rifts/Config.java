@@ -15,6 +15,10 @@ public class Config {
     public static final ModConfigSpec.IntValue riftMaxRadius;
     public static final ModConfigSpec.IntValue riftDefaultLifetime;
     public static final ModConfigSpec.IntValue riftLifetimeVariationPercent;
+    public static final ModConfigSpec.IntValue riftReactingRadius;
+    public static final ModConfigSpec.IntValue riftCrackingRadius;
+    public static final ModConfigSpec.IntValue riftOpeningRadius;
+    public static final ModConfigSpec.IntValue riftOpeningDurationTicks;
 
     static {
         BUILDER.comment("Rift system settings").push("rifts");
@@ -42,6 +46,22 @@ public class Config {
         riftLifetimeVariationPercent = BUILDER
                 .comment("Rift lifetime variance percentage from 0 to 100")
                 .defineInRange("lifetimeVariationPercent", 20, 0, 100);
+
+        riftReactingRadius = BUILDER
+                .comment("Distance in blocks where a dormant normal rift starts reacting to players")
+                .defineInRange("reactingRadius", 16, 1, 128);
+
+        riftCrackingRadius = BUILDER
+                .comment("Distance in blocks where a normal rift grows visible side cracks")
+                .defineInRange("crackingRadius", 10, 1, 128);
+
+        riftOpeningRadius = BUILDER
+                .comment("Distance in blocks where a normal rift begins its one-way opening burst")
+                .defineInRange("openingRadius", 6, 1, 128);
+
+        riftOpeningDurationTicks = BUILDER
+                .comment("Duration of the normal rift opening burst before it becomes active")
+                .defineInRange("openingDurationTicks", 60, 1, 1200);
 
         BUILDER.pop();
     }
