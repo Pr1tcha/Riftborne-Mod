@@ -3,6 +3,7 @@ package com.pr1tcha.Rifts;
 import com.pr1tcha.Rifts.RiftData.RiftBlock;
 import com.pr1tcha.Rifts.RiftData.RiftBlockEntity;
 import com.pr1tcha.Rifts.entity.RiftSplinterEntity;
+import com.pr1tcha.Rifts.entity.TelekineticBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -84,6 +85,13 @@ public class ModContent {
                     .sized(0.6F, 1.35F)
                     .clientTrackingRange(8)
                     .build(ResourceLocation.fromNamespaceAndPath(RiftborneRift.MODID, "rift_splinter").toString()));
+
+    public static final Supplier<EntityType<TelekineticBlockEntity>> TELEKINETIC_BLOCK = ENTITY_TYPES.register("telekinetic_block",
+            () -> EntityType.Builder.<TelekineticBlockEntity>of(TelekineticBlockEntity::new, MobCategory.MISC)
+                    .sized(0.98F, 0.98F)
+                    .clientTrackingRange(10)
+                    .updateInterval(1)
+                    .build(ResourceLocation.fromNamespaceAndPath(RiftborneRift.MODID, "telekinetic_block").toString()));
 
     public static final Supplier<Item> RIFT_SPLINTER_SPAWN_EGG = ITEMS.register("rift_splinter_spawn_egg",
             () -> new SpawnEggItem(RIFT_SPLINTER.get(), 0x1B1425, 0x8E35FF, new Item.Properties()));
