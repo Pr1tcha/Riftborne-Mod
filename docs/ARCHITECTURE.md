@@ -1,12 +1,43 @@
-# Riftborne Rift Architecture Notes
+# Riftborne Architecture Notes
 
 This document describes the current v0.1 rift implementation as it exists in code.
 
+## Package Layout
+
+- `com.pr1tcha.riftborne`
+  - Main mod entry point.
+- `config`
+  - Common mod configuration.
+- `registry`
+  - Blocks, items, entities, sounds, and creative tabs.
+- `command`
+  - Root `/riftborne` command tree.
+- `rift`
+  - Shared rift spawning, progression, and type logic.
+- `rift.block`
+  - Rift anchor block and block entity.
+- `rift.data`
+  - Serializable rift state and stages.
+- `rift.command`
+  - Rift operator and testing commands.
+- `rift.contour`
+  - Discard Contour generation, rules, and teleportation.
+- `rift.entity`
+  - Rift-specific entities.
+- `rift.client`
+  - Rift renderers, procedural visuals, and distortion integration.
+- `telekinesis`
+  - Telekinesis gameplay, commands, and networking.
+- `telekinesis.entity`
+  - Telekinesis-specific entities.
+- `telekinesis.client`
+  - Telekinesis input and rendering.
+
 ## Core Classes
 
-- `RiftborneRift`
+- `Riftborne`
   - Main NeoForge mod entry point.
-  - Registers mod content, common config, and `/rift` commands.
+  - Registers mod content, common config, and `/riftborne` commands.
 
 - `ModContent`
   - Registers the invisible rift anchor block.
@@ -15,16 +46,17 @@ This document describes the current v0.1 rift implementation as it exists in cod
 - `RiftCommand`
   - Provides operator commands for testing and quest scripting.
   - Current commands:
-    - `/rift spawn`
-    - `/rift spawn <pos>`
-    - `/rift spawn <pos> <amount> <sec|t>`
-    - `/rift spawn <pos> <amount> <sec|t> <radius>`
-    - `/rift spawn_portal`
-    - `/rift spawn_archived`
-    - `/rift info [searchRadius]`
-    - `/rift kill [radius]`
-    - `/rift stage get`
-    - `/rift stage set <stage>`
+    - `/riftborne rifts spawn`
+    - `/riftborne rifts spawn <pos>`
+    - `/riftborne rifts spawn <pos> <amount> <sec|t>`
+    - `/riftborne rifts spawn <pos> <amount> <sec|t> <radius>`
+    - `/riftborne contour spawn`
+    - `/riftborne rifts spawn_archived`
+    - `/riftborne rifts info [searchRadius]`
+    - `/riftborne contour escape`
+    - `/riftborne rifts kill [radius]`
+    - `/riftborne rifts stage get`
+    - `/riftborne rifts stage set <stage>`
 
 - `RiftSpawner`
   - Handles natural rift spawn checks on overworld server ticks.
@@ -48,16 +80,24 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Spawns and tracks rift minions.
   - Handles collapse behavior.
   - Saves and loads `RiftData`.
-  - Current rifts use type `riftborne_rift:rift`; archived classic-visual rifts use `riftborne_rift:rift_archived`.
-  - Portal rifts use type `riftborne_rift:rift_portal` and lead to `riftborne:discard_contour`.
+  - Current rifts use type `riftborne:rift`; archived classic-visual rifts use `riftborne:rift_archived`.
+  - Discard Contour Rifts use type `riftborne:discard_contour_rift` and lead to `riftborne:discard_contour`.
+  - Legacy `riftborne:rift_portal` data is loaded as a Discard Contour Rift.
 
 - `RiftSpawnLocator`
-  - Shared volume validator and position finder for normal rifts and portal rifts.
+  - Shared volume validator and position finder for normal rifts and Discard Contour Rifts.
   - Rejects solid blocks, liquids, ceilings, cramped spaces, and unsupported placement.
 
-- `RiftPortalTeleporter`
-  - Handles portal-rift entry and return.
-  - Builds a temporary anchor platform and exit portal inside the Discard Contour.
+- `RiftContourTeleporter`
+  - Handles Discard Contour Rift entry.
+  - Builds the arrival anchor platform inside the Discard Contour without a return rift.
+  - Provides the admin/tester emergency escape used by `/riftborne contour escape`.
+
+- `DiscardContourRules`
+  - Keeps player death respawns inside the Discard Contour.
+  - Blocks teleport commands for players trapped inside the Contour.
+  - Explicitly denies sleeping in the Contour; the dimension type also has `bed_works: false`.
+  - Compass behavior is intentionally unreliable through the Discard Contour dimension type's `natural: false`.
 
 - `RiftBlockEntityRenderer`
   - Client-side renderer for the visible rift.

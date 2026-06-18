@@ -12,11 +12,11 @@
           "height": 1
         },
         {
-          "block": "riftborne_rift:contour_stone",
+          "block": "riftborne:contour_stone",
           "height": 69
         },
         {
-          "block": "riftborne_rift:contour_surface",
+          "block": "riftborne:contour_surface",
           "height": 1
         }
       ]

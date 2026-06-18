@@ -1,0 +1,11 @@
+{
+  "rift_opening": {
+    "subtitle": "subtitles.riftborne.rift_opening",
+    "sounds": [
+      {
+        "name": "riftborne:rift/opening",
+        "stream": false
+      }
+    ]
+  }
+}

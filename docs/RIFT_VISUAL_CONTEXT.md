@@ -1,10 +1,10 @@
-# Riftborne Rift Visual Context
+# Riftborne Visual Context
 
 Дата: 2026-06-13
 
 ## Общий контекст мода
 
-`Riftborne Rift` - мод под Minecraft 1.21.1 NeoForge для сборки Riftborne. Лорно он связан с `Legion: Temporal Code` и сюжетным контекстом Riftborne. Основной текущий объект мода - разломы реальности.
+`Riftborne` - мод под Minecraft 1.21.1 NeoForge для сборки Riftborne. Лорно он связан с `Legion: Temporal Code` и сюжетным контекстом Riftborne. Основной текущий объект мода - разломы реальности.
 
 Пользовательская роль в проекте:
 
@@ -39,7 +39,7 @@ Veil реально запускается в dev-среде и грузит pos
 ### Базовая структура мода
 
 - Пакет переименован под `com.pr1tcha`.
-- Название мода приведено к `Riftborne Rift`.
+- Название мода приведено к `Riftborne`.
 - Есть invisible anchor block для разлома.
 - Есть block entity разлома.
 - Есть команды для тестирования.
@@ -55,16 +55,16 @@ Veil реально запускается в dev-среде и грузит pos
 
 Основные команды:
 
-- `/rift spawn`
-- `/rift spawn_procedural`
-- `/rift info`
-- `/rift kill`
-- `/rift stage get`
-- `/rift stage set <stage>`
+- `/riftborne rifts spawn`
+- `/riftborne rifts spawn`
+- `/riftborne rifts info`
+- `/riftborne rifts kill`
+- `/riftborne rifts stage get`
+- `/riftborne rifts stage set <stage>`
 
-`/rift spawn` оставлен как classic/старый визуал.
+`/riftborne rifts spawn` оставлен как classic/старый визуал.
 
-`/rift spawn_procedural` добавлен как отдельный экспериментальный процедурный разлом, чтобы можно было сравнивать и при необходимости быстро снести новый путь.
+`/riftborne rifts spawn` добавлен как отдельный экспериментальный процедурный разлом, чтобы можно было сравнивать и при необходимости быстро снести новый путь.
 
 ### Геймплейная часть
 
@@ -101,8 +101,8 @@ Veil реально запускается в dev-среде и грузит pos
 - `src/main/java/com/pr1tcha/Rifts/client/ProceduralRiftRenderer.java`
 - `src/main/java/com/pr1tcha/Rifts/client/ProceduralNoise.java`
 - `src/main/java/com/pr1tcha/Rifts/client/VeilRiftDistortion.java`
-- `src/main/resources/assets/riftborne_rift/pinwheel/shaders/program/rift_distortion.fsh`
-- `src/main/resources/assets/riftborne_rift/pinwheel/post/rift_distortion.json`
+- `src/main/resources/assets/riftborne/pinwheel/shaders/program/rift_distortion.fsh`
+- `src/main/resources/assets/riftborne/pinwheel/post/rift_distortion.json`
 
 Что сейчас делает procedural renderer:
 
@@ -244,9 +244,9 @@ Veil distortion сейчас является screen-space post-process эффе
 
 - `src/main/java/com/pr1tcha/Rifts/client/ProceduralRiftRenderer.java`
 - `src/main/java/com/pr1tcha/Rifts/client/VeilRiftDistortion.java`
-- `src/main/resources/assets/riftborne_rift/pinwheel/shaders/program/rift_distortion.fsh`
-- `src/main/resources/assets/riftborne_rift/pinwheel/shaders/program/rift_distortion.json`
-- `src/main/resources/assets/riftborne_rift/pinwheel/post/rift_distortion.json`
+- `src/main/resources/assets/riftborne/pinwheel/shaders/program/rift_distortion.fsh`
+- `src/main/resources/assets/riftborne/pinwheel/shaders/program/rift_distortion.json`
+- `src/main/resources/assets/riftborne/pinwheel/post/rift_distortion.json`
 - `docs/ARCHITECTURE.md`
 
 ## Текущее состояние на момент записи

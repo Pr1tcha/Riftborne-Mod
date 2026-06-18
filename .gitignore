@@ -4,6 +4,8 @@ build/
 
 # Minecraft run directory
 run/
+run-client2/
+run_verify/
 libs/*.jar
 
 # IDE/editor state
