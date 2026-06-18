@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "riftborne:block/contour_stone_vein_cluster"
+  }
+}

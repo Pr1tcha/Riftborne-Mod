@@ -1,0 +1,17 @@
+{
+  "itemGroup.riftborne": "Riftborne",
+  "block.riftborne.rift": "Rift Anchor",
+  "block.riftborne.contour_stone": "Contour Stone",
+  "block.riftborne.contour_surface": "Discard Contour Surface",
+  "block.riftborne.contour_trace": "Contour Trace",
+  "block.riftborne.contour_stone_vein": "Veined Contour Stone",
+  "block.riftborne.contour_weeping_stone": "Weeping Contour Stone",
+  "block.riftborne.contour_vein": "Contour Vein",
+  "entity.riftborne.rift_splinter": "Rift Splinter",
+  "entity.riftborne.telekinetic_block": "Telekinetic Block",
+  "item.riftborne.rift_shard": "Rift Shard",
+  "item.riftborne.rift_splinter_spawn_egg": "Rift Splinter Spawn Egg",
+  "key.categories.riftborne": "Riftborne",
+  "key.riftborne.telekinesis": "Telekinesis",
+  "subtitles.riftborne.rift_opening": "Rift opens"
+}

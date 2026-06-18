@@ -1,10 +1,39 @@
-# Riftborne Rift Architecture Notes
+# Riftborne Architecture Notes
 
 This document describes the current v0.1 rift implementation as it exists in code.
 
+## Package Layout
+
+- `com.pr1tcha.riftborne`
+  - Main mod entry point.
+- `config`
+  - Common mod configuration.
+- `registry`
+  - Blocks, items, entities, sounds, and creative tabs.
+- `rift`
+  - Shared rift spawning, progression, and type logic.
+- `rift.block`
+  - Rift anchor block and block entity.
+- `rift.data`
+  - Serializable rift state and stages.
+- `rift.command`
+  - Rift operator and testing commands.
+- `rift.contour`
+  - Discard Contour generation, rules, and teleportation.
+- `rift.entity`
+  - Rift-specific entities.
+- `rift.client`
+  - Rift renderers, procedural visuals, and distortion integration.
+- `telekinesis`
+  - Telekinesis gameplay, commands, and networking.
+- `telekinesis.entity`
+  - Telekinesis-specific entities.
+- `telekinesis.client`
+  - Telekinesis input and rendering.
+
 ## Core Classes
 
-- `RiftborneRift`
+- `Riftborne`
   - Main NeoForge mod entry point.
   - Registers mod content, common config, and `/rift` commands.
 
@@ -50,9 +79,9 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Spawns and tracks rift minions.
   - Handles collapse behavior.
   - Saves and loads `RiftData`.
-  - Current rifts use type `riftborne_rift:rift`; archived classic-visual rifts use `riftborne_rift:rift_archived`.
-  - Discard Contour Rifts use type `riftborne_rift:discard_contour_rift` and lead to `riftborne:discard_contour`.
-  - Legacy `riftborne_rift:rift_portal` data is loaded as a Discard Contour Rift.
+  - Current rifts use type `riftborne:rift`; archived classic-visual rifts use `riftborne:rift_archived`.
+  - Discard Contour Rifts use type `riftborne:discard_contour_rift` and lead to `riftborne:discard_contour`.
+  - Legacy `riftborne:rift_portal` data is loaded as a Discard Contour Rift.
 
 - `RiftSpawnLocator`
   - Shared volume validator and position finder for normal rifts and Discard Contour Rifts.

@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "riftborne:block/contour_stone_vein",
+        "weight": 3
+      },
+      {
+        "model": "riftborne:block/contour_stone_vein_sparks",
+        "weight": 4
+      },
+      {
+        "model": "riftborne:block/contour_stone_vein_slash",
+        "weight": 3
+      },
+      {
+        "model": "riftborne:block/contour_stone_vein_slash",
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "riftborne:block/contour_stone_vein_lightning",
+        "weight": 3
+      },
+      {
+        "model": "riftborne:block/contour_stone_vein_lightning",
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "riftborne:block/contour_stone_vein_cluster",
+        "weight": 1
+      }
+    ]
+  }
+}

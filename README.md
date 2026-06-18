@@ -1,6 +1,6 @@
-# Riftborne Rift
+# Riftborne
 
-Riftborne Rift is a Minecraft 1.21.1 NeoForge mod for the Riftborne modpack.
+Riftborne is a Minecraft 1.21.1 NeoForge mod for the Riftborne modpack.
 
 The current version is the first working foundation for rift events: a server-driven rift system with commands, configurable natural spawning, lifetime handling, area effects, visual feedback, and rewards.
 
@@ -44,10 +44,10 @@ The current version is the first working foundation for rift events: a server-dr
 
 All commands require operator permission level 2.
 
-`/rift spawn` now uses the current procedural visual and saves as `riftborne_rift:rift`.
+`/rift spawn` now uses the current procedural visual and saves as `riftborne:rift`.
 `/rift spawn_contour` creates a Discard Contour Rift that leads to `riftborne:discard_contour`.
 `/rift spawn_portal` is kept only as a legacy alias for existing scripts.
-`/rift spawn_archived` keeps the old classic visual available as `riftborne_rift:rift_archived`.
+`/rift spawn_archived` keeps the old classic visual available as `riftborne:rift_archived`.
 
 The Discard Contour is a trapping dimension: death respawns the player back inside the Contour, beds do not work, teleport commands are blocked for trapped players, the compass is unreliable because the dimension is non-natural, and no return rift is created at the arrival anchor.
 
