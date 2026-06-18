@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public class RiftData {
     public static final ResourceLocation RIFT_TYPE = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "rift");
+    public static final ResourceLocation CONTOUR_RIFT_TYPE = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "discard_contour_rift");
     public static final ResourceLocation PORTAL_RIFT_TYPE = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "rift_portal");
     public static final ResourceLocation ARCHIVED_RIFT_TYPE = ResourceLocation.fromNamespaceAndPath("riftborne_rift", "rift_archived");
 
@@ -87,10 +88,15 @@ public class RiftData {
             return RIFT_TYPE;
         }
 
-        return ResourceLocation.parse(rawType);
+        ResourceLocation parsedType = ResourceLocation.parse(rawType);
+        return PORTAL_RIFT_TYPE.equals(parsedType) ? CONTOUR_RIFT_TYPE : parsedType;
     }
 
     private static boolean isLegacyRiftType(String rawType) {
         return rawType == null || rawType.isBlank() || "riftborne_rift:small_spatial".equals(rawType);
+    }
+
+    public static boolean isContourRift(ResourceLocation riftType) {
+        return CONTOUR_RIFT_TYPE.equals(riftType) || PORTAL_RIFT_TYPE.equals(riftType);
     }
 }

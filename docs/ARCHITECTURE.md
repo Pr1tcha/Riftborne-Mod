@@ -19,9 +19,11 @@ This document describes the current v0.1 rift implementation as it exists in cod
     - `/rift spawn <pos>`
     - `/rift spawn <pos> <amount> <sec|t>`
     - `/rift spawn <pos> <amount> <sec|t> <radius>`
-    - `/rift spawn_portal`
+    - `/rift spawn_contour`
+    - `/rift spawn_portal` (legacy alias)
     - `/rift spawn_archived`
     - `/rift info [searchRadius]`
+    - `/rift contour escape`
     - `/rift kill [radius]`
     - `/rift stage get`
     - `/rift stage set <stage>`
@@ -49,15 +51,23 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Handles collapse behavior.
   - Saves and loads `RiftData`.
   - Current rifts use type `riftborne_rift:rift`; archived classic-visual rifts use `riftborne_rift:rift_archived`.
-  - Portal rifts use type `riftborne_rift:rift_portal` and lead to `riftborne:discard_contour`.
+  - Discard Contour Rifts use type `riftborne_rift:discard_contour_rift` and lead to `riftborne:discard_contour`.
+  - Legacy `riftborne_rift:rift_portal` data is loaded as a Discard Contour Rift.
 
 - `RiftSpawnLocator`
-  - Shared volume validator and position finder for normal rifts and portal rifts.
+  - Shared volume validator and position finder for normal rifts and Discard Contour Rifts.
   - Rejects solid blocks, liquids, ceilings, cramped spaces, and unsupported placement.
 
-- `RiftPortalTeleporter`
-  - Handles portal-rift entry and return.
-  - Builds a temporary anchor platform and exit portal inside the Discard Contour.
+- `RiftContourTeleporter`
+  - Handles Discard Contour Rift entry.
+  - Builds the arrival anchor platform inside the Discard Contour without a return rift.
+  - Provides the admin/tester emergency escape used by `/rift contour escape`.
+
+- `DiscardContourRules`
+  - Keeps player death respawns inside the Discard Contour.
+  - Blocks teleport commands for players trapped inside the Contour.
+  - Explicitly denies sleeping in the Contour; the dimension type also has `bed_works: false`.
+  - Compass behavior is intentionally unreliable through the Discard Contour dimension type's `natural: false`.
 
 - `RiftBlockEntityRenderer`
   - Client-side renderer for the visible rift.

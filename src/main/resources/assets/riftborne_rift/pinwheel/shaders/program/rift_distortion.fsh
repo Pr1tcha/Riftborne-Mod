@@ -60,20 +60,20 @@ void main() {
 
     vec2 ellipse = (local - vec2(0.5, 0.5)) / vec2(0.49, 0.5);
     float ellipseDistance = dot(ellipse, ellipse);
-    float portalBody = 1.0 - smoothstep(0.78, 1.0, ellipseDistance);
-    float portalEdge = 1.0 - smoothstep(0.98, 1.08, ellipseDistance);
-    float portalMask = max(portalBody, portalEdge * 0.72);
-    portalMask *= smoothstep(-0.02, 0.06, local.y) * (1.0 - smoothstep(0.94, 1.04, local.y));
+    float contourBody = 1.0 - smoothstep(0.78, 1.0, ellipseDistance);
+    float contourEdge = 1.0 - smoothstep(0.98, 1.08, ellipseDistance);
+    float contourMask = max(contourBody, contourEdge * 0.72);
+    contourMask *= smoothstep(-0.02, 0.06, local.y) * (1.0 - smoothstep(0.94, 1.04, local.y));
 
-    float portalMode = step(0.5, RiftMode);
-    float mask = mix(normalMask, portalMask, portalMode);
+    float contourMode = step(0.5, RiftMode);
+    float mask = mix(normalMask, contourMask, contourMode);
 
     if (mask <= 0.001) {
         fragColor = base;
         return;
     }
 
-    float distortionCenter = mix(tearCenter, 0.5, portalMode);
+    float distortionCenter = mix(tearCenter, 0.5, contourMode);
     float wave = sin(local.y * 82.0 + RiftTime * 4.0 + tearNoise * 4.4);
     vec2 offset = vec2(wave * 0.0065, (tearNoise - 0.5) * 0.0035) * strength * mask;
     offset += vec2(local.x - distortionCenter, 0.0) * (tearNoise - 0.5) * 0.009 * strength * mask;

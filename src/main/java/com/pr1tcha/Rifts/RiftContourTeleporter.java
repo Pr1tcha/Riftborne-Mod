@@ -23,18 +23,16 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.Optional;
 
 @EventBusSubscriber(modid = RiftborneRift.MODID)
-public final class RiftPortalTeleporter {
+public final class RiftContourTeleporter {
     public static final ResourceKey<Level> DISCARD_CONTOUR = ResourceKey.create(
             net.minecraft.core.registries.Registries.DIMENSION,
             ResourceLocation.fromNamespaceAndPath("riftborne", "discard_contour")
     );
 
-    private static final String RETURN_TAG = "RiftborneReturn";
-    private static final String COOLDOWN_TAG = "RiftbornePortalCooldown";
+    private static final String COOLDOWN_TAG = "RiftborneContourCooldown";
     private static final BlockPos CONTOUR_SPAWN = new BlockPos(0, 81, 0);
-    private static final BlockPos CONTOUR_EXIT_PORTAL = new BlockPos(4, 81, 0);
 
-    private RiftPortalTeleporter() {
+    private RiftContourTeleporter() {
     }
 
     @SubscribeEvent
@@ -52,15 +50,13 @@ public final class RiftPortalTeleporter {
         }
 
         ServerLevel level = serverPlayer.serverLevel();
-        Optional<BlockPos> portalPos = findNearbyPortal(level, serverPlayer.blockPosition());
-        if (portalPos.isEmpty()) {
+        Optional<BlockPos> contourRiftPos = findNearbyContourRift(level, serverPlayer.blockPosition());
+        if (contourRiftPos.isEmpty()) {
             return;
         }
 
-        if (level.dimension().equals(DISCARD_CONTOUR)) {
-            returnToStoredPosition(serverPlayer);
-        } else {
-            enterDiscardContour(serverPlayer, portalPos.get());
+        if (!level.dimension().equals(DISCARD_CONTOUR)) {
+            enterDiscardContour(serverPlayer);
         }
     }
 
@@ -78,7 +74,6 @@ public final class RiftPortalTeleporter {
         }
 
         carveContourVeins(level, floorCenter);
-        buildExitPortal(level, CONTOUR_EXIT_PORTAL);
     }
 
     private static net.minecraft.world.level.block.state.BlockState anchorFloorState(double distance, int x, int z) {
@@ -128,7 +123,7 @@ public final class RiftPortalTeleporter {
         }
     }
 
-    private static void enterDiscardContour(ServerPlayer player, BlockPos sourcePortalPos) {
+    private static void enterDiscardContour(ServerPlayer player) {
         MinecraftServer server = player.getServer();
         ServerLevel targetLevel = server.getLevel(DISCARD_CONTOUR);
         if (targetLevel == null) {
@@ -136,50 +131,37 @@ public final class RiftPortalTeleporter {
             return;
         }
 
-        CompoundTag ret = new CompoundTag();
-        ret.putString("Dimension", player.serverLevel().dimension().location().toString());
-        ret.putDouble("X", sourcePortalPos.getX() + 0.5D);
-        ret.putDouble("Y", sourcePortalPos.getY() + 0.2D);
-        ret.putDouble("Z", sourcePortalPos.getZ() + 0.5D);
-        ret.putFloat("Yaw", player.getYRot());
-        ret.putFloat("Pitch", player.getXRot());
-        player.getPersistentData().put(RETURN_TAG, ret);
-
         buildContourAnchor(targetLevel);
         player.getPersistentData().putInt(COOLDOWN_TAG, 60);
         player.teleportTo(targetLevel, CONTOUR_SPAWN.getX() + 0.5D, CONTOUR_SPAWN.getY(), CONTOUR_SPAWN.getZ() + 0.5D, player.getYRot(), player.getXRot());
         targetLevel.playSound(null, CONTOUR_SPAWN, ModContent.RIFT_OPENING.get(), SoundSource.BLOCKS, 0.9F, 0.72F);
     }
 
-    private static void returnToStoredPosition(ServerPlayer player) {
-        CompoundTag data = player.getPersistentData();
-        if (!data.contains(RETURN_TAG)) {
-            returnToOverworldSpawn(player);
-            return;
-        }
-
-        CompoundTag ret = data.getCompound(RETURN_TAG);
-        ResourceLocation dimensionId = ResourceLocation.parse(ret.getString("Dimension"));
-        ServerLevel targetLevel = player.getServer().getLevel(ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimensionId));
-        if (targetLevel == null) {
-            returnToOverworldSpawn(player);
-            return;
-        }
-
-        data.remove(RETURN_TAG);
-        data.putInt(COOLDOWN_TAG, 80);
-        player.teleportTo(targetLevel, ret.getDouble("X"), ret.getDouble("Y"), ret.getDouble("Z"), ret.getFloat("Yaw"), ret.getFloat("Pitch"));
-        targetLevel.playSound(null, BlockPos.containing(player.position()), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.9F, 0.85F);
-    }
-
-    private static void returnToOverworldSpawn(ServerPlayer player) {
+    public static void emergencyEscape(ServerPlayer player) {
         ServerLevel overworld = player.getServer().overworld();
-        BlockPos pos = overworld.getSharedSpawnPos();
-        player.getPersistentData().putInt(COOLDOWN_TAG, 80);
-        player.teleportTo(overworld, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, player.getYRot(), player.getXRot());
+        BlockPos spawn = overworld.getSharedSpawnPos();
+        player.getPersistentData().putInt(COOLDOWN_TAG, 100);
+        player.teleportTo(overworld, spawn.getX() + 0.5D, spawn.getY() + 1.0D, spawn.getZ() + 0.5D, player.getYRot(), player.getXRot());
+        overworld.playSound(null, spawn, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.9F, 0.85F);
     }
 
-    private static Optional<BlockPos> findNearbyPortal(ServerLevel level, BlockPos playerPos) {
+    public static BlockPos contourSpawn() {
+        return CONTOUR_SPAWN;
+    }
+
+    public static double contourSpawnX() {
+        return CONTOUR_SPAWN.getX() + 0.5D;
+    }
+
+    public static double contourSpawnY() {
+        return CONTOUR_SPAWN.getY();
+    }
+
+    public static double contourSpawnZ() {
+        return CONTOUR_SPAWN.getZ() + 0.5D;
+    }
+
+    private static Optional<BlockPos> findNearbyContourRift(ServerLevel level, BlockPos playerPos) {
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 2; dy++) {
@@ -191,7 +173,7 @@ public final class RiftPortalTeleporter {
 
                     BlockEntity blockEntity = level.getBlockEntity(cursor);
                     if (blockEntity instanceof RiftBlockEntity rift
-                            && RiftData.PORTAL_RIFT_TYPE.equals(rift.getData().riftType)
+                            && RiftData.isContourRift(rift.getData().riftType)
                             && (rift.getData().stage == RiftStage.ACTIVE || rift.getData().stage == RiftStage.UNSTABLE)) {
                         return Optional.of(cursor.immutable());
                     }
@@ -200,21 +182,5 @@ public final class RiftPortalTeleporter {
         }
 
         return Optional.empty();
-    }
-
-    private static void buildExitPortal(ServerLevel level, BlockPos pos) {
-        level.setBlock(pos, ModContent.RIFT_BLOCK.get().defaultBlockState(), 3);
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof RiftBlockEntity rift) {
-            RiftData data = rift.getData();
-            data.riftType = RiftData.PORTAL_RIFT_TYPE;
-            data.useProceduralVisual = true;
-            data.isQuestRelated = true;
-            data.maxLifetimeTicks = Integer.MAX_VALUE;
-            data.radius = 7.0F;
-            data.stage = RiftStage.DORMANT;
-            data.stageTicks = 0;
-            rift.sync();
-        }
     }
 }

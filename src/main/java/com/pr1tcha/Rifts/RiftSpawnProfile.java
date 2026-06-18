@@ -21,8 +21,8 @@ public record RiftSpawnProfile(
             8
     );
 
-    public static final RiftSpawnProfile PORTAL = new RiftSpawnProfile(
-            RiftType.PORTAL_RIFT,
+    public static final RiftSpawnProfile CONTOUR = new RiftSpawnProfile(
+            RiftType.CONTOUR_RIFT,
             36,
             96,
             4,

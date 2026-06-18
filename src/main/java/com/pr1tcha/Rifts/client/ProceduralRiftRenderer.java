@@ -40,11 +40,11 @@ public final class ProceduralRiftRenderer {
         float age = getAge(rift, partialTick);
         long seed = rift.getData().id.getMostSignificantBits() ^ rift.getData().id.getLeastSignificantBits();
         RiftStage stage = rift.getData().stage;
-        boolean portalRift = RiftData.PORTAL_RIFT_TYPE.equals(rift.getData().riftType);
+        boolean contourRift = RiftData.isContourRift(rift.getData().riftType);
         float openingProgress = getOpeningProgress(rift);
-        float typeScale = portalRift ? 2.35F : 1.0F;
-        float widthScale = portalRift ? 1.62F : 1.0F;
-        float stageScale = getStageScale(stage, openingProgress, portalRift) * typeScale;
+        float typeScale = contourRift ? 2.35F : 1.0F;
+        float widthScale = contourRift ? 1.62F : 1.0F;
+        float stageScale = getStageScale(stage, openingProgress, contourRift) * typeScale;
         float height = 2.95F * stageScale;
         float baseWidth = 0.5F * stageScale * widthScale;
         float alpha = getAlpha(stage);
@@ -62,17 +62,15 @@ public final class ProceduralRiftRenderer {
         VertexConsumer body = buffer.getBuffer(RenderType.entityTranslucentEmissive(BODY_TEXTURE));
         renderEnergySkin(pose, body, seed, height, baseWidth, alpha, age, stage);
         renderGlowShell(pose, body, seed, height, baseWidth, alpha, age, stage);
-        renderOpeningPixelBurst(pose, body, seed, height, baseWidth, alpha, openingProgress, age, stage, portalRift);
+        renderOpeningPixelBurst(pose, body, seed, height, baseWidth, alpha, openingProgress, age, stage, contourRift);
+        renderOpeningConvergence(pose, body, seed, height, baseWidth, alpha, openingProgress, age, stage, contourRift);
+        renderOpeningShockLines(pose, body, seed, height, baseWidth, alpha, openingProgress, age, stage, contourRift);
+        renderEdges(pose, body, seed, height, baseWidth, alpha, age, stage);
+        renderVeins(pose, body, seed, height, baseWidth, alpha, age, stage);
 
         VertexConsumer haze = buffer.getBuffer(RenderType.entityTranslucentEmissive(HAZE_TEXTURE));
         renderRefractionShell(pose, haze, seed, height, baseWidth, alpha, age, stage);
         renderHaze(pose, haze, height, baseWidth, alpha, age, stage);
-
-        VertexConsumer energy = buffer.getBuffer(RenderType.lightning());
-        renderOpeningConvergence(pose, energy, seed, height, baseWidth, alpha, openingProgress, age, stage, portalRift);
-        renderOpeningShockLines(pose, energy, seed, height, baseWidth, alpha, openingProgress, age, stage, portalRift);
-        renderEdges(pose, energy, seed, height, baseWidth, alpha, age, stage);
-        renderVeins(pose, energy, seed, height, baseWidth, alpha, age, stage);
 
         poseStack.popPose();
     }
@@ -269,7 +267,7 @@ public final class ProceduralRiftRenderer {
         }
     }
 
-    private static void renderOpeningConvergence(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float progress, float age, RiftStage stage, boolean portalRift) {
+    private static void renderOpeningConvergence(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float progress, float age, RiftStage stage, boolean contourRift) {
         if (stage != RiftStage.OPENING) {
             return;
         }
@@ -280,38 +278,38 @@ public final class ProceduralRiftRenderer {
             return;
         }
 
-        int crackCount = portalRift ? 34 : 22;
-        float centerY = height * ((portalRift ? 0.5F : 0.42F) + Mth.sin(age * 0.06F) * 0.025F);
-        float reach = portalRift ? 1.55F : 1.0F;
-        float pullWidth = portalRift ? 0.58F : 0.28F;
+        int crackCount = contourRift ? 34 : 22;
+        float centerY = height * ((contourRift ? 0.5F : 0.42F) + Mth.sin(age * 0.06F) * 0.025F);
+        float reach = contourRift ? 1.55F : 1.0F;
+        float pullWidth = contourRift ? 0.58F : 0.28F;
         for (int i = 0; i < crackCount; i++) {
             float side = i % 2 == 0 ? -1.0F : 1.0F;
             float ySeed = hash(seed, 700 + i);
             float xSeed = hash(seed, 740 + i);
             float startX = side * baseWidth * reach * (2.2F + xSeed * 3.2F);
-            float startY = height * (portalRift ? (0.02F + ySeed * 0.96F) : (0.08F + ySeed * 0.84F));
+            float startY = height * (contourRift ? (0.02F + ySeed * 0.96F) : (0.08F + ySeed * 0.84F));
             float wobble = Mth.sin(age * (0.12F + xSeed * 0.08F) + i * 1.7F) * 0.035F;
             float endX = Mth.lerp(gather, startX, side * baseWidth * (0.22F + xSeed * pullWidth)) + wobble;
-            float endY = Mth.lerp(gather, startY, centerY + (ySeed - 0.5F) * height * (portalRift ? 0.3F : 0.18F));
+            float endY = Mth.lerp(gather, startY, centerY + (ySeed - 0.5F) * height * (contourRift ? 0.3F : 0.18F));
             float tailX = Mth.lerp(0.44F, startX, endX);
             float tailY = Mth.lerp(0.44F, startY, endY);
-            int crackAlpha = Mth.clamp((int) (alpha * fade * (portalRift ? 125.0F : 95.0F + gather * 170.0F)), 0, 245);
-            float thickness = (0.007F + gather * 0.016F + hash(seed, 780 + i) * 0.007F) * (portalRift ? 1.35F : 1.0F);
-            int red = portalRift ? 92 : 156;
-            int green = portalRift ? 92 : 48;
+            int crackAlpha = Mth.clamp((int) (alpha * fade * (contourRift ? 125.0F : 95.0F + gather * 170.0F)), 0, 245);
+            float thickness = (0.007F + gather * 0.016F + hash(seed, 780 + i) * 0.007F) * (contourRift ? 1.35F : 1.0F);
+            int red = contourRift ? 92 : 156;
+            int green = contourRift ? 92 : 48;
             int blue = 255;
 
             ribbon(consumer, pose, tailX, tailY, endX, endY, thickness, red, green, blue, crackAlpha);
             if (i % 3 == 0) {
                 float branchX = Mth.lerp(0.62F, tailX, endX);
                 float branchY = Mth.lerp(0.62F, tailY, endY);
-                ribbon(consumer, pose, branchX, branchY, branchX - side * baseWidth * (portalRift ? 0.52F : 0.28F), branchY + height * (portalRift ? 0.082F : 0.055F), thickness * 0.64F, 236, 220, 255, crackAlpha / 2);
+                ribbon(consumer, pose, branchX, branchY, branchX - side * baseWidth * (contourRift ? 0.52F : 0.28F), branchY + height * (contourRift ? 0.082F : 0.055F), thickness * 0.64F, 236, 220, 255, crackAlpha / 2);
             }
         }
 
     }
 
-    private static void renderOpeningPixelBurst(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float progress, float age, RiftStage stage, boolean portalRift) {
+    private static void renderOpeningPixelBurst(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float progress, float age, RiftStage stage, boolean contourRift) {
         if (stage != RiftStage.OPENING) {
             return;
         }
@@ -321,23 +319,23 @@ public final class ProceduralRiftRenderer {
             return;
         }
 
-        float centerY = height * (portalRift ? 0.5F : 0.46F);
-        int particleCount = portalRift ? 78 : 46;
-        float spread = portalRift ? 1.72F : 1.0F;
+        float centerY = height * (contourRift ? 0.5F : 0.46F);
+        int particleCount = contourRift ? 78 : 46;
+        float spread = contourRift ? 1.72F : 1.0F;
         for (int i = 0; i < particleCount; i++) {
             float angle = hash(seed, 1500 + i) * Mth.TWO_PI;
             float lane = hash(seed, 1540 + i);
             float speed = 0.55F + hash(seed, 1580 + i) * 1.65F;
             float distance = baseWidth * spread * (0.45F + speed * (0.45F + burst * 1.95F));
-            float vertical = (hash(seed, 1620 + i) - 0.5F) * height * (portalRift ? 0.34F + burst * 0.72F : 0.18F + burst * 0.52F);
+            float vertical = (hash(seed, 1620 + i) - 0.5F) * height * (contourRift ? 0.34F + burst * 0.72F : 0.18F + burst * 0.52F);
             float x = Mth.cos(angle) * distance * (0.75F + lane * 0.55F);
             float y = centerY + Mth.sin(angle) * distance * 0.36F + vertical;
             float twinkle = 0.72F + Mth.sin(age * 0.58F + i * 1.37F) * 0.28F;
-            float size = baseWidth * (0.035F + hash(seed, 1660 + i) * 0.075F) * (1.0F + burst * (portalRift ? 1.15F : 0.7F));
+            float size = baseWidth * (0.035F + hash(seed, 1660 + i) * 0.075F) * (1.0F + burst * (contourRift ? 1.15F : 0.7F));
             int particleAlpha = Mth.clamp((int) (alpha * burst * twinkle * 245.0F), 0, 245);
 
-            int red = portalRift ? 80 + (int) (hash(seed, 1740 + i) * 70.0F) : hash(seed, 1700 + i) > 0.78F ? 238 : 118 + (int) (hash(seed, 1740 + i) * 75.0F);
-            int green = portalRift ? 80 + (int) (hash(seed, 1820 + i) * 95.0F) : hash(seed, 1780 + i) > 0.82F ? 226 : 18 + (int) (hash(seed, 1820 + i) * 38.0F);
+            int red = contourRift ? 80 + (int) (hash(seed, 1740 + i) * 70.0F) : hash(seed, 1700 + i) > 0.78F ? 238 : 118 + (int) (hash(seed, 1740 + i) * 75.0F);
+            int green = contourRift ? 80 + (int) (hash(seed, 1820 + i) * 95.0F) : hash(seed, 1780 + i) > 0.82F ? 226 : 18 + (int) (hash(seed, 1820 + i) * 38.0F);
             int blue = 210 + (int) (hash(seed, 1860 + i) * 45.0F);
             pixelQuad(consumer, pose, x, y, 0.082F, size, red, green, blue, particleAlpha);
 
@@ -347,7 +345,7 @@ public final class ProceduralRiftRenderer {
         }
     }
 
-    private static void renderOpeningShockLines(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float progress, float age, RiftStage stage, boolean portalRift) {
+    private static void renderOpeningShockLines(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float progress, float age, RiftStage stage, boolean contourRift) {
         if (stage != RiftStage.OPENING) {
             return;
         }
@@ -357,18 +355,18 @@ public final class ProceduralRiftRenderer {
             return;
         }
 
-        float centerY = height * (portalRift ? 0.5F : 0.46F);
-        int lineCount = portalRift ? 20 : 12;
+        float centerY = height * (contourRift ? 0.5F : 0.46F);
+        int lineCount = contourRift ? 20 : 12;
         for (int i = 0; i < lineCount; i++) {
             float side = i % 2 == 0 ? -1.0F : 1.0F;
-            float yJitter = (hash(seed, 1900 + i) - 0.5F) * height * (portalRift ? 0.42F : 0.22F);
+            float yJitter = (hash(seed, 1900 + i) - 0.5F) * height * (contourRift ? 0.42F : 0.22F);
             float x0 = side * baseWidth * (0.35F + hash(seed, 1940 + i) * 0.35F);
-            float x1 = side * baseWidth * (1.35F + hash(seed, 1980 + i) * (portalRift ? 2.35F : 1.45F)) * (0.55F + burst);
+            float x1 = side * baseWidth * (1.35F + hash(seed, 1980 + i) * (contourRift ? 2.35F : 1.45F)) * (0.55F + burst);
             float y0 = centerY + yJitter * 0.35F;
             float y1 = centerY + yJitter + (hash(seed, 2020 + i) - 0.5F) * height * 0.14F;
             int shockAlpha = Mth.clamp((int) (alpha * burst * 190.0F), 0, 210);
 
-            ribbon(consumer, pose, x0, y0, x1, y1, (0.009F + burst * 0.012F) * (portalRift ? 1.35F : 1.0F), 220, 182, 255, shockAlpha);
+            ribbon(consumer, pose, x0, y0, x1, y1, (0.009F + burst * 0.012F) * (contourRift ? 1.35F : 1.0F), 220, 182, 255, shockAlpha);
         }
     }
 
@@ -485,24 +483,12 @@ public final class ProceduralRiftRenderer {
 
         float nx = -dy / length * thickness;
         float ny = dx / length * thickness;
-        quad(consumer, pose,
-                x0 - nx, y0 - ny, 0.018F,
-                x0 + nx, y0 + ny, 0.018F,
-                x1 + nx, y1 + ny, 0.018F,
-                x1 - nx, y1 - ny, 0.018F,
+        texturedQuad(consumer, pose,
+                x0 - nx, y0 - ny, 0.018F, 0.0F, 0.0F,
+                x0 + nx, y0 + ny, 0.018F, 1.0F, 0.0F,
+                x1 + nx, y1 + ny, 0.018F, 1.0F, 1.0F,
+                x1 - nx, y1 - ny, 0.018F, 0.0F, 1.0F,
                 red, green, blue, alpha);
-    }
-
-    private static void quad(VertexConsumer consumer, PoseStack.Pose pose,
-                             float x0, float y0, float z0,
-                             float x1, float y1, float z1,
-                             float x2, float y2, float z2,
-                             float x3, float y3, float z3,
-                             int red, int green, int blue, int alpha) {
-        vertex(consumer, pose, x0, y0, z0, red, green, blue, alpha);
-        vertex(consumer, pose, x1, y1, z1, red, green, blue, alpha);
-        vertex(consumer, pose, x2, y2, z2, red, green, blue, alpha);
-        vertex(consumer, pose, x3, y3, z3, red, green, blue, alpha);
     }
 
     private static void texturedQuad(VertexConsumer consumer, PoseStack.Pose pose,
@@ -555,10 +541,6 @@ public final class ProceduralRiftRenderer {
                 red, green, blue, alpha);
     }
 
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, int red, int green, int blue, int alpha) {
-        consumer.addVertex(pose, x, y, z).setColor(red, green, blue, alpha);
-    }
-
     private static void texturedVertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int red, int green, int blue, int alpha) {
         consumer.addVertex(pose, x, y, z)
                 .setColor(red, green, blue, alpha)
@@ -584,13 +566,13 @@ public final class ProceduralRiftRenderer {
         return Mth.clamp(rift.getData().stageTicks / (float) Config.riftOpeningDurationTicks.get(), 0.0F, 1.0F);
     }
 
-    private static float getStageScale(RiftStage stage, float openingProgress, boolean portalRift) {
-        if (portalRift) {
+    private static float getStageScale(RiftStage stage, float openingProgress, boolean contourRift) {
+        if (contourRift) {
             return switch (stage) {
                 case DORMANT -> 0.5F;
                 case REACTING -> 0.66F;
                 case CRACKING -> 0.82F;
-                case OPENING -> portalOpeningScale(openingProgress);
+                case OPENING -> contourOpeningScale(openingProgress);
                 case ACTIVE -> 1.0F;
                 case UNSTABLE -> 1.18F;
                 case COLLAPSING -> 1.34F;
@@ -628,7 +610,7 @@ public final class ProceduralRiftRenderer {
         return progress < 0.72F ? 0.58F : 1.0F;
     }
 
-    private static float portalOpeningScale(float progress) {
+    private static float contourOpeningScale(float progress) {
         return progress < 0.72F ? 0.82F : 1.0F;
     }
 

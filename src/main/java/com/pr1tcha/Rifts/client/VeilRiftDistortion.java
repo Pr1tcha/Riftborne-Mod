@@ -77,10 +77,10 @@ public final class VeilRiftDistortion {
         Matrix4f modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose.pose());
         Matrix4f projection = RenderSystem.getProjectionMatrix();
         ScreenBounds bounds = new ScreenBounds();
-        boolean portalRift = RiftData.PORTAL_RIFT_TYPE.equals(rift.getData().riftType);
+        boolean contourRift = RiftData.isContourRift(rift.getData().riftType);
 
-        if (portalRift) {
-            includePortalBounds(bounds, modelView, projection, height);
+        if (contourRift) {
+            includeContourRiftBounds(bounds, modelView, projection, height);
         } else {
             for (int i = 0; i <= 8; i++) {
                 float t = i / 8.0F;
@@ -110,17 +110,17 @@ public final class VeilRiftDistortion {
         float score = screenDistance - projectedSize * 0.35F;
         if (score < visibleScore) {
             float openingPulse = openingPulse(rift);
-            float portalPulse = portalRift ? openingPulse : 0.0F;
-            float padX = portalRift ? Math.max(0.018F, (bounds.maxX() - bounds.minX()) * (0.06F + portalPulse * 0.22F)) : (bounds.maxX() - bounds.minX()) * 0.34F * openingPulse;
-            float padY = portalRift ? Math.max(0.014F, (bounds.maxY() - bounds.minY()) * (0.06F + portalPulse * 0.22F)) : (bounds.maxY() - bounds.minY()) * 0.34F * openingPulse;
+            float contourPulse = contourRift ? openingPulse : 0.0F;
+            float padX = contourRift ? Math.max(0.018F, (bounds.maxX() - bounds.minX()) * (0.06F + contourPulse * 0.22F)) : (bounds.maxX() - bounds.minX()) * 0.34F * openingPulse;
+            float padY = contourRift ? Math.max(0.014F, (bounds.maxY() - bounds.minY()) * (0.06F + contourPulse * 0.22F)) : (bounds.maxY() - bounds.minY()) * 0.34F * openingPulse;
             visibleFrame = frame;
             visibleScore = score;
             minX = Mth.clamp(bounds.minX() - padX, 0.0F, 1.0F);
             minY = Mth.clamp(bounds.minY() - padY, 0.0F, 1.0F);
             maxX = Mth.clamp(bounds.maxX() + padX, 0.0F, 1.0F);
             maxY = Mth.clamp(bounds.maxY() + padY, 0.0F, 1.0F);
-            strength = Math.min(alpha * distanceFade * (portalRift ? 1.08F + portalPulse * 0.34F : 0.95F + openingPulse * 0.45F), 1.0F);
-            mode = portalRift ? 1.0F : 0.0F;
+            strength = Math.min(alpha * distanceFade * (contourRift ? 1.08F + contourPulse * 0.34F : 0.95F + openingPulse * 0.45F), 1.0F);
+            mode = contourRift ? 1.0F : 0.0F;
         }
     }
 
@@ -161,7 +161,7 @@ public final class VeilRiftDistortion {
         return value * value * (3.0F - 2.0F * value);
     }
 
-    private static void includePortalBounds(ScreenBounds bounds, Matrix4f modelView, Matrix4f projection, float height) {
+    private static void includeContourRiftBounds(ScreenBounds bounds, Matrix4f modelView, Matrix4f projection, float height) {
         ScreenPoint bottom = project(modelView, projection, 0.0F, 0.0F, 0.0F);
         ScreenPoint middle = project(modelView, projection, 0.0F, height * 0.5F, 0.0F);
         ScreenPoint top = project(modelView, projection, 0.0F, height, 0.0F);

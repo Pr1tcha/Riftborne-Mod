@@ -88,6 +88,14 @@ versionRange = "[4.8.4,)"
 ordering = "AFTER"
 side = "BOTH"
 
+[[dependencies."${mod_id}"]]
+modId = "curios"
+type = "optional"
+reason = "Reserved for Riftborne Rift trinkets, equipment slots, and wearable artifacts."
+versionRange = "[9.5.1,)"
+ordering = "AFTER"
+side = "BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This placeholder declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for instance.

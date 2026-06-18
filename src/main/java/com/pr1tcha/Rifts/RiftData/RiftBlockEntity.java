@@ -56,7 +56,7 @@ public class RiftBlockEntity extends BlockEntity {
         AABB triggerArea = new AABB(pos).inflate(rift.radius);
         List<Player> playersNear = level.getEntitiesOfClass(Player.class, triggerArea);
 
-        if ((RiftData.RIFT_TYPE.equals(rift.riftType) || RiftData.PORTAL_RIFT_TYPE.equals(rift.riftType)) && rift.useProceduralVisual) {
+        if ((RiftData.RIFT_TYPE.equals(rift.riftType) || RiftData.isContourRift(rift.riftType)) && rift.useProceduralVisual) {
             tickProceduralRiftAwakening(level, pos, blockEntity, rift);
         } else if (rift.stage == RiftStage.OPENING && !playersNear.isEmpty()) {
             activateRift(level, pos, blockEntity, rift, playersNear);

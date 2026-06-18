@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 
@@ -56,8 +57,15 @@ public class RiftCommand {
                         .executes(context -> getRiftInfo(context.getSource(), 5))
                 )
 
+                .then(Commands.literal("contour")
+                        .then(Commands.literal("escape")
+                                .executes(context -> escapeDiscardContour(context.getSource()))
+                        )
+                )
+
                 .then(spawnCommand("spawn", RiftSpawnProfile.NORMAL, true))
-                .then(spawnCommand("spawn_portal", RiftSpawnProfile.PORTAL, true))
+                .then(spawnCommand("spawn_contour", RiftSpawnProfile.CONTOUR, true))
+                .then(spawnCommand("spawn_portal", RiftSpawnProfile.CONTOUR, true))
                 .then(spawnCommand("spawn_archived", RiftSpawnProfile.NORMAL, false))
         );
     }
@@ -167,11 +175,23 @@ public class RiftCommand {
         if (!proceduralVisual) {
             return "Archived";
         }
-        if (profile.type() == RiftType.PORTAL_RIFT) {
-            return "Portal";
+        if (profile.type() == RiftType.CONTOUR_RIFT) {
+            return "Discard Contour";
         }
 
         return "Rift";
+    }
+
+    private static int escapeDiscardContour(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        if (!player.serverLevel().dimension().equals(RiftContourTeleporter.DISCARD_CONTOUR)) {
+            source.sendFailure(Component.literal("You are not inside the Discard Contour."));
+            return 0;
+        }
+
+        RiftContourTeleporter.emergencyEscape(player);
+        source.sendSuccess(() -> Component.literal("Emergency escape from the Discard Contour complete."), true);
+        return 1;
     }
 
     private static int killRifts(CommandSourceStack source, int radius) {

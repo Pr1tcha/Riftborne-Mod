@@ -40,6 +40,14 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        client2 {
+            client()
+
+            gameDirectory = project.file('run-client2')
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArguments.addAll '--username', 'Dev2'
+        }
+
         server {
             server()
             programArgument '--nogui'
@@ -98,8 +106,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     compileOnly files('libs/veil-neoforge-1.21.1-4.0.2.jar')
     compileOnly files('libs/geckolib-neoforge-1.21.1-4.8.4.jar')
+    compileOnly files("libs/curios-neoforge-${curios_version}-api.jar")
     modDevRuntimeDependencies files('libs/veil-neoforge-1.21.1-4.0.2.jar')
     modDevRuntimeDependencies files('libs/geckolib-neoforge-1.21.1-4.8.4.jar')
+    modDevRuntimeDependencies files("libs/curios-neoforge-${curios_version}.jar")
 
     // Riftborne Rift dependency placeholder with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

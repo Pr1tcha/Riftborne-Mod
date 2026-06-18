@@ -21,7 +21,7 @@ public final class DiscardContourFeatures {
 
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
-        if (!event.isNewChunk() || !(event.getLevel() instanceof ServerLevel level) || !level.dimension().equals(RiftPortalTeleporter.DISCARD_CONTOUR)) {
+        if (!event.isNewChunk() || !(event.getLevel() instanceof ServerLevel level) || !level.dimension().equals(RiftContourTeleporter.DISCARD_CONTOUR)) {
             return;
         }
 

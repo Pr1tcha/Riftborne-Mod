@@ -22,6 +22,10 @@ The current version is the first working foundation for rift events: a server-dr
 - `/rift spawn <pos>`
 - `/rift spawn <pos> <amount> <sec|t>`
 - `/rift spawn <pos> <amount> <sec|t> <radius>`
+- `/rift spawn_contour`
+- `/rift spawn_contour <pos>`
+- `/rift spawn_contour <pos> <amount> <sec|t>`
+- `/rift spawn_contour <pos> <amount> <sec|t> <radius>`
 - `/rift spawn_portal`
 - `/rift spawn_portal <pos>`
 - `/rift spawn_portal <pos> <amount> <sec|t>`
@@ -32,6 +36,7 @@ The current version is the first working foundation for rift events: a server-dr
 - `/rift spawn_archived <pos> <amount> <sec|t> <radius>`
 - `/rift info`
 - `/rift info <searchRadius>`
+- `/rift contour escape`
 - `/rift kill`
 - `/rift kill <radius>`
 - `/rift stage get`
@@ -40,8 +45,13 @@ The current version is the first working foundation for rift events: a server-dr
 All commands require operator permission level 2.
 
 `/rift spawn` now uses the current procedural visual and saves as `riftborne_rift:rift`.
-`/rift spawn_portal` creates a large portal rift that leads to `riftborne:discard_contour`.
+`/rift spawn_contour` creates a Discard Contour Rift that leads to `riftborne:discard_contour`.
+`/rift spawn_portal` is kept only as a legacy alias for existing scripts.
 `/rift spawn_archived` keeps the old classic visual available as `riftborne_rift:rift_archived`.
+
+The Discard Contour is a trapping dimension: death respawns the player back inside the Contour, beds do not work, teleport commands are blocked for trapped players, the compass is unreliable because the dimension is non-natural, and no return rift is created at the arrival anchor.
+
+Operators can use `/rift contour escape` as an emergency test command to leave the Discard Contour.
 
 Rift spawn commands search for a valid clear volume near the source when no position is provided. Explicit positions are also validated so rifts do not appear inside solid blocks, liquids, ceilings, or cramped spaces.
 
