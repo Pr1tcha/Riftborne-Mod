@@ -4,7 +4,10 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import com.pr1tcha.Rifts.client.RiftBlockEntityRenderer;
 import com.pr1tcha.Rifts.client.RiftSplinterRenderer;
+import com.pr1tcha.Rifts.client.TelekineticBlockRenderer;
 import com.pr1tcha.Rifts.client.VeilRiftDistortion;
+import com.pr1tcha.Rifts.telekinesis.TelekinesisCommand;
+import com.pr1tcha.Rifts.telekinesis.TelekinesisNetwork;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,6 +31,7 @@ public class RiftborneRift {
         RiftWorldStage.init();
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(ModContent::registerEntityAttributes);
+        modEventBus.addListener(TelekinesisNetwork::register);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);
@@ -42,6 +46,7 @@ public class RiftborneRift {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         RiftCommand.register(event.getServer().getCommands().getDispatcher());
+        TelekinesisCommand.register(event.getServer().getCommands().getDispatcher());
     }
 
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -56,6 +61,7 @@ public class RiftborneRift {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModContent.RIFT_BE_TYPE.get(), RiftBlockEntityRenderer::new);
             event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
+            event.registerEntityRenderer(ModContent.TELEKINETIC_BLOCK.get(), TelekineticBlockRenderer::new);
         }
     }
 }
