@@ -1,15 +1,14 @@
 package com.pr1tcha.riftborne;
 
 import com.mojang.logging.LogUtils;
+import com.pr1tcha.riftborne.command.RiftborneCommands;
 import com.pr1tcha.riftborne.config.Config;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rift.client.RiftBlockEntityRenderer;
 import com.pr1tcha.riftborne.rift.client.RiftSplinterRenderer;
 import com.pr1tcha.riftborne.rift.client.VeilRiftDistortion;
-import com.pr1tcha.riftborne.rift.command.RiftCommand;
 import com.pr1tcha.riftborne.rift.RiftWorldStage;
 import com.pr1tcha.riftborne.telekinesis.client.TelekineticBlockRenderer;
-import com.pr1tcha.riftborne.telekinesis.TelekinesisCommand;
 import com.pr1tcha.riftborne.telekinesis.TelekinesisNetwork;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -49,8 +48,7 @@ public class Riftborne {
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        RiftCommand.register(event.getServer().getCommands().getDispatcher());
-        TelekinesisCommand.register(event.getServer().getCommands().getDispatcher());
+        RiftborneCommands.register(event.getServer().getCommands().getDispatcher());
     }
 
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

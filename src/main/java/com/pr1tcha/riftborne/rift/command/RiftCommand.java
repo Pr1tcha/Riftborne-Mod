@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.CommandDispatcher;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rift.block.RiftBlockEntity;
 import com.pr1tcha.riftborne.rift.contour.RiftContourTeleporter;
@@ -14,7 +13,6 @@ import com.pr1tcha.riftborne.rift.RiftSpawnLocator;
 import com.pr1tcha.riftborne.rift.RiftSpawnProfile;
 import com.pr1tcha.riftborne.rift.RiftType;
 import com.pr1tcha.riftborne.rift.RiftWorldStage;
-import com.pr1tcha.riftborne.Riftborne;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -34,10 +32,8 @@ public class RiftCommand {
     private static final List<String> TIME_UNITS = List.of("sec", "t");
     private static final int DEFAULT_COMMAND_LIFETIME_TICKS = 6000;
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("rift")
-                .requires(source -> source.hasPermission(2))
-
+    public static LiteralArgumentBuilder<CommandSourceStack> riftsCategory() {
+        return Commands.literal("rifts")
                 .then(Commands.literal("stage")
                         .then(Commands.literal("get")
                                 .executes(context -> getStage(context.getSource()))
@@ -63,17 +59,16 @@ public class RiftCommand {
                         .executes(context -> getRiftInfo(context.getSource(), 5))
                 )
 
-                .then(Commands.literal("contour")
-                        .then(Commands.literal("escape")
-                                .executes(context -> escapeDiscardContour(context.getSource()))
-                        )
-                )
-
                 .then(spawnCommand("spawn", RiftSpawnProfile.NORMAL, true))
-                .then(spawnCommand("spawn_contour", RiftSpawnProfile.CONTOUR, true))
-                .then(spawnCommand("spawn_portal", RiftSpawnProfile.CONTOUR, true))
-                .then(spawnCommand("spawn_archived", RiftSpawnProfile.NORMAL, false))
-        );
+                .then(spawnCommand("spawn_archived", RiftSpawnProfile.NORMAL, false));
+    }
+
+    public static LiteralArgumentBuilder<CommandSourceStack> contourCategory() {
+        return Commands.literal("contour")
+                .then(spawnCommand("spawn", RiftSpawnProfile.CONTOUR, true))
+                .then(Commands.literal("escape")
+                        .executes(context -> escapeDiscardContour(context.getSource()))
+                );
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> spawnCommand(String name, RiftSpawnProfile profile, boolean proceduralVisual) {

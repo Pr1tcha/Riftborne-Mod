@@ -10,6 +10,8 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Common mod configuration.
 - `registry`
   - Blocks, items, entities, sounds, and creative tabs.
+- `command`
+  - Root `/riftborne` command tree.
 - `rift`
   - Shared rift spawning, progression, and type logic.
 - `rift.block`
@@ -35,7 +37,7 @@ This document describes the current v0.1 rift implementation as it exists in cod
 
 - `Riftborne`
   - Main NeoForge mod entry point.
-  - Registers mod content, common config, and `/rift` commands.
+  - Registers mod content, common config, and `/riftborne` commands.
 
 - `ModContent`
   - Registers the invisible rift anchor block.
@@ -44,18 +46,17 @@ This document describes the current v0.1 rift implementation as it exists in cod
 - `RiftCommand`
   - Provides operator commands for testing and quest scripting.
   - Current commands:
-    - `/rift spawn`
-    - `/rift spawn <pos>`
-    - `/rift spawn <pos> <amount> <sec|t>`
-    - `/rift spawn <pos> <amount> <sec|t> <radius>`
-    - `/rift spawn_contour`
-    - `/rift spawn_portal` (legacy alias)
-    - `/rift spawn_archived`
-    - `/rift info [searchRadius]`
-    - `/rift contour escape`
-    - `/rift kill [radius]`
-    - `/rift stage get`
-    - `/rift stage set <stage>`
+    - `/riftborne rifts spawn`
+    - `/riftborne rifts spawn <pos>`
+    - `/riftborne rifts spawn <pos> <amount> <sec|t>`
+    - `/riftborne rifts spawn <pos> <amount> <sec|t> <radius>`
+    - `/riftborne contour spawn`
+    - `/riftborne rifts spawn_archived`
+    - `/riftborne rifts info [searchRadius]`
+    - `/riftborne contour escape`
+    - `/riftborne rifts kill [radius]`
+    - `/riftborne rifts stage get`
+    - `/riftborne rifts stage set <stage>`
 
 - `RiftSpawner`
   - Handles natural rift spawn checks on overworld server ticks.
@@ -90,7 +91,7 @@ This document describes the current v0.1 rift implementation as it exists in cod
 - `RiftContourTeleporter`
   - Handles Discard Contour Rift entry.
   - Builds the arrival anchor platform inside the Discard Contour without a return rift.
-  - Provides the admin/tester emergency escape used by `/rift contour escape`.
+  - Provides the admin/tester emergency escape used by `/riftborne contour escape`.
 
 - `DiscardContourRules`
   - Keeps player death respawns inside the Discard Contour.

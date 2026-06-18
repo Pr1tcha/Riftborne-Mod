@@ -11,10 +11,10 @@
 Команды доступны операторам с уровнем прав 2.
 
 ```mcfunction
-/telekinesis grant
-/telekinesis grant <targets>
-/telekinesis revoke
-/telekinesis revoke <targets>
+/riftborne telekinesis grant
+/riftborne telekinesis grant <targets>
+/riftborne telekinesis revoke
+/riftborne telekinesis revoke <targets>
 ```
 
 Без `targets` команда применяется к исполнителю.

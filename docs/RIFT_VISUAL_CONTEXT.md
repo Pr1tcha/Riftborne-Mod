@@ -55,16 +55,16 @@ Veil реально запускается в dev-среде и грузит pos
 
 Основные команды:
 
-- `/rift spawn`
-- `/rift spawn_procedural`
-- `/rift info`
-- `/rift kill`
-- `/rift stage get`
-- `/rift stage set <stage>`
+- `/riftborne rifts spawn`
+- `/riftborne rifts spawn`
+- `/riftborne rifts info`
+- `/riftborne rifts kill`
+- `/riftborne rifts stage get`
+- `/riftborne rifts stage set <stage>`
 
-`/rift spawn` оставлен как classic/старый визуал.
+`/riftborne rifts spawn` оставлен как classic/старый визуал.
 
-`/rift spawn_procedural` добавлен как отдельный экспериментальный процедурный разлом, чтобы можно было сравнивать и при необходимости быстро снести новый путь.
+`/riftborne rifts spawn` добавлен как отдельный экспериментальный процедурный разлом, чтобы можно было сравнивать и при необходимости быстро снести новый путь.
 
 ### Геймплейная часть
 

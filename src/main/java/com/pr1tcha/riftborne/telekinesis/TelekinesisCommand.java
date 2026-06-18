@@ -1,8 +1,7 @@
 package com.pr1tcha.riftborne.telekinesis;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.pr1tcha.riftborne.Riftborne;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -15,9 +14,8 @@ public final class TelekinesisCommand {
     private TelekinesisCommand() {
     }
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("telekinesis")
-                .requires(source -> source.hasPermission(2))
+    public static LiteralArgumentBuilder<CommandSourceStack> category() {
+        return Commands.literal("telekinesis")
                 .then(Commands.literal("grant")
                         .executes(context -> setAbility(context.getSource(), List.of(context.getSource().getPlayerOrException()), true))
                         .then(Commands.argument("targets", EntityArgument.players())
@@ -29,8 +27,7 @@ public final class TelekinesisCommand {
                         .then(Commands.argument("targets", EntityArgument.players())
                                 .executes(context -> setAbility(context.getSource(), EntityArgument.getPlayers(context, "targets"), false))
                         )
-                )
-        );
+                );
     }
 
     private static int setAbility(CommandSourceStack source, Collection<ServerPlayer> targets, boolean enabled) throws CommandSyntaxException {
