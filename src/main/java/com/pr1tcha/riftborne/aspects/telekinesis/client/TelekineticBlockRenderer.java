@@ -1,8 +1,8 @@
-package com.pr1tcha.riftborne.telekinesis.client;
+package com.pr1tcha.riftborne.aspects.telekinesis.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.pr1tcha.riftborne.Riftborne;
-import com.pr1tcha.riftborne.telekinesis.entity.TelekineticBlockEntity;
+import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

@@ -34,6 +34,7 @@ public class RiftCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> riftsCategory() {
         return Commands.literal("rifts")
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.literal("stage")
                         .then(Commands.literal("get")
                                 .executes(context -> getStage(context.getSource()))
@@ -65,6 +66,7 @@ public class RiftCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> contourCategory() {
         return Commands.literal("contour")
+                .requires(source -> source.hasPermission(2))
                 .then(spawnCommand("spawn", RiftSpawnProfile.CONTOUR, true))
                 .then(Commands.literal("escape")
                         .executes(context -> escapeDiscardContour(context.getSource()))

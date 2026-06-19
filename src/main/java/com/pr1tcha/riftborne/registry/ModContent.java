@@ -4,7 +4,8 @@ import com.pr1tcha.riftborne.rift.block.RiftBlock;
 import com.pr1tcha.riftborne.rift.block.RiftBlockEntity;
 import com.pr1tcha.riftborne.rift.entity.RiftSplinterEntity;
 import com.pr1tcha.riftborne.Riftborne;
-import com.pr1tcha.riftborne.telekinesis.entity.TelekineticBlockEntity;
+import com.pr1tcha.riftborne.codex.block.CodexLaptopBlock;
+import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -53,6 +54,9 @@ public class ModContent {
     public static final Supplier<Block> CONTOUR_VEIN = BLOCKS.register("contour_vein",
             () -> new Block(BlockBehaviour.Properties.of().lightLevel(state -> 3).strength(5.2F, 12.0F).requiresCorrectToolForDrops()));
 
+    public static final Supplier<Block> CODEX_LAPTOP = BLOCKS.register("codex_laptop",
+            () -> new CodexLaptopBlock(BlockBehaviour.Properties.of().strength(2.5F, 5.0F).noOcclusion()));
+
     public static final Supplier<BlockEntityType<RiftBlockEntity>> RIFT_BE_TYPE = BLOCK_ENTITIES.register("rift_be",
             () -> BlockEntityType.Builder.of(RiftBlockEntity::new, RIFT_BLOCK.get()).build(null));
 
@@ -76,6 +80,9 @@ public class ModContent {
 
     public static final Supplier<Item> CONTOUR_VEIN_ITEM = ITEMS.register("contour_vein",
             () -> new BlockItem(CONTOUR_VEIN.get(), new Item.Properties()));
+
+    public static final Supplier<Item> CODEX_LAPTOP_ITEM = ITEMS.register("codex_laptop",
+            () -> new BlockItem(CODEX_LAPTOP.get(), new Item.Properties()));
 
     public static final Supplier<SoundEvent> RIFT_OPENING = SOUND_EVENTS.register("rift_opening",
             () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rift_opening")));
@@ -108,6 +115,7 @@ public class ModContent {
                         output.accept(CONTOUR_STONE_VEIN_ITEM.get());
                         output.accept(CONTOUR_WEEPING_STONE_ITEM.get());
                         output.accept(CONTOUR_VEIN_ITEM.get());
+                        output.accept(CODEX_LAPTOP_ITEM.get());
                         output.accept(RIFT_SPLINTER_SPAWN_EGG.get());
                     })
                     .build());

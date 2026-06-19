@@ -1,7 +1,7 @@
-package com.pr1tcha.riftborne.telekinesis;
+package com.pr1tcha.riftborne.aspects.telekinesis;
 
 import com.pr1tcha.riftborne.Riftborne;
-import com.pr1tcha.riftborne.telekinesis.client.TelekinesisClient;
+import com.pr1tcha.riftborne.aspects.telekinesis.client.TelekinesisClient;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

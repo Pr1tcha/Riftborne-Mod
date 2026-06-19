@@ -8,8 +8,9 @@ import com.pr1tcha.riftborne.rift.client.RiftBlockEntityRenderer;
 import com.pr1tcha.riftborne.rift.client.RiftSplinterRenderer;
 import com.pr1tcha.riftborne.rift.client.VeilRiftDistortion;
 import com.pr1tcha.riftborne.rift.RiftWorldStage;
-import com.pr1tcha.riftborne.telekinesis.client.TelekineticBlockRenderer;
-import com.pr1tcha.riftborne.telekinesis.TelekinesisNetwork;
+import com.pr1tcha.riftborne.aspects.telekinesis.client.TelekineticBlockRenderer;
+import com.pr1tcha.riftborne.aspects.telekinesis.TelekinesisNetwork;
+import com.pr1tcha.riftborne.codex.network.CodexNetwork;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -35,6 +36,7 @@ public class Riftborne {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(ModContent::registerEntityAttributes);
         modEventBus.addListener(TelekinesisNetwork::register);
+        modEventBus.addListener(CodexNetwork::register);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);

@@ -1,4 +1,4 @@
-package com.pr1tcha.riftborne.telekinesis;
+package com.pr1tcha.riftborne.aspects.telekinesis;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -16,6 +16,7 @@ public final class TelekinesisCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> category() {
         return Commands.literal("telekinesis")
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.literal("grant")
                         .executes(context -> setAbility(context.getSource(), List.of(context.getSource().getPlayerOrException()), true))
                         .then(Commands.argument("targets", EntityArgument.players())
@@ -41,7 +42,8 @@ public final class TelekinesisCommand {
         }
 
         String action = enabled ? "granted to" : "revoked from";
-        source.sendSuccess(() -> Component.literal("Telekinesis " + action + " " + targets.size() + " player(s)."), true);
+        String note = enabled ? " Active RNA is required to use it." : "";
+        source.sendSuccess(() -> Component.literal("Telekinesis " + action + " " + targets.size() + " player(s)." + note), true);
         return targets.size();
     }
 }
