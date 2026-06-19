@@ -35,6 +35,7 @@ neoForge {
     runs {
         client {
             client()
+            ideName = "RunClient"
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
@@ -43,6 +44,7 @@ neoForge {
         client2 {
             client()
 
+            ideName = "RunClient2"
             gameDirectory = project.file('run-client2')
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             programArguments.addAll '--username', 'Dev2'

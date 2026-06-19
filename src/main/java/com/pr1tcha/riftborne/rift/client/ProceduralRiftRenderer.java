@@ -22,15 +22,15 @@ import net.minecraft.world.phys.Vec3;
 public final class ProceduralRiftRenderer {
     private static final ResourceLocation SOLID_TEXTURE = ResourceLocation.fromNamespaceAndPath(
             Riftborne.MODID,
-            "textures/effect/procedural_rift_solid.png"
+            "textures/effect/standard_rift/solid.png"
     );
     private static final ResourceLocation BODY_TEXTURE = ResourceLocation.fromNamespaceAndPath(
             Riftborne.MODID,
-            "textures/effect/story_rift.png"
+            "textures/effect/standard_rift/body.png"
     );
     private static final ResourceLocation HAZE_TEXTURE = ResourceLocation.fromNamespaceAndPath(
             Riftborne.MODID,
-            "textures/effect/story_rift_haze.png"
+            "textures/effect/standard_rift/haze.png"
     );
     private static final int SEGMENTS = 72;
 
@@ -119,21 +119,21 @@ public final class ProceduralRiftRenderer {
                     a.rightInner(), a.y(), 0.004F, 0.82F, t0,
                     b.rightInner(), b.y(), 0.004F, 0.82F, t1,
                     b.leftInner(), b.y(), 0.004F, 0.18F, t1,
-                    22, 4, 42, Mth.clamp((int) (alpha * (62.0F + a.darkness() * 22.0F)), 0, 96));
+                    2, 16, 38, Mth.clamp((int) (alpha * (62.0F + a.darkness() * 22.0F)), 0, 96));
 
             texturedQuad(consumer, pose,
                     a.leftOuter(), a.y(), -0.006F, 0.0F, t0,
                     a.leftInner(), a.y(), -0.006F, 0.35F, t0,
                     b.leftInner(), b.y(), -0.006F, 0.35F, t1,
                     b.leftOuter(), b.y(), -0.006F, 0.0F, t1,
-                    112, 24, 190, Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
+                    18, 112, 224, Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
 
             texturedQuad(consumer, pose,
                     a.rightInner(), a.y(), -0.006F, 0.65F, t0,
                     a.rightOuter(), a.y(), -0.006F, 1.0F, t0,
                     b.rightOuter(), b.y(), -0.006F, 1.0F, t1,
                     b.rightInner(), b.y(), -0.006F, 0.65F, t1,
-                    126, 28, 210, Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
+                    24, 146, 246, Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
         }
     }
 
@@ -151,7 +151,7 @@ public final class ProceduralRiftRenderer {
                     a.rightOuter(), a.y(), -0.022F, 1.0F, t0,
                     b.rightOuter(), b.y(), -0.022F, 1.0F, t1,
                     b.leftOuter(), b.y(), -0.022F, 0.0F, t1,
-                    134, 44, 255, shellAlpha);
+                    36, 168, 255, shellAlpha);
         }
     }
 
@@ -202,14 +202,14 @@ public final class ProceduralRiftRenderer {
                 outerA, a.y(), -0.035F, 0.72F, t0,
                 outerB, b.y(), -0.035F, 0.72F, t1,
                 midB, b.y(), -0.035F, 0.24F, t1,
-                184, 126, 255, innerAlpha);
+                84, 196, 255, innerAlpha);
 
         texturedQuad(consumer, pose,
                 edgeA, a.y(), -0.047F, 0.18F, t0,
                 farA, a.y(), -0.047F, 0.92F, t0,
                 farB, b.y(), -0.047F, 0.92F, t1,
                 edgeB, b.y(), -0.047F, 0.18F, t1,
-                183, 92, 255, outerAlpha);
+                38, 142, 255, outerAlpha);
 
         if (((int) (t0 * 1000.0F) + (int) (seed & 7L)) % 11 == 0) {
             float glintY0 = Mth.lerp(0.35F, a.y(), b.y());
@@ -220,7 +220,7 @@ public final class ProceduralRiftRenderer {
                     glintX + side * (0.055F + shimmer * 0.045F), glintY0 + 0.025F, -0.028F, 0.72F, 0.0F,
                     glintX + side * (0.047F + shimmer * 0.04F), glintY1, -0.028F, 0.72F, 1.0F,
                     glintX - side * 0.01F, glintY1 - 0.018F, -0.028F, 0.35F, 1.0F,
-                    235, 210, 255, Mth.clamp((int) (alpha * strength * 105.0F), 0, 145));
+                    210, 244, 255, Mth.clamp((int) (alpha * strength * 105.0F), 0, 145));
         }
     }
 
@@ -232,12 +232,12 @@ public final class ProceduralRiftRenderer {
             RiftSlice b = slice(seed, t1, height, baseWidth, age, stage);
             int edgeAlpha = Mth.clamp((int) (alpha * (122.0F + a.edgeHeat() * 72.0F + Mth.sin(age * 0.17F + i) * 28.0F)), 35, 210);
 
-            ribbon(consumer, pose, a.leftEdge(), a.y(), b.leftEdge(), b.y(), 0.017F, 185, 58, 255, edgeAlpha);
-            ribbon(consumer, pose, a.rightEdge(), a.y(), b.rightEdge(), b.y(), 0.017F, 205, 72, 255, edgeAlpha);
+            ribbon(consumer, pose, a.leftEdge(), a.y(), b.leftEdge(), b.y(), 0.017F, 30, 148, 255, edgeAlpha);
+            ribbon(consumer, pose, a.rightEdge(), a.y(), b.rightEdge(), b.y(), 0.017F, 62, 192, 255, edgeAlpha);
 
             if (i % 9 == 0) {
-                ribbon(consumer, pose, a.leftOuter(), a.y(), b.leftOuter(), b.y(), 0.008F, 238, 224, 255, edgeAlpha / 2);
-                ribbon(consumer, pose, a.rightOuter(), a.y(), b.rightOuter(), b.y(), 0.008F, 238, 224, 255, edgeAlpha / 2);
+                ribbon(consumer, pose, a.leftOuter(), a.y(), b.leftOuter(), b.y(), 0.008F, 214, 246, 255, edgeAlpha / 2);
+                ribbon(consumer, pose, a.rightOuter(), a.y(), b.rightOuter(), b.y(), 0.008F, 214, 246, 255, edgeAlpha / 2);
             }
         }
 
@@ -264,7 +264,7 @@ public final class ProceduralRiftRenderer {
             float x1 = side < 0 ? b.leftEdge() : b.rightEdge();
             int veinAlpha = Mth.clamp((int) (alpha * (105.0F + Mth.sin(age * 0.55F + i * 1.3F) * 70.0F)), 30, 210);
 
-            ribbon(consumer, pose, x0, a.y(), x1, b.y(), 0.011F, 238, 218, 255, veinAlpha);
+            ribbon(consumer, pose, x0, a.y(), x1, b.y(), 0.011F, 188, 238, 255, veinAlpha);
         }
     }
 
@@ -296,15 +296,15 @@ public final class ProceduralRiftRenderer {
             float tailY = Mth.lerp(0.44F, startY, endY);
             int crackAlpha = Mth.clamp((int) (alpha * fade * (contourRift ? 125.0F : 95.0F + gather * 170.0F)), 0, 245);
             float thickness = (0.007F + gather * 0.016F + hash(seed, 780 + i) * 0.007F) * (contourRift ? 1.35F : 1.0F);
-            int red = contourRift ? 92 : 156;
-            int green = contourRift ? 92 : 48;
+            int red = contourRift ? 46 : 28;
+            int green = contourRift ? 174 : 148;
             int blue = 255;
 
             ribbon(consumer, pose, tailX, tailY, endX, endY, thickness, red, green, blue, crackAlpha);
             if (i % 3 == 0) {
                 float branchX = Mth.lerp(0.62F, tailX, endX);
                 float branchY = Mth.lerp(0.62F, tailY, endY);
-                ribbon(consumer, pose, branchX, branchY, branchX - side * baseWidth * (contourRift ? 0.52F : 0.28F), branchY + height * (contourRift ? 0.082F : 0.055F), thickness * 0.64F, 236, 220, 255, crackAlpha / 2);
+                ribbon(consumer, pose, branchX, branchY, branchX - side * baseWidth * (contourRift ? 0.52F : 0.28F), branchY + height * (contourRift ? 0.082F : 0.055F), thickness * 0.64F, 205, 242, 255, crackAlpha / 2);
             }
         }
 
@@ -335,13 +335,13 @@ public final class ProceduralRiftRenderer {
             float size = baseWidth * (0.035F + hash(seed, 1660 + i) * 0.075F) * (1.0F + burst * (contourRift ? 1.15F : 0.7F));
             int particleAlpha = Mth.clamp((int) (alpha * burst * twinkle * 245.0F), 0, 245);
 
-            int red = contourRift ? 80 + (int) (hash(seed, 1740 + i) * 70.0F) : hash(seed, 1700 + i) > 0.78F ? 238 : 118 + (int) (hash(seed, 1740 + i) * 75.0F);
-            int green = contourRift ? 80 + (int) (hash(seed, 1820 + i) * 95.0F) : hash(seed, 1780 + i) > 0.82F ? 226 : 18 + (int) (hash(seed, 1820 + i) * 38.0F);
+            int red = contourRift ? 24 + (int) (hash(seed, 1740 + i) * 55.0F) : hash(seed, 1700 + i) > 0.78F ? 205 : 18 + (int) (hash(seed, 1740 + i) * 55.0F);
+            int green = contourRift ? 138 + (int) (hash(seed, 1820 + i) * 90.0F) : hash(seed, 1780 + i) > 0.82F ? 242 : 118 + (int) (hash(seed, 1820 + i) * 100.0F);
             int blue = 210 + (int) (hash(seed, 1860 + i) * 45.0F);
             pixelQuad(consumer, pose, x, y, 0.082F, size, red, green, blue, particleAlpha);
 
             if (i % 5 == 0) {
-                pixelQuad(consumer, pose, x, y, 0.086F, size * 0.42F, 255, 238, 255, Mth.clamp((int) (particleAlpha * 0.82F), 0, 230));
+                pixelQuad(consumer, pose, x, y, 0.086F, size * 0.42F, 220, 248, 255, Mth.clamp((int) (particleAlpha * 0.82F), 0, 230));
             }
         }
     }
@@ -367,7 +367,7 @@ public final class ProceduralRiftRenderer {
             float y1 = centerY + yJitter + (hash(seed, 2020 + i) - 0.5F) * height * 0.14F;
             int shockAlpha = Mth.clamp((int) (alpha * burst * 190.0F), 0, 210);
 
-            ribbon(consumer, pose, x0, y0, x1, y1, (0.009F + burst * 0.012F) * (contourRift ? 1.35F : 1.0F), 220, 182, 255, shockAlpha);
+            ribbon(consumer, pose, x0, y0, x1, y1, (0.009F + burst * 0.012F) * (contourRift ? 1.35F : 1.0F), 154, 226, 255, shockAlpha);
         }
     }
 
@@ -388,7 +388,7 @@ public final class ProceduralRiftRenderer {
         float y = slice.y();
         int seamAlpha = Mth.clamp((int) (alpha * 132.0F), 36, 158);
 
-        ribbon(consumer, pose, left, y, right, y, 0.007F, 142, 34, 212, seamAlpha);
+        ribbon(consumer, pose, left, y, right, y, 0.007F, 22, 126, 232, seamAlpha);
     }
 
     private static void renderHaze(PoseStack.Pose pose, VertexConsumer haze, float height, float baseWidth, float alpha, float age, RiftStage stage) {
@@ -404,8 +404,8 @@ public final class ProceduralRiftRenderer {
         };
         float breath = 1.0F + Mth.sin(age * 0.055F) * 0.055F;
 
-        hazeQuad(haze, pose, baseWidth * 3.0F * breath, height * 1.08F, -0.052F, 145, 116, 220, Mth.clamp((int) (alpha * stageAlpha * 178.0F), 0, 175));
-        hazeQuad(haze, pose, baseWidth * 2.18F, height * 1.16F, -0.06F, 214, 192, 255, Mth.clamp((int) (alpha * stageAlpha * 96.0F), 0, 112));
+        hazeQuad(haze, pose, baseWidth * 3.0F * breath, height * 1.08F, -0.052F, 54, 158, 232, Mth.clamp((int) (alpha * stageAlpha * 178.0F), 0, 175));
+        hazeQuad(haze, pose, baseWidth * 2.18F, height * 1.16F, -0.06F, 176, 230, 255, Mth.clamp((int) (alpha * stageAlpha * 96.0F), 0, 112));
     }
 
     private static RiftSlice slice(long seed, float t, float height, float baseWidth, float age, RiftStage stage) {

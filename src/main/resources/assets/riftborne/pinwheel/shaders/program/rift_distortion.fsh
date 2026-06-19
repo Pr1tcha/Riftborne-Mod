@@ -81,10 +81,11 @@ void main() {
     vec2 warpedUv = clamp(uv + offset, vec2(0.001), vec2(0.999));
     vec4 warped = texture(DiffuseSampler0, warpedUv);
     vec4 cyan = texture(DiffuseSampler0, clamp(uv + offset * 1.35 + vec2(0.001, -0.0006) * mask * strength, vec2(0.001), vec2(0.999)));
-    vec4 violet = texture(DiffuseSampler0, clamp(uv - offset * 0.9 + vec2(-0.001, 0.0008) * mask * strength, vec2(0.001), vec2(0.999)));
+    vec4 azure = texture(DiffuseSampler0, clamp(uv - offset * 0.9 + vec2(-0.001, 0.0008) * mask * strength, vec2(0.001), vec2(0.999)));
 
-    warped.r = violet.r;
+    warped.r = mix(warped.r, azure.b * 0.42, mask * strength);
+    warped.g = mix(warped.g, cyan.g, mask * strength * 0.42);
     warped.b = cyan.b;
-    warped.rgb += vec3(0.035, 0.015, 0.065) * mask * strength;
+    warped.rgb += vec3(0.006, 0.034, 0.078) * mask * strength;
     fragColor = mix(base, warped, mask * min(strength * 1.35, 1.0));
 }

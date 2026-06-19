@@ -53,6 +53,13 @@ public class ModContent {
     public static final Supplier<Block> CONTOUR_VEIN = BLOCKS.register("contour_vein",
             () -> new Block(BlockBehaviour.Properties.of().lightLevel(state -> 3).strength(5.2F, 12.0F).requiresCorrectToolForDrops()));
 
+    public static final Supplier<Block> RNA_INTERSPACE_STONE = interspaceBlock("rna_interspace_stone", 1);
+    public static final Supplier<Block> RNA_INTERSPACE_SURFACE = interspaceBlock("rna_interspace_surface", 3);
+    public static final Supplier<Block> RNA_INTERSPACE_VEIN = interspaceBlock("rna_interspace_vein", 8);
+    public static final Supplier<Block> RIFTWALKER_INTERSPACE_STONE = interspaceBlock("riftwalker_interspace_stone", 2);
+    public static final Supplier<Block> RIFTWALKER_INTERSPACE_SURFACE = interspaceBlock("riftwalker_interspace_surface", 5);
+    public static final Supplier<Block> RIFTWALKER_INTERSPACE_VEIN = interspaceBlock("riftwalker_interspace_vein", 10);
+
     public static final Supplier<BlockEntityType<RiftBlockEntity>> RIFT_BE_TYPE = BLOCK_ENTITIES.register("rift_be",
             () -> BlockEntityType.Builder.of(RiftBlockEntity::new, RIFT_BLOCK.get()).build(null));
 
@@ -76,6 +83,13 @@ public class ModContent {
 
     public static final Supplier<Item> CONTOUR_VEIN_ITEM = ITEMS.register("contour_vein",
             () -> new BlockItem(CONTOUR_VEIN.get(), new Item.Properties()));
+
+    public static final Supplier<Item> RNA_INTERSPACE_STONE_ITEM = blockItem("rna_interspace_stone", RNA_INTERSPACE_STONE);
+    public static final Supplier<Item> RNA_INTERSPACE_SURFACE_ITEM = blockItem("rna_interspace_surface", RNA_INTERSPACE_SURFACE);
+    public static final Supplier<Item> RNA_INTERSPACE_VEIN_ITEM = blockItem("rna_interspace_vein", RNA_INTERSPACE_VEIN);
+    public static final Supplier<Item> RIFTWALKER_INTERSPACE_STONE_ITEM = blockItem("riftwalker_interspace_stone", RIFTWALKER_INTERSPACE_STONE);
+    public static final Supplier<Item> RIFTWALKER_INTERSPACE_SURFACE_ITEM = blockItem("riftwalker_interspace_surface", RIFTWALKER_INTERSPACE_SURFACE);
+    public static final Supplier<Item> RIFTWALKER_INTERSPACE_VEIN_ITEM = blockItem("riftwalker_interspace_vein", RIFTWALKER_INTERSPACE_VEIN);
 
     public static final Supplier<SoundEvent> RIFT_OPENING = SOUND_EVENTS.register("rift_opening",
             () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rift_opening")));
@@ -108,6 +122,12 @@ public class ModContent {
                         output.accept(CONTOUR_STONE_VEIN_ITEM.get());
                         output.accept(CONTOUR_WEEPING_STONE_ITEM.get());
                         output.accept(CONTOUR_VEIN_ITEM.get());
+                        output.accept(RNA_INTERSPACE_STONE_ITEM.get());
+                        output.accept(RNA_INTERSPACE_SURFACE_ITEM.get());
+                        output.accept(RNA_INTERSPACE_VEIN_ITEM.get());
+                        output.accept(RIFTWALKER_INTERSPACE_STONE_ITEM.get());
+                        output.accept(RIFTWALKER_INTERSPACE_SURFACE_ITEM.get());
+                        output.accept(RIFTWALKER_INTERSPACE_VEIN_ITEM.get());
                         output.accept(RIFT_SPLINTER_SPAWN_EGG.get());
                     })
                     .build());
@@ -123,5 +143,16 @@ public class ModContent {
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(RIFT_SPLINTER.get(), RiftSplinterEntity.createAttributes().build());
+    }
+
+    private static Supplier<Block> interspaceBlock(String name, int lightLevel) {
+        return BLOCKS.register(name, () -> new Block(BlockBehaviour.Properties.of()
+                .lightLevel(state -> lightLevel)
+                .strength(4.5F, 10.0F)
+                .requiresCorrectToolForDrops()));
+    }
+
+    private static Supplier<Item> blockItem(String name, Supplier<Block> block) {
+        return ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
     }
 }

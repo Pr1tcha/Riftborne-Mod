@@ -1,0 +1,16 @@
+{
+  "type": "riftborne:rna_interspace",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "minecraft:the_void",
+      "features": false,
+      "lakes": false,
+      "layers": [
+        { "block": "minecraft:bedrock", "height": 1 },
+        { "block": "riftborne:rna_interspace_stone", "height": 70 },
+        { "block": "riftborne:rna_interspace_surface", "height": 1 }
+      ]
+    }
+  }
+}

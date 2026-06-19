@@ -22,6 +22,8 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Rift operator and testing commands.
 - `rift.contour`
   - Discard Contour generation, rules, and teleportation.
+- `interspace`
+  - RNA and Riftwalker interspace dimensions, terrain decoration, test access, and return-point handling.
 - `rift.entity`
   - Rift-specific entities.
 - `rift.client`
@@ -59,9 +61,8 @@ This document describes the current v0.1 rift implementation as it exists in cod
     - `/riftborne rifts stage set <stage>`
 
 - `RiftSpawner`
-  - Handles natural rift spawn checks on overworld server ticks.
-  - Uses config values for interval, chance, spawn distance, lifetime, and lifetime variance.
-  - Only runs when `riftborneRiftStage` is at least `1`.
+  - Reserved as an empty integration point for the future natural spawning rework.
+  - Natural rift spawning is currently disabled.
 
 - `RiftWorldStage`
   - Registers the persistent `riftborneRiftStage` gamerule.
@@ -89,9 +90,27 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Rejects solid blocks, liquids, ceilings, cramped spaces, and unsupported placement.
 
 - `RiftContourTeleporter`
-  - Handles Discard Contour Rift entry.
+  - Handles Discard Contour entry through an active Contour Rift.
+  - Sends players falling below the Overworld void into the Discard Contour.
   - Builds the arrival anchor platform inside the Discard Contour without a return rift.
   - Provides the admin/tester emergency escape used by `/riftborne contour escape`.
+
+- `InterspaceDimensions`
+  - Declares `riftborne:rna_interspace` and `riftborne:riftwalker_interspace`.
+  - Stores the player's entry dimension and coordinates before transit.
+  - Builds a safe arrival platform and returns the player to the stored origin.
+
+- `InterspaceFeatures`
+  - Gives both interspaces independent terrain palettes and floating formations.
+  - RNA Interspace uses a restrained blue/cyan palette.
+  - Riftwalker Interspace uses a brighter violet/lilac palette and more floating fragments.
+
+- `InterspaceCommand`
+  - Temporary development access:
+    - `/riftborne interspace rna`
+    - `/riftborne interspace riftwalker`
+    - `/riftborne interspace return`
+  - These commands are test scaffolding, not the final lore-facing entry mechanic.
 
 - `DiscardContourRules`
   - Keeps player death respawns inside the Discard Contour.
@@ -128,7 +147,7 @@ This document describes the current v0.1 rift implementation as it exists in cod
 
 ## Current Gameplay Flow
 
-1. A rift anchor appears by command or natural spawn.
+1. A rift anchor appears by command or a scripted system.
 2. The rift starts in `OPENING`.
 3. When a player enters the radius:
    - the rift switches to `ACTIVE`;
@@ -154,18 +173,12 @@ This is intentionally shader-free for now. Future rift types can swap texture/co
 
 ## Config
 
-Config keys live under `rifts`:
-
-- `checkInterval`
-- `spawnChance`
-- `minRadiusFromPlayer`
-- `maxRadiusFromPlayer`
-- `defaultLifetimeTicks`
-- `lifetimeVariationPercent`
+Natural spawning currently has no config keys. The remaining `rifts` settings
+control the player-triggered activation behavior of existing rifts.
 
 ## Known Gaps
 
-- World stage gating currently controls natural spawning.
+- Natural spawning is disabled pending a full rework.
 - Stage changes are command-driven and ready for FTB Quests command actions.
 - `SCAR` exists as a stage enum, but the current scar implementation is still represented by an obsidian block after collapse.
 - Rewards are currently hardcoded as `Rift Shard`, not a dedicated reward table.
