@@ -1,7 +1,9 @@
-package com.pr1tcha.riftborne.telekinesis;
+package com.pr1tcha.riftborne.aspects.telekinesis;
 
 import com.pr1tcha.riftborne.Riftborne;
-import com.pr1tcha.riftborne.telekinesis.entity.TelekineticBlockEntity;
+import com.pr1tcha.riftborne.rna.RnaApi;
+import com.pr1tcha.riftborne.rna.data.RnaData;
+import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -63,7 +65,7 @@ public final class TelekinesisAbility {
     }
 
     public static boolean hasAbility(Player player) {
-        return player.getPersistentData().getBoolean(ABILITY_TAG);
+        return player.getPersistentData().getBoolean(ABILITY_TAG) && RnaApi.hasActiveRna(player);
     }
 
     public static void setAbility(ServerPlayer player, boolean enabled) {
@@ -107,7 +109,7 @@ public final class TelekinesisAbility {
         }
 
         double clampedSteps = Mth.clamp(scrollSteps, -5.0F, 5.0F);
-        state.distance = Mth.clamp(state.distance + clampedSteps * SCROLL_STEP, minHoldDistance(state), MAX_HOLD_DISTANCE);
+        state.distance = Mth.clamp(state.distance + clampedSteps * SCROLL_STEP, minHoldDistance(state), maxHoldDistance(player));
     }
 
     public static void pushHeldTarget(ServerPlayer player) {
@@ -118,11 +120,18 @@ public final class TelekinesisAbility {
 
         TelekinesisNetwork.sendGrabState(player, false);
         if (!hasAbility(player) || !player.serverLevel().dimension().equals(state.dimension)) {
+            restoreTargetGravity(player.getServer(), state, player);
             return;
         }
 
         HOLDING_PLAYERS.remove(player.getUUID());
         cancelBlockCharge(player.getUUID());
+
+        RnaApi.addMetaWear(player, 2, "telekinesis_push");
+        if (!hasAbility(player)) {
+            restoreTargetGravity(player.getServer(), state, player);
+            return;
+        }
 
         Entity target = player.serverLevel().getEntity(state.entityId);
         if (!canGrabTarget(player, target)) {
@@ -131,7 +140,7 @@ public final class TelekinesisAbility {
         }
 
         target.setNoGravity(state.originalNoGravity);
-        target.setDeltaMovement(player.getLookAngle().normalize().scale(PUSH_STRENGTH));
+        target.setDeltaMovement(player.getLookAngle().normalize().scale(pushStrength(player)));
         target.hasImpulse = true;
         target.hurtMarked = true;
         restoreItemPickupTarget(target, state);
@@ -151,7 +160,7 @@ public final class TelekinesisAbility {
     }
 
     private static boolean tryStartEntityGrab(ServerPlayer player) {
-        HitResult hit = ProjectileUtil.getHitResultOnViewVector(player, entity -> canGrabTarget(player, entity), MAX_GRAB_RANGE);
+        HitResult hit = ProjectileUtil.getHitResultOnViewVector(player, entity -> canGrabTarget(player, entity), maxGrabRange(player));
         if (!(hit instanceof EntityHitResult entityHit)) {
             return false;
         }
@@ -164,6 +173,10 @@ public final class TelekinesisAbility {
         if (!canGrabTarget(player, target)) {
             return false;
         }
+        int wear = target instanceof TelekineticBlockEntity ? 2 : 1;
+        if (!RnaApi.addMetaWear(player, wear, "telekinesis_grab") || !RnaApi.hasActiveRna(player)) {
+            return false;
+        }
 
         UUID originalItemTarget = target instanceof ItemEntity item ? item.getTarget() : null;
         GrabState state = new GrabState(
@@ -172,7 +185,7 @@ public final class TelekinesisAbility {
                 target.isNoGravity(),
                 target instanceof ItemEntity,
                 originalItemTarget,
-                Mth.clamp(distance, minHoldDistance(target), MAX_HOLD_DISTANCE)
+                Mth.clamp(distance, minHoldDistance(target), maxHoldDistance(player))
         );
 
         cancelBlockCharge(player.getUUID());
@@ -280,7 +293,8 @@ public final class TelekinesisAbility {
         }
 
         Entity target = player.serverLevel().getEntity(state.entityId);
-        if (!canGrabTarget(player, target) || target.distanceToSqr(player) > MAX_LINK_DISTANCE * MAX_LINK_DISTANCE) {
+        double linkDistance = maxLinkDistance(player);
+        if (!canGrabTarget(player, target) || target.distanceToSqr(player) > linkDistance * linkDistance) {
             HOLDING_PLAYERS.remove(player.getUUID());
             cancelBlockCharge(player.getUUID());
             stopGrab(player);
@@ -301,10 +315,11 @@ public final class TelekinesisAbility {
         Vec3 desiredCenter = player.getEyePosition().add(player.getLookAngle().normalize().scale(state.distance));
         Vec3 currentCenter = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
         Vec3 offset = desiredCenter.subtract(currentCenter);
-        Vec3 motion = target.getDeltaMovement().scale(HOLD_MOTION_DAMPING).add(offset.scale(PULL_STRENGTH));
+        Vec3 motion = target.getDeltaMovement().scale(HOLD_MOTION_DAMPING).add(offset.scale(pullStrength(player)));
 
-        if (motion.lengthSqr() > MAX_PULL_SPEED * MAX_PULL_SPEED) {
-            motion = motion.normalize().scale(MAX_PULL_SPEED);
+        double maxPullSpeed = maxPullSpeed(player);
+        if (motion.lengthSqr() > maxPullSpeed * maxPullSpeed) {
+            motion = motion.normalize().scale(maxPullSpeed);
         }
         if (offset.lengthSqr() < 0.0025D && motion.lengthSqr() < 0.0025D) {
             motion = Vec3.ZERO;
@@ -338,7 +353,7 @@ public final class TelekinesisAbility {
             BLOCK_CHARGES.put(playerId, charge);
         }
 
-        if (gameTime - charge.startedAtTick >= BLOCK_CHARGE_TICKS) {
+        if (gameTime - charge.startedAtTick >= blockChargeTicks(player)) {
             cancelBlockCharge(playerId);
             liftBlock(player, pos, state);
         }
@@ -346,7 +361,7 @@ public final class TelekinesisAbility {
 
     private static BlockHitResult findBlockInView(ServerPlayer player) {
         Vec3 eye = player.getEyePosition();
-        Vec3 end = eye.add(player.getLookAngle().normalize().scale(MAX_GRAB_RANGE));
+        Vec3 end = eye.add(player.getLookAngle().normalize().scale(maxGrabRange(player)));
         HitResult hit = player.serverLevel().clip(new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
         return hit instanceof BlockHitResult blockHit ? blockHit : null;
     }
@@ -476,6 +491,35 @@ public final class TelekinesisAbility {
 
     private static double minHoldDistance(boolean itemEntity) {
         return itemEntity ? MIN_ITEM_HOLD_DISTANCE : MIN_HOLD_DISTANCE;
+    }
+
+    private static double maxGrabRange(Player player) {
+        return MAX_GRAB_RANGE + RnaApi.get(player).throughput() * 0.03D;
+    }
+
+    private static double maxHoldDistance(Player player) {
+        return MAX_HOLD_DISTANCE + RnaApi.get(player).nodeDensity() * 0.02D;
+    }
+
+    private static double maxLinkDistance(Player player) {
+        return MAX_LINK_DISTANCE + RnaApi.get(player).connectivity() * 0.03D;
+    }
+
+    private static double pullStrength(Player player) {
+        return PULL_STRENGTH + RnaApi.get(player).connectivity() * 0.0015D;
+    }
+
+    private static double maxPullSpeed(Player player) {
+        return MAX_PULL_SPEED + RnaApi.get(player).throughput() * 0.002D;
+    }
+
+    private static double pushStrength(Player player) {
+        return PUSH_STRENGTH + RnaApi.get(player).throughput() * 0.004D;
+    }
+
+    private static int blockChargeTicks(Player player) {
+        RnaData data = RnaApi.get(player);
+        return Math.max(12, BLOCK_CHARGE_TICKS - data.connectivity() / 20);
     }
 
     @SubscribeEvent

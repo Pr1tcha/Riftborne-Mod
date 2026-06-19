@@ -1,4 +1,4 @@
-package com.pr1tcha.riftborne.telekinesis.entity;
+package com.pr1tcha.riftborne.aspects.telekinesis.entity;
 
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.Riftborne;

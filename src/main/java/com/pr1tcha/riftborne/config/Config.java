@@ -20,6 +20,10 @@ public class Config {
     public static final ModConfigSpec.IntValue riftCrackingRadius;
     public static final ModConfigSpec.IntValue riftOpeningRadius;
     public static final ModConfigSpec.IntValue riftOpeningDurationTicks;
+    public static final ModConfigSpec.IntValue metaWearStableDecayInterval;
+    public static final ModConfigSpec.IntValue metaWearStrainDecayInterval;
+    public static final ModConfigSpec.IntValue metaWearDistortionDecayInterval;
+    public static final ModConfigSpec.IntValue metaWearRejectionDecayInterval;
 
     static {
         BUILDER.comment("Rift system settings").push("rifts");
@@ -63,6 +67,26 @@ public class Config {
         riftOpeningDurationTicks = BUILDER
                 .comment("Duration of the normal rift opening burst before it becomes active")
                 .defineInRange("openingDurationTicks", 60, 1, 1200);
+
+        BUILDER.pop();
+
+        BUILDER.comment("RNA meta-wear settings").push("rna");
+
+        metaWearStableDecayInterval = BUILDER
+                .comment("Ticks required to passively remove one meta-wear point in STABLE")
+                .defineInRange("stableDecayInterval", 200, 20, 72000);
+
+        metaWearStrainDecayInterval = BUILDER
+                .comment("Ticks required to passively remove one meta-wear point in STRAIN")
+                .defineInRange("strainDecayInterval", 400, 20, 72000);
+
+        metaWearDistortionDecayInterval = BUILDER
+                .comment("Ticks required to passively remove one meta-wear point in DISTORTION")
+                .defineInRange("distortionDecayInterval", 800, 20, 72000);
+
+        metaWearRejectionDecayInterval = BUILDER
+                .comment("Ticks required to passively remove one meta-wear point in REJECTION")
+                .defineInRange("rejectionDecayInterval", 2400, 20, 72000);
 
         BUILDER.pop();
     }

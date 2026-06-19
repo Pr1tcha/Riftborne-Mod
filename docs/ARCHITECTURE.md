@@ -26,12 +26,59 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Rift-specific entities.
 - `rift.client`
   - Rift renderers, procedural visuals, and distortion integration.
-- `telekinesis`
+- `aspects`
+  - Shared command and extension boundary for RNA-powered Aspects.
+- `aspects.telekinesis`
   - Telekinesis gameplay, commands, and networking.
-- `telekinesis.entity`
+- `aspects.telekinesis.entity`
   - Telekinesis-specific entities.
-- `telekinesis.client`
+- `aspects.telekinesis.client`
   - Telekinesis input and rendering.
+- `player`
+  - Shared persistent player-data boundary. Owns the root `Riftborne` save tag.
+- `rna`
+  - Public RNA API, meta-wear lifecycle, passive recovery, and integration events.
+- `rna.data`
+  - Serializable RNA model, formation paths, stages, and stat identifiers.
+- `rna.command`
+  - RNA and meta-wear test commands.
+- `codex`
+  - Extensible Codex entry catalog.
+- `codex.data`
+  - Per-player Codex state and immutable entry definitions.
+- `codex.block`
+  - Placeable field laptop.
+- `codex.network`
+  - Server-authoritative GUI snapshots and laptop actions.
+- `codex.client`
+  - Dark desktop/Codex interface.
+
+## Player Data Boundary
+
+All new player-owned state is stored below one persistent root:
+
+- `Riftborne.RNA`
+  - Four 0-100 stats, formation path, meta-wear, stage, critical/collapse flags, and timing fields.
+- `Riftborne.Codex`
+  - Unlocked entry IDs, notifications, recent data, power state, and battery.
+
+Gameplay systems do not manipulate these tags directly. They use `RnaApi` or `RiftbornePlayerData`, which keeps persistence and later migrations isolated from abilities and UI code.
+
+## RNA Integration
+
+- `TRAINING`, `STRESS`, and `ARTIFICIAL_BORN` are selectable and expose distinct starting profiles, growth modifiers, and meta-wear multipliers.
+- `TECHNOLOGICAL` and `INTERSPATIAL` are stable reserved IDs with no active mechanics.
+- Stage transitions and collapse are server-authoritative.
+- Passive meta-wear recovery intervals are configurable.
+- The existing telekinesis unlock now requires active RNA.
+- RNA throughput, density, connectivity, and overload resistance tune telekinesis behavior or cost.
+- Telekinesis adds meta-wear only through `RnaApi`, so future abilities can use the same path.
+
+## Field Codex Laptop
+
+The laptop is intentionally a stateless access block. Player discoveries belong to the player, not to one placed block, so future terminals and scanners can display the same Codex without copying data between block entities.
+
+On interaction the server sends a read-only snapshot to the client. Power toggles return to the server and produce a refreshed snapshot. Codex entries live in a catalog independent from the screen, allowing a later JSON/datapack loader without redesigning the GUI.
 
 ## Core Classes
 

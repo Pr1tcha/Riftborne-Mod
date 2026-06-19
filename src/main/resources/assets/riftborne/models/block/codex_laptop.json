@@ -1,0 +1,47 @@
+{
+  "textures": {
+    "case": "minecraft:block/polished_deepslate",
+    "screen": "minecraft:block/cyan_stained_glass",
+    "keyboard": "minecraft:block/black_concrete",
+    "particle": "minecraft:block/polished_deepslate"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 2],
+      "to": [15, 3, 14],
+      "faces": {
+        "down": {"texture": "#case"},
+        "up": {"texture": "#keyboard"},
+        "north": {"texture": "#case"},
+        "south": {"texture": "#case"},
+        "west": {"texture": "#case"},
+        "east": {"texture": "#case"}
+      }
+    },
+    {
+      "from": [1.5, 3, 12],
+      "to": [14.5, 14, 14],
+      "rotation": {
+        "origin": [8, 3, 13],
+        "axis": "x",
+        "angle": -22.5,
+        "rescale": true
+      },
+      "faces": {
+        "down": {"texture": "#case"},
+        "up": {"texture": "#case"},
+        "north": {"texture": "#screen", "tintindex": 0},
+        "south": {"texture": "#case"},
+        "west": {"texture": "#case"},
+        "east": {"texture": "#case"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [30, 225, 0],
+      "translation": [0, -1, 0],
+      "scale": [0.8, 0.8, 0.8]
+    }
+  }
+}

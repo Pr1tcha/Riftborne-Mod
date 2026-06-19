@@ -4,6 +4,15 @@ Riftborne is a Minecraft 1.21.1 NeoForge mod for the Riftborne modpack.
 
 The current version is the first working foundation for rift events: a server-driven rift system with commands, configurable natural spawning, lifetime handling, area effects, visual feedback, and rewards.
 
+It also includes the first RNA/Codex foundation:
+
+- persistent per-player Resonant Neural Architecture data;
+- formation paths and four 0-100 RNA stats;
+- meta-wear stages, passive recovery, critical instability, and collapse;
+- a placeable field laptop with a desktop and Codex GUI;
+- an extensible Codex entry catalog and per-player unlock state;
+- telekinesis integrated with active RNA stats and meta-wear.
+
 ## Current Scope
 
 - Spawns rifts by command.
@@ -38,7 +47,26 @@ The current version is the first working foundation for rift events: a server-dr
 - `/riftborne rifts stage get`
 - `/riftborne rifts stage set <stage>`
 
-All commands require operator permission level 2.
+Rift, Contour, telekinesis mutation, RNA mutation, and meta-wear mutation commands require operator permission level 2.
+
+RNA read commands are available to the executing player; mutation and test commands require operator permission level 2.
+
+### RNA and Meta-wear Commands
+
+- `/riftborne rna get [player]`
+- `/riftborne rna init`
+- `/riftborne rna reset`
+- `/riftborne rna set <nodeDensity|connectivity|throughput|overloadResistance> <0-100>`
+- `/riftborne rna path set <TRAINING|STRESS|ARTIFICIAL_BORN>`
+- `/riftborne metawear get`
+- `/riftborne metawear set <0-100>`
+- `/riftborne metawear add <1-100>`
+- `/riftborne metawear clear`
+- `/riftborne metawear collapse`
+
+`TECHNOLOGICAL` and `INTERSPATIAL` are reserved save-stable path IDs and cannot be selected yet.
+
+Telekinesis is the first Aspect and is unlockable with `/riftborne aspects telekinesis grant`. It requires an active RNA profile. Grabs and throws add meta-wear through the shared RNA API.
 
 `/riftborne rifts spawn` now uses the current procedural visual and saves as `riftborne:rift`.
 `/riftborne contour spawn` creates a Discard Contour Rift that leads to `riftborne:discard_contour`.

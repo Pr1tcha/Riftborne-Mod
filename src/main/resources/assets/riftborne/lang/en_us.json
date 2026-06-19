@@ -7,11 +7,19 @@
   "block.riftborne.contour_stone_vein": "Veined Contour Stone",
   "block.riftborne.contour_weeping_stone": "Weeping Contour Stone",
   "block.riftborne.contour_vein": "Contour Vein",
+  "block.riftborne.codex_laptop": "Field Codex Laptop",
   "entity.riftborne.rift_splinter": "Rift Splinter",
   "entity.riftborne.telekinetic_block": "Telekinetic Block",
   "item.riftborne.rift_shard": "Rift Shard",
   "item.riftborne.rift_splinter_spawn_egg": "Rift Splinter Spawn Egg",
   "key.categories.riftborne": "Riftborne",
   "key.riftborne.telekinesis": "Telekinesis",
-  "subtitles.riftborne.rift_opening": "Rift opens"
+  "subtitles.riftborne.rift_opening": "Rift opens",
+  "screen.riftborne.codex_laptop": "Riftborne Field Codex",
+  "message.riftborne.rna.stage.stable": "RNA is stable.",
+  "message.riftborne.rna.stage.strain": "RNA entered a state of strain.",
+  "message.riftborne.rna.stage.distortion": "RNA distortion detected.",
+  "message.riftborne.rna.stage.rejection": "The Meta-Layer rejects the unstable RNA.",
+  "message.riftborne.rna.stage.architecture_break": "Critical state: RNA architecture break.",
+  "message.riftborne.rna.collapsed": "RNA destroyed. Synchronous access lost."
 }

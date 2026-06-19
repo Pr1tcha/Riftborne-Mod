@@ -1,8 +1,8 @@
-package com.pr1tcha.riftborne.telekinesis.client;
+package com.pr1tcha.riftborne.aspects.telekinesis.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.pr1tcha.riftborne.Riftborne;
-import com.pr1tcha.riftborne.telekinesis.TelekinesisNetwork;
+import com.pr1tcha.riftborne.aspects.telekinesis.TelekinesisNetwork;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
