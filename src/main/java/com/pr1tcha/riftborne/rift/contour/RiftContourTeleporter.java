@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -33,6 +34,7 @@ public final class RiftContourTeleporter {
 
     private static final String COOLDOWN_TAG = "RiftborneContourCooldown";
     private static final BlockPos CONTOUR_SPAWN = new BlockPos(0, 81, 0);
+    private static final int VOID_ENTRY_DEPTH = 16;
 
     private RiftContourTeleporter() {
     }
@@ -52,6 +54,11 @@ public final class RiftContourTeleporter {
         }
 
         ServerLevel level = serverPlayer.serverLevel();
+        if (shouldEnterFromOverworldVoid(serverPlayer, level)) {
+            enterDiscardContour(serverPlayer);
+            return;
+        }
+
         Optional<BlockPos> contourRiftPos = findNearbyContourRift(level, serverPlayer.blockPosition());
         if (contourRiftPos.isEmpty()) {
             return;
@@ -60,6 +67,13 @@ public final class RiftContourTeleporter {
         if (!level.dimension().equals(DISCARD_CONTOUR)) {
             enterDiscardContour(serverPlayer);
         }
+    }
+
+    private static boolean shouldEnterFromOverworldVoid(ServerPlayer player, ServerLevel level) {
+        return level.dimension().equals(ServerLevel.OVERWORLD)
+                && !player.isSpectator()
+                && player.getDeltaMovement().y < 0.0D
+                && player.getY() < level.getMinBuildHeight() - VOID_ENTRY_DEPTH;
     }
 
     public static void buildContourAnchor(ServerLevel level) {
@@ -136,6 +150,8 @@ public final class RiftContourTeleporter {
         buildContourAnchor(targetLevel);
         player.getPersistentData().putInt(COOLDOWN_TAG, 60);
         player.teleportTo(targetLevel, CONTOUR_SPAWN.getX() + 0.5D, CONTOUR_SPAWN.getY(), CONTOUR_SPAWN.getZ() + 0.5D, player.getYRot(), player.getXRot());
+        player.setDeltaMovement(Vec3.ZERO);
+        player.resetFallDistance();
         targetLevel.playSound(null, CONTOUR_SPAWN, ModContent.RIFT_OPENING.get(), SoundSource.BLOCKS, 0.9F, 0.72F);
     }
 

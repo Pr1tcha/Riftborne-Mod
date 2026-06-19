@@ -13,6 +13,9 @@ libs/*.jar
 .vscode/
 *.iml
 
+# Local IDE compilation output
+bin/
+
 # OS/editor noise
 .DS_Store
 Thumbs.db

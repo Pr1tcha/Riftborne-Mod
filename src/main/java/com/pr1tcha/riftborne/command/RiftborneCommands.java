@@ -1,9 +1,10 @@
 package com.pr1tcha.riftborne.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.pr1tcha.riftborne.rift.command.RiftCommand;
 import com.pr1tcha.riftborne.aspects.AspectCommands;
+import com.pr1tcha.riftborne.interspace.InterspaceCommand;
 import com.pr1tcha.riftborne.rna.command.RnaCommand;
+import com.pr1tcha.riftborne.rift.command.RiftCommand;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
@@ -18,6 +19,7 @@ public final class RiftborneCommands {
                 .then(AspectCommands.category())
                 .then(RnaCommand.rnaCategory())
                 .then(RnaCommand.metaWearCategory())
+                .then(InterspaceCommand.category())
         );
     }
 }
