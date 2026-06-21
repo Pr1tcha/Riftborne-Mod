@@ -23,6 +23,7 @@ net/
 # Local design sources and concept documents
 *.pdf
 *.bbmodel
+docs/concepts/
 
 # OS/editor noise
 .DS_Store
