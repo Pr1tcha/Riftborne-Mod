@@ -16,6 +16,14 @@ libs/*.jar
 # Local IDE compilation output
 bin/
 
+# Local generated previews, extracted references, and test logs
+tmp/
+net/
+
+# Local design sources and concept documents
+*.pdf
+*.bbmodel
+
 # OS/editor noise
 .DS_Store
 Thumbs.db
