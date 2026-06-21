@@ -79,60 +79,61 @@ public final class RnaCommand {
 
     private static int show(CommandSourceStack source, ServerPlayer player) {
         RnaData data = RnaApi.get(player);
-        source.sendSuccess(() -> Component.literal("RNA [" + player.getGameProfile().getName() + "]")
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.header", player.getGameProfile().getName())
                 .withStyle(ChatFormatting.AQUA), false);
-        source.sendSuccess(() -> Component.literal(
-                "active=" + data.hasRNA()
-                        + ", path=" + data.formationPath()
-                        + ", collapsed=" + data.rnaCollapsed()), false);
-        source.sendSuccess(() -> Component.literal(
-                "nodeDensity=" + data.nodeDensity()
-                        + ", connectivity=" + data.connectivity()
-                        + ", throughput=" + data.throughput()
-                        + ", overloadResistance=" + data.overloadResistance()), false);
-        source.sendSuccess(() -> Component.literal(
-                "metaWear=" + data.metaWear() + "%, stage=" + data.metaWearStage()
-                        + ", critical=" + data.criticalInstability()), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.state",
+                localizedBoolean(data.hasRNA()),
+                Component.translatable(data.formationPath().translationKey()),
+                localizedBoolean(data.rnaCollapsed())), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.stats",
+                data.nodeDensity(), data.connectivity(), data.throughput(), data.overloadResistance()), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.meta_wear_state",
+                data.metaWear(),
+                Component.translatable(stageKey(data.metaWearStage().name())),
+                localizedBoolean(data.criticalInstability())), false);
         return 1;
     }
 
     private static int initialize(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         RnaApi.initialize(player, FormationPath.TRAINING);
-        source.sendSuccess(() -> Component.literal("Test RNA initialized."), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.initialized"), false);
         return 1;
     }
 
     private static int reset(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         RnaApi.reset(source.getPlayerOrException());
-        source.sendSuccess(() -> Component.literal("RNA reset."), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.reset"), false);
         return 1;
     }
 
     private static int setStat(CommandSourceStack source, String statId, int value) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         RnaStat stat = RnaStat.fromId(statId);
         if (stat == null) {
-            source.sendFailure(Component.literal("Unknown RNA stat: " + statId));
+            source.sendFailure(Component.translatable("command.riftborne.rna.unknown_stat", statId));
             return 0;
         }
         RnaApi.setStat(source.getPlayerOrException(), stat, value);
-        source.sendSuccess(() -> Component.literal(stat.id() + " = " + value), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.stat_set",
+                Component.translatable(stat.translationKey()), value), false);
         return 1;
     }
 
     private static int setPath(CommandSourceStack source, String pathId) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         FormationPath path = FormationPath.fromId(pathId);
         if (!RnaApi.setFormationPath(source.getPlayerOrException(), path)) {
-            source.sendFailure(Component.literal("This formation path is reserved or unknown."));
+            source.sendFailure(Component.translatable("command.riftborne.rna.unknown_path"));
             return 0;
         }
-        source.sendSuccess(() -> Component.literal("RNA formation path = " + path.name()), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.path_set",
+                Component.translatable(path.translationKey())), false);
         return 1;
     }
 
     private static int showMetaWear(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         RnaData data = RnaApi.get(source.getPlayerOrException());
-        source.sendSuccess(() -> Component.literal("Meta-wear: " + data.metaWear() + "% [" + data.metaWearStage() + "]"), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rna.meta_wear",
+                data.metaWear(), Component.translatable(stageKey(data.metaWearStage().name()))), false);
         return 1;
     }
 
@@ -145,7 +146,7 @@ public final class RnaCommand {
     private static int addMetaWear(CommandSourceStack source, int value) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         if (!RnaApi.addMetaWear(player, value, "command")) {
-            source.sendFailure(Component.literal("Player has no active RNA."));
+            source.sendFailure(Component.translatable("command.riftborne.rna.no_active_rna"));
             return 0;
         }
         return showMetaWear(source);
@@ -154,5 +155,13 @@ public final class RnaCommand {
     private static int collapse(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         RnaApi.collapse(source.getPlayerOrException(), "command");
         return 1;
+    }
+
+    private static Component localizedBoolean(boolean value) {
+        return Component.translatable("options." + (value ? "on" : "off"));
+    }
+
+    private static String stageKey(String stage) {
+        return "rna.riftborne.meta_wear_stage." + stage.toLowerCase(java.util.Locale.ROOT);
     }
 }

@@ -14,6 +14,7 @@ import com.pr1tcha.riftborne.rift.RiftSpawnProfile;
 import com.pr1tcha.riftborne.rift.RiftType;
 import com.pr1tcha.riftborne.rift.RiftWorldStage;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -112,18 +113,18 @@ public class RiftCommand {
 
     private static int getStage(CommandSourceStack source) {
         int stage = RiftWorldStage.getStage(source.getLevel());
-        source.sendSuccess(() -> Component.literal("Riftborne rift stage: " + stage), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.stage", stage), false);
         return stage;
     }
 
     private static int setStage(CommandSourceStack source, int stage) {
         MinecraftServer server = source.getServer();
         if (!RiftWorldStage.setStage(source.getLevel(), stage, server)) {
-            source.sendFailure(Component.literal("Riftborne rift stage gamerule is not registered yet."));
+            source.sendFailure(Component.translatable("command.riftborne.rifts.stage_unavailable"));
             return 0;
         }
 
-        source.sendSuccess(() -> Component.literal("Riftborne rift stage set to " + stage), true);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.stage_set", stage), true);
         return stage;
     }
 
@@ -132,7 +133,7 @@ public class RiftCommand {
         BlockPos playerPos = BlockPos.containing(source.getPosition());
         Optional<BlockPos> foundPos = RiftSpawnLocator.findValidRiftPosition(level, playerPos, profile);
         if (foundPos.isEmpty()) {
-            source.sendFailure(Component.literal("No valid rift space found nearby."));
+            source.sendFailure(Component.translatable("command.riftborne.rifts.no_valid_space"));
             return 0;
         }
 
@@ -146,7 +147,7 @@ public class RiftCommand {
         }
 
         if (!RiftSpawnLocator.isValidRiftPosition(level, pos, profile)) {
-            source.sendFailure(Component.literal("That position does not have enough clear space for this rift."));
+            source.sendFailure(Component.translatable("command.riftborne.rifts.not_enough_space"));
             return 0;
         }
 
@@ -166,34 +167,36 @@ public class RiftCommand {
         }
 
         int finalTicks = lifetimeTicks;
-        source.sendSuccess(() -> Component.literal(String.format(
-                "%s rift opened at %s. Lifetime: %d t (%.1f sec), radius: %.1f blocks",
-                getSpawnLabel(profile, proceduralVisual), pos.toShortString(), finalTicks, finalTicks / 20.0f, radius
-        )), true);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.spawned",
+                getSpawnLabel(profile, proceduralVisual),
+                pos.toShortString(),
+                finalTicks,
+                String.format(Locale.ROOT, "%.1f", finalTicks / 20.0f),
+                String.format(Locale.ROOT, "%.1f", radius)), true);
 
         return 1;
     }
 
-    private static String getSpawnLabel(RiftSpawnProfile profile, boolean proceduralVisual) {
+    private static Component getSpawnLabel(RiftSpawnProfile profile, boolean proceduralVisual) {
         if (!proceduralVisual) {
-            return "Archived";
+            return Component.translatable("rift.riftborne.type.archived");
         }
         if (profile.type() == RiftType.CONTOUR_RIFT) {
-            return "Discard Contour";
+            return Component.translatable("rift.riftborne.type.contour");
         }
 
-        return "Rift";
+        return Component.translatable("rift.riftborne.type.normal");
     }
 
     private static int escapeDiscardContour(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         if (!player.serverLevel().dimension().equals(RiftContourTeleporter.DISCARD_CONTOUR)) {
-            source.sendFailure(Component.literal("You are not inside the Discard Contour."));
+            source.sendFailure(Component.translatable("command.riftborne.contour.not_inside"));
             return 0;
         }
 
         RiftContourTeleporter.emergencyEscape(player);
-        source.sendSuccess(() -> Component.literal("Emergency escape from the Discard Contour complete."), true);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.contour.escaped"), true);
         return 1;
     }
 
@@ -214,10 +217,8 @@ public class RiftCommand {
         }
 
         int finalKilledCount = killedCount;
-        source.sendSuccess(() -> Component.literal(String.format(
-                "Removed rifts in %d block radius: %d",
-                radius, finalKilledCount
-        )), true);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.removed",
+                radius, finalKilledCount), true);
 
         return killedCount;
     }
@@ -243,39 +244,54 @@ public class RiftCommand {
         }
 
         if (foundPos == null) {
-            source.sendFailure(Component.literal(String.format("No rift found within %d blocks.", searchRadius)));
+            source.sendFailure(Component.translatable("command.riftborne.rifts.not_found", searchRadius));
             return 0;
         }
 
         BlockEntity blockEntity = level.getBlockEntity(foundPos);
         if (!(blockEntity instanceof RiftBlockEntity riftTile)) {
-            source.sendFailure(Component.literal("Rift block found, but rift data is missing or corrupted."));
+            source.sendFailure(Component.translatable("command.riftborne.rifts.corrupted"));
             return 0;
         }
 
         RiftData data = riftTile.getData();
         int leftTicks = Math.max(0, data.maxLifetimeTicks - data.ticksExisted);
         boolean isQuest = data.isQuestRelated || data.isCommandSpawned;
-        String statusText = isQuest ? "Scripted" : "Natural";
+        Component statusText = Component.translatable(isQuest
+                ? "rift.riftborne.source.scripted"
+                : "rift.riftborne.source.natural");
         ChatFormatting statusColor = isQuest ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GREEN;
 
-        source.sendSuccess(() -> Component.literal("ID: ").withStyle(ChatFormatting.GRAY)
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.info.id").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(data.id.toString()).withStyle(ChatFormatting.GRAY)), false);
-        source.sendSuccess(() -> Component.literal("Position: ").withStyle(ChatFormatting.GRAY)
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.info.position").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(data.centerPos.toShortString()).withStyle(ChatFormatting.WHITE)), false);
-        source.sendSuccess(() -> Component.literal("Type: ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(data.riftType.toString()).withStyle(ChatFormatting.GRAY)), false);
-        source.sendSuccess(() -> Component.literal("Stage: ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(data.stage.name()).withStyle(ChatFormatting.GOLD)), false);
-        source.sendSuccess(() -> Component.literal("Radius: ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(data.radius + " blocks").withStyle(ChatFormatting.YELLOW)), false);
-        source.sendSuccess(() -> Component.literal(String.format(
-                "Lifetime: %d / %d t (left: %.1f sec)",
-                data.ticksExisted, data.maxLifetimeTicks, leftTicks / 20.0f
-        )).withStyle(ChatFormatting.GREEN), false);
-        source.sendSuccess(() -> Component.literal("Rift source: ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(statusText).withStyle(statusColor)), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.info.type").withStyle(ChatFormatting.GRAY)
+                .append(Component.translatable(riftTypeKey(RiftType.fromId(data.riftType))).withStyle(ChatFormatting.GRAY)), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.info.stage").withStyle(ChatFormatting.GRAY)
+                .append(Component.translatable(riftStageKey(data.stage)).withStyle(ChatFormatting.GOLD)), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.info.radius").withStyle(ChatFormatting.GRAY)
+                .append(Component.translatable("command.riftborne.rifts.info.blocks",
+                        String.format(Locale.ROOT, "%.1f", data.radius)).withStyle(ChatFormatting.YELLOW)), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.info.lifetime",
+                data.ticksExisted,
+                data.maxLifetimeTicks,
+                String.format(Locale.ROOT, "%.1f", leftTicks / 20.0f)).withStyle(ChatFormatting.GREEN), false);
+        source.sendSuccess(() -> Component.translatable("command.riftborne.rifts.info.source").withStyle(ChatFormatting.GRAY)
+                .append(statusText.copy().withStyle(statusColor)), false);
 
         return 1;
+    }
+
+    private static String riftTypeKey(RiftType type) {
+        return "rift.riftborne.type." + switch (type) {
+            case NORMAL_RIFT -> "normal";
+            case CONTOUR_RIFT -> "contour";
+            case ARCHIVED_RIFT -> "archived";
+        };
+    }
+
+    private static String riftStageKey(RiftStage stage) {
+        return "rift.riftborne.stage." + stage.name().toLowerCase(Locale.ROOT);
     }
 }

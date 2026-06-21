@@ -31,8 +31,9 @@ public final class RnaApi {
         save(player, data);
 
         CodexData codex = RiftbornePlayerData.getCodex(player);
-        codex.addNotification("Профиль РНА инициализирован.");
-        codex.addRecentData("Сформирована РНА: " + data.formationPath().name());
+        codex.addTranslatedNotification("codex.riftborne.feed.rna_initialized");
+        codex.addTranslatedRecentData("codex.riftborne.feed.rna_formed",
+                CodexData.translationArgument(data.formationPath().translationKey()));
         codex.unlock("connectivity");
         RiftbornePlayerData.saveCodex(player, codex);
     }
@@ -71,7 +72,10 @@ public final class RnaApi {
         save(player, data);
 
         CodexData codex = RiftbornePlayerData.getCodex(player);
-        codex.addRecentData(stat.id() + " +" + (data.getStat(stat) - previous) + " [" + source + "]");
+        codex.addTranslatedRecentData("codex.riftborne.feed.stat_growth",
+                CodexData.translationArgument(stat.translationKey()),
+                data.getStat(stat) - previous,
+                localizeSource(source));
         RiftbornePlayerData.saveCodex(player, codex);
         return data.getStat(stat) - previous;
     }
@@ -144,8 +148,8 @@ public final class RnaApi {
         player.sendSystemMessage(Component.translatable("message.riftborne.rna.collapsed").withStyle(ChatFormatting.DARK_RED));
 
         CodexData codex = RiftbornePlayerData.getCodex(player);
-        codex.addNotification("РНА разрушена. Синхронный доступ утрачен.");
-        codex.addRecentData("Зарегистрирован распад РНА: " + source);
+        codex.addTranslatedNotification("message.riftborne.rna.collapsed");
+        codex.addTranslatedRecentData("codex.riftborne.feed.rna_collapsed", localizeSource(source));
         codex.unlock("meta_wear");
         RiftbornePlayerData.saveCodex(player, codex);
     }
@@ -159,8 +163,8 @@ public final class RnaApi {
         player.sendSystemMessage(data.metaWearStage().transitionMessage().withStyle(stageColor(data.metaWearStage())));
 
         CodexData codex = RiftbornePlayerData.getCodex(player);
-        codex.addNotification(data.metaWearStage().transitionMessage().getString());
-        codex.addRecentData("Мета-износ: " + data.metaWear() + "% [" + source + "]");
+        codex.addTranslatedNotification(data.metaWearStage().messageKey());
+        codex.addTranslatedRecentData("codex.riftborne.feed.meta_wear", data.metaWear(), localizeSource(source));
         if (data.metaWearStage().ordinal() >= MetaWearStage.DISTORTION.ordinal()) {
             codex.unlock("meta_wear");
         }
@@ -179,5 +183,13 @@ public final class RnaApi {
 
     private static void save(Player player, RnaData data) {
         RiftbornePlayerData.saveRna(player, data);
+    }
+
+    private static String localizeSource(String source) {
+        String key = "rna.riftborne.source." + source;
+        return switch (source) {
+            case "command", "passive_decay" -> CodexData.translationArgument(key);
+            default -> source;
+        };
     }
 }

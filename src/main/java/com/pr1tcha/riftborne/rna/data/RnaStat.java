@@ -18,6 +18,10 @@ public enum RnaStat {
         return id;
     }
 
+    public String translationKey() {
+        return "rna.riftborne.stat." + name().toLowerCase(Locale.ROOT);
+    }
+
     public static RnaStat fromId(String id) {
         if (id == null) {
             return null;

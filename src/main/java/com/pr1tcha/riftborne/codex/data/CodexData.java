@@ -12,6 +12,9 @@ import net.minecraft.util.Mth;
 
 public final class CodexData {
     private static final int MAX_FEED_ENTRIES = 8;
+    private static final String TRANSLATION_PREFIX = "\u001E";
+    private static final String ARGUMENT_SEPARATOR = "\u001D";
+    private static final String TRANSLATION_ARGUMENT_PREFIX = "\u001C";
 
     private final Set<String> unlockedEntries = new LinkedHashSet<>();
     private final List<String> notifications = new ArrayList<>();
@@ -22,8 +25,8 @@ public final class CodexData {
     public CodexData() {
         unlockedEntries.add("rna_overview");
         unlockedEntries.add("node_density");
-        notifications.add("Кодекс готов к работе.");
-        recentData.add("Профиль РНА не синхронизирован.");
+        notifications.add(translation("codex.riftborne.feed.ready"));
+        recentData.add(translation("codex.riftborne.feed.rna_not_synchronized"));
     }
 
     public static CodexData load(CompoundTag tag) {
@@ -75,6 +78,42 @@ public final class CodexData {
 
     public void addRecentData(String message) {
         addBounded(recentData, message);
+    }
+
+    public void addTranslatedNotification(String key, Object... arguments) {
+        addNotification(translation(key, arguments));
+    }
+
+    public void addTranslatedRecentData(String key, Object... arguments) {
+        addRecentData(translation(key, arguments));
+    }
+
+    public static String translation(String key, Object... arguments) {
+        StringBuilder encoded = new StringBuilder(TRANSLATION_PREFIX).append(key);
+        for (Object argument : arguments) {
+            encoded.append(ARGUMENT_SEPARATOR).append(argument);
+        }
+        return encoded.toString();
+    }
+
+    public static String translationArgument(String key) {
+        return TRANSLATION_ARGUMENT_PREFIX + key;
+    }
+
+    public static boolean isTranslationArgument(String value) {
+        return value.startsWith(TRANSLATION_ARGUMENT_PREFIX);
+    }
+
+    public static String translationArgumentKey(String value) {
+        return value.substring(TRANSLATION_ARGUMENT_PREFIX.length());
+    }
+
+    public static boolean isTranslation(String value) {
+        return value != null && value.startsWith(TRANSLATION_PREFIX);
+    }
+
+    public static String[] translationParts(String value) {
+        return value.substring(TRANSLATION_PREFIX.length()).split(ARGUMENT_SEPARATOR, -1);
     }
 
     private static void addBounded(List<String> list, String message) {

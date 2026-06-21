@@ -16,7 +16,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 
 @EventBusSubscriber(modid = Riftborne.MODID)
 public final class DiscardContourRules {
-    private static final Component CONTOUR_HOLDS_MESSAGE = Component.literal("The Discard Contour does not let go.");
+    private static final Component CONTOUR_HOLDS_MESSAGE =
+            Component.translatable("message.riftborne.contour.holds");
 
     private DiscardContourRules() {
     }

@@ -9,18 +9,12 @@ public final class CodexEntries {
     private static final Map<String, CodexEntry> ENTRIES = new LinkedHashMap<>();
 
     static {
-        register(new CodexEntry("rna_overview", "Резонансная нейроархитектура", "РНА",
-                "Внутренняя структура, проводящая и стабилизирующая резонансные импульсы.", false));
-        register(new CodexEntry("node_density", "Плотность узлов", "РНА",
-                "Определяет насыщенность узловой структуры и её базовую вместимость.", false));
-        register(new CodexEntry("connectivity", "Связность", "РНА",
-                "Показывает качество соединений и чистоту передачи импульса.", true));
-        register(new CodexEntry("throughput", "Пропускная способность", "РНА",
-                "Определяет объём нагрузки, который архитектура проводит за короткое время.", true));
-        register(new CodexEntry("overload_resistance", "Устойчивость к перегрузке", "РНА",
-                "Снижает повреждение архитектуры при чрезмерной резонансной нагрузке.", true));
-        register(new CodexEntry("meta_wear", "Мета-износ", "Мета-износ",
-                "Накопленное повреждение РНА. Это не энергия: высокий износ угрожает распадом.", true));
+        register(entry("rna_overview", "rna", false));
+        register(entry("node_density", "rna", false));
+        register(entry("connectivity", "rna", true));
+        register(entry("throughput", "rna", true));
+        register(entry("overload_resistance", "rna", true));
+        register(entry("meta_wear", "meta_wear", true));
     }
 
     private CodexEntries() {
@@ -28,6 +22,17 @@ public final class CodexEntries {
 
     private static void register(CodexEntry entry) {
         ENTRIES.put(entry.id(), entry);
+    }
+
+    private static CodexEntry entry(String id, String category, boolean hiddenByDefault) {
+        String baseKey = "codex.riftborne.entry." + id;
+        return new CodexEntry(
+                id,
+                baseKey + ".title",
+                "codex.riftborne.category." + category,
+                baseKey + ".text",
+                hiddenByDefault
+        );
     }
 
     public static List<CodexEntry> all() {

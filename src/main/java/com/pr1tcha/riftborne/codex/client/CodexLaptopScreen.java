@@ -1,10 +1,12 @@
 package com.pr1tcha.riftborne.codex.client;
 
 import com.pr1tcha.riftborne.codex.CodexEntries;
+import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.codex.data.CodexEntry;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -16,6 +18,9 @@ public final class CodexLaptopScreen extends Screen {
     private static final int PANEL_WIDTH = 600;
     private static final int PANEL_HEIGHT = 340;
     private static final int STATUS_HEIGHT = 22;
+    private static final int SCREEN_MARGIN = 12;
+    private static final int TOAST_MIN_WIDTH = 220;
+    private static final int TOAST_MAX_WIDTH = 300;
     private static final int COLOR_SHELL = 0xF2080C11;
     private static final int COLOR_DESKTOP = 0xFF0B1520;
     private static final int COLOR_WINDOW = 0xF20C121A;
@@ -40,21 +45,27 @@ public final class CodexLaptopScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        float scale = interfaceScale();
+        int scaledMouseX = (int) (mouseX / scale);
+        int scaledMouseY = (int) (mouseY / scale);
         int left = panelLeft();
         int top = panelTop();
 
+        graphics.pose().pushPose();
+        graphics.pose().scale(scale, scale, 1.0F);
         drawLaptopShell(graphics, left, top);
         if (snapshot.powered()) {
             drawDesktopWallpaper(graphics, left, top);
             if (view == View.DESKTOP) {
-                renderDesktop(graphics, left, top, mouseX, mouseY);
+                renderDesktop(graphics, left, top, scaledMouseX, scaledMouseY);
             } else {
-                renderCodexWindow(graphics, left, top, mouseX, mouseY);
+                renderCodexWindow(graphics, left, top, scaledMouseX, scaledMouseY);
             }
         } else {
             renderStandby(graphics, left, top);
         }
-        renderStatusBar(graphics, left, top, mouseX, mouseY);
+        renderStatusBar(graphics, left, top, scaledMouseX, scaledMouseY);
+        graphics.pose().popPose();
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 
@@ -90,21 +101,29 @@ public final class CodexLaptopScreen extends Screen {
         }
 
         drawCodexIcon(graphics, iconX, iconY);
-        graphics.drawCenteredString(font, "Кодекс", iconX + 22, iconY + 51, COLOR_TEXT);
+        graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.icon"), iconX + 22, iconY + 51, COLOR_TEXT);
 
         List<String> notifications = CodexNetwork.split(snapshot.notifications());
         List<String> recent = CodexNetwork.split(snapshot.recentData());
         if (!notifications.isEmpty() || !recent.isEmpty()) {
-            int toastX = left + PANEL_WIDTH - 171;
+            Component systemText = Component.translatable("screen.riftborne.codex.system");
+            Component notificationText = notifications.isEmpty() ? Component.empty() : feedComponent(notifications.get(0));
+            Component recentText = recent.isEmpty() ? Component.empty() : feedComponent(recent.get(0));
+            int toastWidth = Math.clamp(
+                    Math.max(font.width(systemText), Math.max(font.width(notificationText), font.width(recentText))) + 14,
+                    TOAST_MIN_WIDTH,
+                    TOAST_MAX_WIDTH
+            );
+            int toastX = left + PANEL_WIDTH - toastWidth - 18;
             int toastY = top + 18;
-            graphics.fill(toastX, toastY, toastX + 153, toastY + 53, 0xB5091119);
-            graphics.renderOutline(toastX, toastY, 153, 53, 0x6638A9A4);
-            graphics.drawString(font, "СИСТЕМА", toastX + 7, toastY + 7, COLOR_ACCENT, false);
+            graphics.fill(toastX, toastY, toastX + toastWidth, toastY + 53, 0xB5091119);
+            graphics.renderOutline(toastX, toastY, toastWidth, 53, 0x6638A9A4);
+            graphics.drawString(font, systemText, toastX + 7, toastY + 7, COLOR_ACCENT, false);
             if (!notifications.isEmpty()) {
-                drawTrimmed(graphics, notifications.get(0), toastX + 7, toastY + 20, 139, COLOR_TEXT);
+                drawTrimmed(graphics, notificationText, toastX + 7, toastY + 20, toastWidth - 14, COLOR_TEXT);
             }
             if (!recent.isEmpty()) {
-                drawTrimmed(graphics, recent.get(0), toastX + 7, toastY + 34, 139, COLOR_MUTED);
+                drawTrimmed(graphics, recentText, toastX + 7, toastY + 34, toastWidth - 14, COLOR_MUTED);
             }
         }
     }
@@ -128,7 +147,7 @@ public final class CodexLaptopScreen extends Screen {
         graphics.fill(windowX, windowY, windowX + windowWidth, windowY + windowHeight, COLOR_WINDOW);
         graphics.renderOutline(windowX, windowY, windowWidth, windowHeight, COLOR_BORDER);
         graphics.fill(windowX + 1, windowY + 1, windowX + windowWidth - 1, windowY + 24, 0xFF12232D);
-        graphics.drawString(font, "КОДЕКС // АРХИВ ЗНАНИЙ", windowX + 9, windowY + 8, COLOR_TEXT, false);
+        graphics.drawString(font, Component.translatable("screen.riftborne.codex.archive_title"), windowX + 9, windowY + 8, COLOR_TEXT, false);
 
         int closeX = windowX + windowWidth - 21;
         boolean closeHovered = inside(mouseX, mouseY, closeX, windowY + 4, 16, 16);
@@ -153,7 +172,9 @@ public final class CodexLaptopScreen extends Screen {
                 graphics.fill(listX + 4, rowY, listX + listWidth - 4, rowY + 19,
                         selected ? 0x88317D7D : 0x442B5960);
             }
-            String label = isUnlocked ? entry.title() : "Закрытая запись";
+            Component label = isUnlocked
+                    ? Component.translatable(entry.titleKey())
+                    : Component.translatable("screen.riftborne.codex.locked_entry");
             drawTrimmed(graphics, label, listX + 9, rowY + 6, listWidth - 18,
                     isUnlocked ? COLOR_TEXT : 0xFF4D5A5C);
             rowY += 22;
@@ -161,13 +182,14 @@ public final class CodexLaptopScreen extends Screen {
 
         CodexEntry selected = unlocked.contains(selectedEntryId) ? CodexEntries.get(selectedEntryId) : null;
         if (selected == null) {
-            graphics.drawString(font, "Выберите открытую запись.", contentX + 9, listY + 10, COLOR_MUTED, false);
+            graphics.drawString(font, Component.translatable("screen.riftborne.codex.select_entry"), contentX + 9, listY + 10, COLOR_MUTED, false);
             return;
         }
 
-        graphics.drawString(font, selected.category().toUpperCase(), contentX + 9, listY + 9, COLOR_ACCENT, false);
-        graphics.drawString(font, selected.title(), contentX + 9, listY + 25, COLOR_TEXT, false);
-        List<FormattedCharSequence> lines = font.split(Component.literal(selected.text()), contentWidth - 18);
+        String category = Component.translatable(selected.categoryKey()).getString().toUpperCase(Locale.ROOT);
+        graphics.drawString(font, category, contentX + 9, listY + 9, COLOR_ACCENT, false);
+        graphics.drawString(font, Component.translatable(selected.titleKey()), contentX + 9, listY + 25, COLOR_TEXT, false);
+        List<FormattedCharSequence> lines = font.split(Component.translatable(selected.textKey()), contentWidth - 18);
         int textY = listY + 45;
         for (FormattedCharSequence line : lines) {
             graphics.drawString(font, line, contentX + 9, textY, 0xFFC1D1D0, false);
@@ -177,9 +199,9 @@ public final class CodexLaptopScreen extends Screen {
 
     private void renderStandby(GuiGraphics graphics, int left, int top) {
         graphics.fill(left + 3, top + 3, left + PANEL_WIDTH - 3, top + PANEL_HEIGHT - STATUS_HEIGHT, 0xFF020406);
-        graphics.drawCenteredString(font, "РЕЖИМ ОЖИДАНИЯ", left + PANEL_WIDTH / 2,
+        graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.standby"), left + PANEL_WIDTH / 2,
                 top + PANEL_HEIGHT / 2 - 10, 0xFF41696C);
-        graphics.drawCenteredString(font, "Нажмите PWR для запуска", left + PANEL_WIDTH / 2,
+        graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.power_hint"), left + PANEL_WIDTH / 2,
                 top + PANEL_HEIGHT / 2 + 6, 0xFF273F43);
     }
 
@@ -196,8 +218,8 @@ public final class CodexLaptopScreen extends Screen {
                 powerHovered ? 0xFFFFFFFF : COLOR_ACCENT, false);
 
         String rnaStatus = snapshot.hasRna()
-                ? "РНА " + stageLabel() + " " + snapshot.metaWear() + "%"
-                : "РНА НЕТ СВЯЗИ";
+                ? Component.translatable("screen.riftborne.codex.rna_status", stageLabel(), snapshot.metaWear()).getString()
+                : Component.translatable("screen.riftborne.codex.rna_offline").getString();
         graphics.drawString(font, rnaStatus, left + 48, y + 7,
                 snapshot.hasRna() ? stageColor() : 0xFFB24C5B, false);
 
@@ -205,7 +227,7 @@ public final class CodexLaptopScreen extends Screen {
         int timeWidth = font.width(time);
         graphics.drawString(font, time, left + PANEL_WIDTH - timeWidth - 12, y + 7, COLOR_TEXT, false);
 
-        String battery = "ЭНЕРГИЯ " + snapshot.battery() + "%";
+        String battery = Component.translatable("screen.riftborne.codex.energy", snapshot.battery()).getString();
         int batteryWidth = font.width(battery);
         graphics.drawString(font, battery, left + PANEL_WIDTH - timeWidth - batteryWidth - 25, y + 7,
                 batteryColor(), false);
@@ -218,6 +240,9 @@ public final class CodexLaptopScreen extends Screen {
             return super.mouseClicked(mouseX, mouseY, button);
         }
 
+        float scale = interfaceScale();
+        mouseX /= scale;
+        mouseY /= scale;
         int left = panelLeft();
         int top = panelTop();
         int statusY = top + PANEL_HEIGHT - STATUS_HEIGHT;
@@ -260,8 +285,23 @@ public final class CodexLaptopScreen extends Screen {
         return true;
     }
 
-    private void drawTrimmed(GuiGraphics graphics, String text, int x, int y, int maxWidth, int color) {
-        graphics.drawString(font, font.plainSubstrByWidth(text, maxWidth), x, y, color, false);
+    private void drawTrimmed(GuiGraphics graphics, Component text, int x, int y, int maxWidth, int color) {
+        graphics.drawString(font, font.plainSubstrByWidth(text.getString(), maxWidth), x, y, color, false);
+    }
+
+    private static Component feedComponent(String encoded) {
+        if (!CodexData.isTranslation(encoded)) {
+            return Component.literal(encoded);
+        }
+        String[] parts = CodexData.translationParts(encoded);
+        Object[] arguments = new Object[Math.max(0, parts.length - 1)];
+        for (int index = 0; index < arguments.length; index++) {
+            String argument = parts[index + 1];
+            arguments[index] = CodexData.isTranslationArgument(argument)
+                    ? Component.translatable(CodexData.translationArgumentKey(argument))
+                    : argument;
+        }
+        return Component.translatable(parts[0], arguments);
     }
 
     private String minecraftTime() {
@@ -274,11 +314,25 @@ public final class CodexLaptopScreen extends Screen {
     }
 
     private int panelLeft() {
-        return (width - PANEL_WIDTH) / 2;
+        return (virtualWidth() - PANEL_WIDTH) / 2;
     }
 
     private int panelTop() {
-        return (height - PANEL_HEIGHT) / 2;
+        return (virtualHeight() - PANEL_HEIGHT) / 2;
+    }
+
+    private float interfaceScale() {
+        float widthScale = Math.max(1, width - SCREEN_MARGIN) / (float) PANEL_WIDTH;
+        float heightScale = Math.max(1, height - SCREEN_MARGIN) / (float) PANEL_HEIGHT;
+        return Math.min(1.0F, Math.min(widthScale, heightScale));
+    }
+
+    private int virtualWidth() {
+        return (int) (width / interfaceScale());
+    }
+
+    private int virtualHeight() {
+        return (int) (height / interfaceScale());
     }
 
     private static boolean inside(double mouseX, double mouseY, int x, int y, int width, int height) {
@@ -300,13 +354,8 @@ public final class CodexLaptopScreen extends Screen {
     }
 
     private String stageLabel() {
-        return switch (snapshot.metaWearStage()) {
-            case "STABLE" -> "СТАБ";
-            case "STRAIN" -> "НАПР";
-            case "DISTORTION" -> "ИСКАЖ";
-            case "REJECTION" -> "ОТТОРЖ";
-            default -> "СРЫВ";
-        };
+        return Component.translatable("screen.riftborne.codex.stage."
+                + snapshot.metaWearStage().toLowerCase(Locale.ROOT)).getString();
     }
 
     @Override

@@ -33,7 +33,7 @@ public final class TelekinesisCommand {
 
     private static int setAbility(CommandSourceStack source, Collection<ServerPlayer> targets, boolean enabled) throws CommandSyntaxException {
         if (targets.isEmpty()) {
-            source.sendFailure(Component.literal("No players selected."));
+            source.sendFailure(Component.translatable("command.riftborne.telekinesis.no_players"));
             return 0;
         }
 
@@ -41,9 +41,10 @@ public final class TelekinesisCommand {
             TelekinesisAbility.setAbility(player, enabled);
         }
 
-        String action = enabled ? "granted to" : "revoked from";
-        String note = enabled ? " Active RNA is required to use it." : "";
-        source.sendSuccess(() -> Component.literal("Telekinesis " + action + " " + targets.size() + " player(s)." + note), true);
+        String key = enabled
+                ? "command.riftborne.telekinesis.granted"
+                : "command.riftborne.telekinesis.revoked";
+        source.sendSuccess(() -> Component.translatable(key, targets.size()), true);
         return targets.size();
     }
 }

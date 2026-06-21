@@ -32,6 +32,10 @@ public enum MetaWearStage {
         return Component.translatable(messageKey);
     }
 
+    public String messageKey() {
+        return messageKey;
+    }
+
     public static MetaWearStage fromWear(int metaWear) {
         int value = Math.max(0, Math.min(100, metaWear));
         for (MetaWearStage stage : values()) {

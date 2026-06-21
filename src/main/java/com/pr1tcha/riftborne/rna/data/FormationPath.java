@@ -26,6 +26,10 @@ public enum FormationPath {
         return metaWearMultiplier;
     }
 
+    public String translationKey() {
+        return "rna.riftborne.formation_path." + name().toLowerCase(Locale.ROOT);
+    }
+
     public double growthMultiplier(RnaStat stat) {
         return switch (this) {
             case TRAINING -> switch (stat) {

@@ -143,7 +143,8 @@ public final class RiftContourTeleporter {
         MinecraftServer server = player.getServer();
         ServerLevel targetLevel = server.getLevel(DISCARD_CONTOUR);
         if (targetLevel == null) {
-            player.displayClientMessage(net.minecraft.network.chat.Component.literal("Discard Contour dimension is not loaded."), true);
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                    "message.riftborne.contour.not_loaded"), true);
             return;
         }
 
