@@ -14,17 +14,23 @@ import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.forge.event.ForgeVeilPostProcessingEvent;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class VeilRiftDistortion {
     private static final ResourceLocation PIPELINE = ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rift_distortion");
@@ -41,6 +47,7 @@ public final class VeilRiftDistortion {
     private static float strength = 0.0F;
     private static float mode = 0.0F;
     private static float time;
+    private static final List<DeferredRift> DEFERRED_RIFTS = new ArrayList<>();
 
     private VeilRiftDistortion() {
     }
@@ -123,6 +130,15 @@ public final class VeilRiftDistortion {
             strength = Math.min(alpha * distanceFade * (contourRift ? 1.08F + contourPulse * 0.34F : 0.95F + openingPulse * 0.45F), 1.0F);
             mode = contourRift ? 1.0F : 0.0F;
         }
+    }
+
+    public static boolean deferRenderedRift(RiftBlockEntity rift, float partialTick) {
+        if (!registered || !pipelineRequested) {
+            return false;
+        }
+
+        DEFERRED_RIFTS.add(new DeferredRift(rift, partialTick));
+        return true;
     }
 
     private static boolean hasLineOfSight(Minecraft minecraft, Vec3 cameraPos, Vec3 riftCenter, float height) {
@@ -243,6 +259,40 @@ public final class VeilRiftDistortion {
         pipeline.getUniformSafe("RiftTime").setFloat(time);
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onRenderLevelStage(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL || DEFERRED_RIFTS.isEmpty()) {
+            return;
+        }
+
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        Vec3 cameraPos = event.getCamera().getPosition();
+        var modelViewStack = RenderSystem.getModelViewStack();
+        modelViewStack.pushMatrix();
+        modelViewStack.set(event.getModelViewMatrix());
+        RenderSystem.applyModelViewMatrix();
+        try {
+            for (DeferredRift deferred : DEFERRED_RIFTS) {
+                if (deferred.rift().isRemoved() || deferred.rift().getLevel() != Minecraft.getInstance().level) {
+                    continue;
+                }
+
+                PoseStack poseStack = new PoseStack();
+                poseStack.translate(
+                        deferred.rift().getBlockPos().getX() - cameraPos.x,
+                        deferred.rift().getBlockPos().getY() - cameraPos.y,
+                        deferred.rift().getBlockPos().getZ() - cameraPos.z
+                );
+                ProceduralRiftRenderer.renderDeferred(deferred.rift(), deferred.partialTick(), poseStack, buffer);
+            }
+            buffer.endBatch();
+        } finally {
+            modelViewStack.popMatrix();
+            RenderSystem.applyModelViewMatrix();
+            DEFERRED_RIFTS.clear();
+        }
+    }
+
     private static void ensurePipeline() {
         if (pipelineRequested) {
             return;
@@ -257,6 +307,9 @@ public final class VeilRiftDistortion {
     }
 
     private record ScreenPoint(float x, float y) {
+    }
+
+    private record DeferredRift(RiftBlockEntity rift, float partialTick) {
     }
 
     private static final class ScreenBounds {

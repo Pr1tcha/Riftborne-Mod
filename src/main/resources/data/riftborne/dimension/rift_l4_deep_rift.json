@@ -1,0 +1,16 @@
+{
+  "type": "riftborne:rift_dimension",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "minecraft:the_void",
+      "features": false,
+      "lakes": false,
+      "layers": [
+        { "block": "minecraft:bedrock", "height": 1 },
+        { "block": "minecraft:reinforced_deepslate", "height": 80 },
+        { "block": "minecraft:obsidian", "height": 1 }
+      ]
+    }
+  }
+}

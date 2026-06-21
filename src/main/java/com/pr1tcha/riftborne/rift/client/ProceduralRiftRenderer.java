@@ -56,7 +56,35 @@ public final class ProceduralRiftRenderer {
 
         PoseStack.Pose pose = poseStack.last();
         VeilRiftDistortion.recordRenderedRift(rift, pose, height, baseWidth, alpha);
+        if (VeilRiftDistortion.deferRenderedRift(rift, partialTick)) {
+            poseStack.popPose();
+            return;
+        }
 
+        renderLayers(rift, partialTick, pose, buffer);
+        poseStack.popPose();
+    }
+
+    static void renderDeferred(RiftBlockEntity rift, float partialTick, PoseStack poseStack, MultiBufferSource buffer) {
+        poseStack.pushPose();
+        poseStack.translate(0.5F, 0.1F, 0.5F);
+        poseStack.mulPose(Axis.YP.rotationDegrees(getYawToCamera(rift) + 180.0F));
+        renderLayers(rift, partialTick, poseStack.last(), buffer);
+        poseStack.popPose();
+    }
+
+    private static void renderLayers(RiftBlockEntity rift, float partialTick, PoseStack.Pose pose, MultiBufferSource buffer) {
+        float age = getAge(rift, partialTick);
+        long seed = rift.getData().id.getMostSignificantBits() ^ rift.getData().id.getLeastSignificantBits();
+        RiftStage stage = rift.getData().stage;
+        boolean contourRift = RiftData.isContourRift(rift.getData().riftType);
+        float openingProgress = getOpeningProgress(rift);
+        float typeScale = contourRift ? 2.35F : 1.0F;
+        float widthScale = contourRift ? 1.62F : 1.0F;
+        float stageScale = getStageScale(stage, openingProgress, contourRift) * typeScale;
+        float height = 2.95F * stageScale;
+        float baseWidth = 0.5F * stageScale * widthScale;
+        float alpha = getAlpha(stage);
         VertexConsumer solidBody = buffer.getBuffer(RenderType.entityCutoutNoCull(SOLID_TEXTURE));
         renderSolidBody(pose, solidBody, seed, height, baseWidth, age, stage);
 
@@ -72,8 +100,6 @@ public final class ProceduralRiftRenderer {
         VertexConsumer haze = buffer.getBuffer(RenderType.entityTranslucentEmissive(HAZE_TEXTURE));
         renderRefractionShell(pose, haze, seed, height, baseWidth, alpha, age, stage);
         renderHaze(pose, haze, height, baseWidth, alpha, age, stage);
-
-        poseStack.popPose();
     }
 
     private static float getYawToCamera(RiftBlockEntity rift) {
@@ -381,14 +407,14 @@ public final class ProceduralRiftRenderer {
     }
 
     private static void renderEndpointLine(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage, boolean top) {
-        float t = top ? 0.985F : 0.015F;
+        float t = top ? 1.0F : 0.0F;
         RiftSlice slice = slice(seed, t, height, baseWidth, age, stage);
         float left = slice.leftEdge();
         float right = slice.rightEdge();
         float y = slice.y();
-        int seamAlpha = Mth.clamp((int) (alpha * 132.0F), 36, 158);
+        int seamAlpha = Mth.clamp((int) (alpha * 190.0F), 70, 210);
 
-        ribbon(consumer, pose, left, y, right, y, 0.007F, 22, 126, 232, seamAlpha);
+        ribbon(consumer, pose, left, y, right, y, 0.017F, 46, 170, 255, seamAlpha);
     }
 
     private static void renderHaze(PoseStack.Pose pose, VertexConsumer haze, float height, float baseWidth, float alpha, float age, RiftStage stage) {

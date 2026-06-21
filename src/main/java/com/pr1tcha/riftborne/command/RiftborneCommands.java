@@ -5,6 +5,7 @@ import com.pr1tcha.riftborne.aspects.AspectCommands;
 import com.pr1tcha.riftborne.interspace.InterspaceCommand;
 import com.pr1tcha.riftborne.rna.command.RnaCommand;
 import com.pr1tcha.riftborne.rift.command.RiftCommand;
+import com.pr1tcha.riftborne.rift.dimension.RiftDimensionCommand;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
@@ -14,6 +15,7 @@ public final class RiftborneCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("riftborne")
+                .then(RiftDimensionCommand.category())
                 .then(RiftCommand.riftsCategory())
                 .then(RiftCommand.contourCategory())
                 .then(AspectCommands.category())

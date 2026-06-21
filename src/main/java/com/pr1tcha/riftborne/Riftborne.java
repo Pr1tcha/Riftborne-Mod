@@ -5,6 +5,7 @@ import com.pr1tcha.riftborne.command.RiftborneCommands;
 import com.pr1tcha.riftborne.config.Config;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rift.client.RiftBlockEntityRenderer;
+import com.pr1tcha.riftborne.rift.client.RiftSkyEffects;
 import com.pr1tcha.riftborne.rift.client.RiftSplinterRenderer;
 import com.pr1tcha.riftborne.rift.client.VeilRiftDistortion;
 import com.pr1tcha.riftborne.rift.RiftWorldStage;
@@ -24,6 +25,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
@@ -71,6 +73,11 @@ public class Riftborne {
             event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
             event.registerBlockEntityRenderer(ModContent.CODEX_LAPTOP_BE_TYPE.get(), context -> new CodexLaptopRenderer());
             event.registerEntityRenderer(ModContent.TELEKINETIC_BLOCK.get(), TelekineticBlockRenderer::new);
+        }
+
+        @SubscribeEvent
+        public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
+            RiftSkyEffects.register(event);
         }
     }
 }
