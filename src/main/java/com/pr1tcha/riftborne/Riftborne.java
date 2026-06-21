@@ -11,6 +11,8 @@ import com.pr1tcha.riftborne.rift.RiftWorldStage;
 import com.pr1tcha.riftborne.aspects.telekinesis.client.TelekineticBlockRenderer;
 import com.pr1tcha.riftborne.aspects.telekinesis.TelekinesisNetwork;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
+import com.pr1tcha.riftborne.codex.client.CodexLaptopRenderer;
+import com.pr1tcha.riftborne.client.model.RiftborneBakedModelFactory;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -26,6 +28,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
+import software.bernie.geckolib.util.GeckoLibUtil;
 @Mod(Riftborne.MODID)
 public class Riftborne {
     public static final String MODID = "riftborne";
@@ -33,6 +36,7 @@ public class Riftborne {
 
     public Riftborne(IEventBus modEventBus, ModContainer modContainer) {
         RiftWorldStage.init();
+        GeckoLibUtil.addCustomBakedModelFactory(MODID, new RiftborneBakedModelFactory());
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(ModContent::registerEntityAttributes);
         modEventBus.addListener(TelekinesisNetwork::register);
@@ -65,6 +69,7 @@ public class Riftborne {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModContent.RIFT_BE_TYPE.get(), RiftBlockEntityRenderer::new);
             event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
+            event.registerBlockEntityRenderer(ModContent.CODEX_LAPTOP_BE_TYPE.get(), context -> new CodexLaptopRenderer());
             event.registerEntityRenderer(ModContent.TELEKINETIC_BLOCK.get(), TelekineticBlockRenderer::new);
         }
     }

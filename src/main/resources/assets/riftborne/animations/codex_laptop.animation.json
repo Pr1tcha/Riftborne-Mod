@@ -1,0 +1,110 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.codex_laptop.open": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.72,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.32": [
+              -42,
+              0,
+              0
+            ],
+            "0.72": [
+              -100,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.codex_laptop.close": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.62,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0.0": [
+              -100,
+              0,
+              0
+            ],
+            "0.28": [
+              -48,
+              0,
+              0
+            ],
+            "0.62": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.codex_laptop.opened": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.05,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0.0": [
+              -100,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.codex_laptop.closed": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.05,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.codex_laptop.working": {
+      "loop": true,
+      "animation_length": 2.0,
+      "bones": {
+        "screen_glow": {
+          "scale": {
+            "0.0": [
+              1,
+              1,
+              1
+            ],
+            "1.0": [
+              1.003,
+              1.003,
+              1
+            ],
+            "2.0": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      }
+    }
+  }
+}

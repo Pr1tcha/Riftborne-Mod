@@ -5,6 +5,8 @@ import com.pr1tcha.riftborne.rift.block.RiftBlockEntity;
 import com.pr1tcha.riftborne.rift.entity.RiftSplinterEntity;
 import com.pr1tcha.riftborne.Riftborne;
 import com.pr1tcha.riftborne.codex.block.CodexLaptopBlock;
+import com.pr1tcha.riftborne.codex.block.CodexLaptopBlockEntity;
+import com.pr1tcha.riftborne.codex.item.CodexLaptopItem;
 import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -65,6 +67,9 @@ public class ModContent {
 
     public static final Supplier<BlockEntityType<RiftBlockEntity>> RIFT_BE_TYPE = BLOCK_ENTITIES.register("rift_be",
             () -> BlockEntityType.Builder.of(RiftBlockEntity::new, RIFT_BLOCK.get()).build(null));
+    public static final Supplier<BlockEntityType<CodexLaptopBlockEntity>> CODEX_LAPTOP_BE_TYPE =
+            BLOCK_ENTITIES.register("codex_laptop",
+                    () -> BlockEntityType.Builder.of(CodexLaptopBlockEntity::new, CODEX_LAPTOP.get()).build(null));
 
     public static final Supplier<Item> RIFT_SHARD = ITEMS.register("rift_shard",
             () -> new Item(new Item.Properties()));
@@ -88,7 +93,7 @@ public class ModContent {
             () -> new BlockItem(CONTOUR_VEIN.get(), new Item.Properties()));
 
     public static final Supplier<Item> CODEX_LAPTOP_ITEM = ITEMS.register("codex_laptop",
-            () -> new BlockItem(CODEX_LAPTOP.get(), new Item.Properties()));
+            () -> new CodexLaptopItem(CODEX_LAPTOP.get(), new Item.Properties()));
     public static final Supplier<Item> RNA_INTERSPACE_STONE_ITEM = blockItem("rna_interspace_stone", RNA_INTERSPACE_STONE);
     public static final Supplier<Item> RNA_INTERSPACE_SURFACE_ITEM = blockItem("rna_interspace_surface", RNA_INTERSPACE_SURFACE);
     public static final Supplier<Item> RNA_INTERSPACE_VEIN_ITEM = blockItem("rna_interspace_vein", RNA_INTERSPACE_VEIN);
