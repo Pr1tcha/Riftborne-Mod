@@ -21,11 +21,16 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class ModContent {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Riftborne.MODID);
@@ -34,6 +39,8 @@ public class ModContent {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, Riftborne.MODID);
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Riftborne.MODID);
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Riftborne.MODID);
+    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(BuiltInRegistries.FLUID, Riftborne.MODID);
+    public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, Riftborne.MODID);
 
     public static final Supplier<Block> RIFT_BLOCK = BLOCKS.register("rift",
             () -> new RiftBlock(BlockBehaviour.Properties.of().noCollission().noLootTable().strength(-1.0F, 3600000.0F)));
@@ -61,9 +68,41 @@ public class ModContent {
     public static final Supplier<Block> RNA_INTERSPACE_STONE = interspaceBlock("rna_interspace_stone", 1);
     public static final Supplier<Block> RNA_INTERSPACE_SURFACE = interspaceBlock("rna_interspace_surface", 3);
     public static final Supplier<Block> RNA_INTERSPACE_VEIN = interspaceBlock("rna_interspace_vein", 8);
-    public static final Supplier<Block> RIFTWALKER_INTERSPACE_STONE = interspaceBlock("riftwalker_interspace_stone", 2);
-    public static final Supplier<Block> RIFTWALKER_INTERSPACE_SURFACE = interspaceBlock("riftwalker_interspace_surface", 5);
-    public static final Supplier<Block> RIFTWALKER_INTERSPACE_VEIN = interspaceBlock("riftwalker_interspace_vein", 10);
+    public static final Supplier<FluidType> RNA_CURRENT_TYPE = FLUID_TYPES.register("rna_current",
+            () -> new FluidType(FluidType.Properties.create()
+                    .descriptionId("fluid.riftborne.rna_current")
+                    .motionScale(0.010D)
+                    .canPushEntity(true)
+                    .canSwim(true)
+                    .canDrown(true)
+                    .canExtinguish(true)
+                    .fallDistanceModifier(0.0F)
+                    .lightLevel(11)
+                    .density(930)
+                    .viscosity(1250)));
+    private static final BaseFlowingFluid.Properties RNA_CURRENT_PROPERTIES =
+            new BaseFlowingFluid.Properties(RNA_CURRENT_TYPE, ModContent::rnaCurrentSource, ModContent::rnaCurrentFlowing)
+                    .block(ModContent::rnaCurrentBlock)
+                    .slopeFindDistance(4)
+                    .levelDecreasePerBlock(1)
+                    .tickRate(12)
+                    .explosionResistance(100.0F);
+    public static final Supplier<Fluid> RNA_CURRENT_SOURCE = FLUIDS.register("rna_current",
+            () -> new BaseFlowingFluid.Source(RNA_CURRENT_PROPERTIES));
+    public static final Supplier<Fluid> RNA_CURRENT_FLOWING = FLUIDS.register("flowing_rna_current",
+            () -> new BaseFlowingFluid.Flowing(RNA_CURRENT_PROPERTIES));
+    public static final Supplier<Block> RNA_INTERSPACE_CURRENT = BLOCKS.register("rna_interspace_current",
+            () -> new LiquidBlock((net.minecraft.world.level.material.FlowingFluid) RNA_CURRENT_SOURCE.get(),
+                    BlockBehaviour.Properties.of()
+                            .replaceable()
+                            .noCollission()
+                            .noOcclusion()
+                            .lightLevel(state -> 11)
+                            .strength(100.0F)
+                            .noLootTable()));
+    public static final Supplier<Block> RIFTWALKER_INTERSPACE_STONE = interspaceBlock("riftwalker_interspace_stone", 0);
+    public static final Supplier<Block> RIFTWALKER_INTERSPACE_SURFACE = interspaceBlock("riftwalker_interspace_surface", 1);
+    public static final Supplier<Block> RIFTWALKER_INTERSPACE_VEIN = interspaceBlock("riftwalker_interspace_vein", 13);
 
     public static final Supplier<BlockEntityType<RiftBlockEntity>> RIFT_BE_TYPE = BLOCK_ENTITIES.register("rift_be",
             () -> BlockEntityType.Builder.of(RiftBlockEntity::new, RIFT_BLOCK.get()).build(null));
@@ -150,6 +189,8 @@ public class ModContent {
         CREATIVE_MODE_TABS.register(modEventBus);
         SOUND_EVENTS.register(modEventBus);
         ENTITY_TYPES.register(modEventBus);
+        FLUIDS.register(modEventBus);
+        FLUID_TYPES.register(modEventBus);
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -165,5 +206,17 @@ public class ModContent {
 
     private static Supplier<Item> blockItem(String name, Supplier<Block> block) {
         return ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+    }
+
+    private static Fluid rnaCurrentSource() {
+        return RNA_CURRENT_SOURCE.get();
+    }
+
+    private static Fluid rnaCurrentFlowing() {
+        return RNA_CURRENT_FLOWING.get();
+    }
+
+    private static LiquidBlock rnaCurrentBlock() {
+        return (LiquidBlock) RNA_INTERSPACE_CURRENT.get();
     }
 }

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "riftborne:rna_current",
+    "riftborne:flowing_rna_current"
+  ]
+}
