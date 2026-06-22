@@ -1,5 +1,6 @@
 package com.pr1tcha.riftborne.codex.data;
 
+import com.pr1tcha.riftborne.codex.CodexEntries;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,6 +18,8 @@ public final class CodexData {
     private static final String TRANSLATION_ARGUMENT_PREFIX = "\u001C";
 
     private final Set<String> unlockedEntries = new LinkedHashSet<>();
+    private final Set<String> queuedEntries = new LinkedHashSet<>();
+    private final Set<String> damagedEntries = new LinkedHashSet<>();
     private final List<String> notifications = new ArrayList<>();
     private final List<String> recentData = new ArrayList<>();
     private boolean devicePowered = true;
@@ -32,10 +35,14 @@ public final class CodexData {
     public static CodexData load(CompoundTag tag) {
         CodexData data = new CodexData();
         data.unlockedEntries.clear();
+        data.queuedEntries.clear();
+        data.damagedEntries.clear();
         data.notifications.clear();
         data.recentData.clear();
 
         readStrings(tag, "UnlockedEntries", data.unlockedEntries);
+        readStrings(tag, "QueuedEntries", data.queuedEntries);
+        readStrings(tag, "DamagedEntries", data.damagedEntries);
         readStrings(tag, "Notifications", data.notifications);
         readStrings(tag, "RecentData", data.recentData);
         data.devicePowered = !tag.contains("DevicePowered") || tag.getBoolean("DevicePowered");
@@ -46,6 +53,8 @@ public final class CodexData {
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
         tag.put("UnlockedEntries", writeStrings(unlockedEntries));
+        tag.put("QueuedEntries", writeStrings(queuedEntries));
+        tag.put("DamagedEntries", writeStrings(damagedEntries));
         tag.put("Notifications", writeStrings(notifications));
         tag.put("RecentData", writeStrings(recentData));
         tag.putBoolean("DevicePowered", devicePowered);
@@ -70,6 +79,40 @@ public final class CodexData {
 
     public void unlock(String entryId) {
         unlockedEntries.add(entryId);
+        queuedEntries.remove(entryId);
+        damagedEntries.remove(entryId);
+    }
+
+    public void queue(String entryId) {
+        if (!unlockedEntries.contains(entryId)) {
+            queuedEntries.add(entryId);
+        }
+    }
+
+    public void damage(String entryId) {
+        if (!unlockedEntries.contains(entryId)) {
+            queuedEntries.remove(entryId);
+            damagedEntries.add(entryId);
+        }
+    }
+
+    public int synchronize(Iterable<String> entryIds) {
+        int synchronizedCount = 0;
+        for (String entryId : entryIds) {
+            if (CodexEntries.get(entryId) != null && !unlockedEntries.contains(entryId)) {
+                unlock(entryId);
+                synchronizedCount++;
+            }
+        }
+        return synchronizedCount;
+    }
+
+    public boolean restoreDamaged(String entryId) {
+        if (!damagedEntries.remove(entryId)) {
+            return false;
+        }
+        unlock(entryId);
+        return true;
     }
 
     public void addNotification(String message) {
@@ -129,6 +172,14 @@ public final class CodexData {
 
     public Set<String> unlockedEntries() {
         return Set.copyOf(unlockedEntries);
+    }
+
+    public Set<String> queuedEntries() {
+        return Set.copyOf(queuedEntries);
+    }
+
+    public Set<String> damagedEntries() {
+        return Set.copyOf(damagedEntries);
     }
 
     public List<String> notifications() {

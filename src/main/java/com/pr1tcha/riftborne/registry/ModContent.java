@@ -6,7 +6,10 @@ import com.pr1tcha.riftborne.rift.entity.RiftSplinterEntity;
 import com.pr1tcha.riftborne.Riftborne;
 import com.pr1tcha.riftborne.codex.block.CodexLaptopBlock;
 import com.pr1tcha.riftborne.codex.block.CodexLaptopBlockEntity;
+import com.pr1tcha.riftborne.codex.block.CodexDockBlock;
+import com.pr1tcha.riftborne.codex.block.CodexDockBlockEntity;
 import com.pr1tcha.riftborne.codex.item.CodexLaptopItem;
+import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -65,6 +68,8 @@ public class ModContent {
 
     public static final Supplier<Block> CODEX_LAPTOP = BLOCKS.register("codex_laptop",
             () -> new CodexLaptopBlock(BlockBehaviour.Properties.of().strength(2.5F, 5.0F).noOcclusion()));
+    public static final Supplier<Block> CODEX_DOCK = BLOCKS.register("codex_dock",
+            () -> new CodexDockBlock(BlockBehaviour.Properties.of().strength(2.5F, 5.0F).noOcclusion()));
     public static final Supplier<Block> RNA_INTERSPACE_STONE = interspaceBlock("rna_interspace_stone", 1);
     public static final Supplier<Block> RNA_INTERSPACE_SURFACE = interspaceBlock("rna_interspace_surface", 3);
     public static final Supplier<Block> RNA_INTERSPACE_VEIN = interspaceBlock("rna_interspace_vein", 8);
@@ -109,6 +114,9 @@ public class ModContent {
     public static final Supplier<BlockEntityType<CodexLaptopBlockEntity>> CODEX_LAPTOP_BE_TYPE =
             BLOCK_ENTITIES.register("codex_laptop",
                     () -> BlockEntityType.Builder.of(CodexLaptopBlockEntity::new, CODEX_LAPTOP.get()).build(null));
+    public static final Supplier<BlockEntityType<CodexDockBlockEntity>> CODEX_DOCK_BE_TYPE =
+            BLOCK_ENTITIES.register("codex_dock",
+                    () -> BlockEntityType.Builder.of(CodexDockBlockEntity::new, CODEX_DOCK.get()).build(null));
 
     public static final Supplier<Item> RIFT_SHARD = ITEMS.register("rift_shard",
             () -> new Item(new Item.Properties()));
@@ -133,6 +141,10 @@ public class ModContent {
 
     public static final Supplier<Item> CODEX_LAPTOP_ITEM = ITEMS.register("codex_laptop",
             () -> new CodexLaptopItem(CODEX_LAPTOP.get(), new Item.Properties()));
+    public static final Supplier<Item> CODEX_DOCK_ITEM = ITEMS.register("codex_dock",
+            () -> new BlockItem(CODEX_DOCK.get(), new Item.Properties()));
+    public static final Supplier<Item> POCKET_CODEX = ITEMS.register("pocket_codex",
+            () -> new PocketCodexItem(new Item.Properties().stacksTo(1)));
     public static final Supplier<Item> RNA_INTERSPACE_STONE_ITEM = blockItem("rna_interspace_stone", RNA_INTERSPACE_STONE);
     public static final Supplier<Item> RNA_INTERSPACE_SURFACE_ITEM = blockItem("rna_interspace_surface", RNA_INTERSPACE_SURFACE);
     public static final Supplier<Item> RNA_INTERSPACE_VEIN_ITEM = blockItem("rna_interspace_vein", RNA_INTERSPACE_VEIN);
@@ -145,7 +157,7 @@ public class ModContent {
 
     public static final Supplier<EntityType<RiftSplinterEntity>> RIFT_SPLINTER = ENTITY_TYPES.register("rift_splinter",
             () -> EntityType.Builder.of(RiftSplinterEntity::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.35F)
+                    .sized(0.72F, 1.6F)
                     .clientTrackingRange(8)
                     .build(ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rift_splinter").toString()));
 
@@ -172,6 +184,8 @@ public class ModContent {
                         output.accept(CONTOUR_WEEPING_STONE_ITEM.get());
                         output.accept(CONTOUR_VEIN_ITEM.get());
                         output.accept(CODEX_LAPTOP_ITEM.get());
+                        output.accept(CODEX_DOCK_ITEM.get());
+                        output.accept(POCKET_CODEX.get());
                         output.accept(RNA_INTERSPACE_STONE_ITEM.get());
                         output.accept(RNA_INTERSPACE_SURFACE_ITEM.get());
                         output.accept(RNA_INTERSPACE_VEIN_ITEM.get());

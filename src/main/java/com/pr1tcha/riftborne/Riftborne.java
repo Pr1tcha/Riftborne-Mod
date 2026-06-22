@@ -13,6 +13,7 @@ import com.pr1tcha.riftborne.aspects.telekinesis.client.TelekineticBlockRenderer
 import com.pr1tcha.riftborne.aspects.telekinesis.TelekinesisNetwork;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
 import com.pr1tcha.riftborne.codex.client.CodexLaptopRenderer;
+import com.pr1tcha.riftborne.codex.client.CodexDockRenderer;
 import com.pr1tcha.riftborne.client.model.RiftborneBakedModelFactory;
 import com.pr1tcha.riftborne.interspace.RnaFluidClient;
 import net.minecraft.client.Minecraft;
@@ -81,6 +82,7 @@ public class Riftborne {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModContent.RIFT_BE_TYPE.get(), RiftBlockEntityRenderer::new);
             event.registerBlockEntityRenderer(ModContent.CODEX_LAPTOP_BE_TYPE.get(), context -> new CodexLaptopRenderer());
+            event.registerBlockEntityRenderer(ModContent.CODEX_DOCK_BE_TYPE.get(), context -> new CodexDockRenderer());
             event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
             event.registerEntityRenderer(ModContent.TELEKINETIC_BLOCK.get(), TelekineticBlockRenderer::new);
         }

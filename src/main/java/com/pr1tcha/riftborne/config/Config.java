@@ -18,6 +18,7 @@ public class Config {
     public static final ModConfigSpec.IntValue metaWearStrainDecayInterval;
     public static final ModConfigSpec.IntValue metaWearDistortionDecayInterval;
     public static final ModConfigSpec.IntValue metaWearRejectionDecayInterval;
+    public static final ModConfigSpec.DoubleValue codexScanDistance;
 
     static {
         BUILDER.comment("Rift system settings").push("rifts");
@@ -37,6 +38,14 @@ public class Config {
         riftOpeningDurationTicks = BUILDER
                 .comment("Duration of the normal rift opening burst before it becomes active")
                 .defineInRange("openingDurationTicks", 60, 1, 1200);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Codex settings").push("codex");
+
+        codexScanDistance = BUILDER
+                .comment("Maximum Pocket Codex scan distance in blocks")
+                .defineInRange("scanDistance", 12.0D, 2.0D, 64.0D);
 
         BUILDER.pop();
 

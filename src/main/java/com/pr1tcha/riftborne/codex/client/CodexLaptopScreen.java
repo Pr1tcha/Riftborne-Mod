@@ -102,6 +102,10 @@ public final class CodexLaptopScreen extends Screen {
 
         drawCodexIcon(graphics, iconX, iconY);
         graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.icon"), iconX + 22, iconY + 51, COLOR_TEXT);
+        drawDesktopApp(graphics, left + 100, iconY, mouseX, mouseY, "SYNC",
+                "screen.riftborne.codex.sync", CodexNetwork.split(snapshot.queuedEntries()).size());
+        drawDesktopApp(graphics, left + 176, iconY, mouseX, mouseY, "DEC",
+                "screen.riftborne.codex.decryptor", CodexNetwork.split(snapshot.damagedEntries()).size());
 
         List<String> notifications = CodexNetwork.split(snapshot.notifications());
         List<String> recent = CodexNetwork.split(snapshot.recentData());
@@ -128,6 +132,31 @@ public final class CodexLaptopScreen extends Screen {
         }
     }
 
+    private void drawDesktopApp(
+            GuiGraphics graphics,
+            int x,
+            int y,
+            int mouseX,
+            int mouseY,
+            String glyph,
+            String titleKey,
+            int count
+    ) {
+        boolean hovered = inside(mouseX, mouseY, x - 6, y - 5, 58, 72);
+        if (hovered) {
+            graphics.fill(x - 6, y - 5, x + 52, y + 67, 0x55345D66);
+            graphics.renderOutline(x - 6, y - 5, 58, 72, 0x8855E1D5);
+        }
+        graphics.fill(x, y + 4, x + 40, y + 45, 0xFF18313A);
+        graphics.renderOutline(x, y + 4, 40, 41, COLOR_ACCENT);
+        graphics.drawCenteredString(font, glyph, x + 20, y + 20, COLOR_ACCENT);
+        if (count > 0) {
+            graphics.fill(x + 29, y, x + 43, y + 14, 0xFF9A3543);
+            graphics.drawCenteredString(font, Integer.toString(count), x + 36, y + 3, COLOR_TEXT);
+        }
+        graphics.drawCenteredString(font, Component.translatable(titleKey), x + 20, y + 51, COLOR_TEXT);
+    }
+
     private void drawCodexIcon(GuiGraphics graphics, int x, int y) {
         graphics.fill(x + 3, y, x + 39, y + 44, 0xFF172631);
         graphics.fill(x, y + 4, x + 36, y + 48, 0xFF203A43);
@@ -147,12 +176,22 @@ public final class CodexLaptopScreen extends Screen {
         graphics.fill(windowX, windowY, windowX + windowWidth, windowY + windowHeight, COLOR_WINDOW);
         graphics.renderOutline(windowX, windowY, windowWidth, windowHeight, COLOR_BORDER);
         graphics.fill(windowX + 1, windowY + 1, windowX + windowWidth - 1, windowY + 24, 0xFF12232D);
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.archive_title"), windowX + 9, windowY + 8, COLOR_TEXT, false);
+        String titleKey = switch (view) {
+            case SYNC -> "screen.riftborne.codex.sync_title";
+            case DECRYPTOR -> "screen.riftborne.codex.decryptor_title";
+            default -> "screen.riftborne.codex.archive_title";
+        };
+        graphics.drawString(font, Component.translatable(titleKey), windowX + 9, windowY + 8, COLOR_TEXT, false);
 
         int closeX = windowX + windowWidth - 21;
         boolean closeHovered = inside(mouseX, mouseY, closeX, windowY + 4, 16, 16);
         graphics.fill(closeX, windowY + 4, closeX + 16, windowY + 20, closeHovered ? 0xFF9A3543 : 0xFF263943);
         graphics.drawCenteredString(font, "×", closeX + 8, windowY + 8, COLOR_TEXT);
+
+        if (view == View.SYNC || view == View.DECRYPTOR) {
+            renderQueueWindow(graphics, windowX, windowY, windowWidth, windowHeight);
+            return;
+        }
 
         int listX = windowX + 8;
         int listY = windowY + 31;
@@ -194,6 +233,28 @@ public final class CodexLaptopScreen extends Screen {
         for (FormattedCharSequence line : lines) {
             graphics.drawString(font, line, contentX + 9, textY, 0xFFC1D1D0, false);
             textY += 11;
+        }
+    }
+
+    private void renderQueueWindow(GuiGraphics graphics, int windowX, int windowY, int windowWidth, int windowHeight) {
+        List<String> entries = CodexNetwork.split(view == View.SYNC ? snapshot.queuedEntries() : snapshot.damagedEntries());
+        int x = windowX + 14;
+        int y = windowY + 38;
+        if (entries.isEmpty()) {
+            graphics.drawString(font, Component.translatable("screen.riftborne.codex.queue_empty"), x, y, COLOR_MUTED, false);
+            return;
+        }
+        for (String entryId : entries) {
+            CodexEntry entry = CodexEntries.get(entryId);
+            if (entry != null) {
+                graphics.drawString(font, Component.translatable(entry.titleKey()), x, y, COLOR_TEXT, false);
+                if (view == View.DECRYPTOR) {
+                    graphics.fill(windowX + windowWidth - 112, y - 4, windowX + windowWidth - 16, y + 13, 0xFF214A46);
+                    graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.restore"),
+                            windowX + windowWidth - 64, y, COLOR_ACCENT);
+                }
+                y += 22;
+            }
         }
     }
 
@@ -259,6 +320,14 @@ public final class CodexLaptopScreen extends Screen {
                 view = View.CODEX;
                 return true;
             }
+            if (inside(mouseX, mouseY, left + 94, top + 30, 58, 72)) {
+                view = View.SYNC;
+                return true;
+            }
+            if (inside(mouseX, mouseY, left + 170, top + 30, 58, 72)) {
+                view = View.DECRYPTOR;
+                return true;
+            }
             return true;
         }
 
@@ -267,6 +336,22 @@ public final class CodexLaptopScreen extends Screen {
         int windowWidth = PANEL_WIDTH - 32;
         if (inside(mouseX, mouseY, windowX + windowWidth - 21, windowY + 4, 16, 16)) {
             view = View.DESKTOP;
+            return true;
+        }
+
+        if (view == View.DECRYPTOR) {
+            List<String> damaged = CodexNetwork.split(snapshot.damagedEntries());
+            int rowY = windowY + 34;
+            for (String entryId : damaged) {
+                if (inside(mouseX, mouseY, windowX + windowWidth - 112, rowY, 96, 17)) {
+                    PacketDistributor.sendToServer(new CodexNetwork.RestoreDamagedPayload(entryId));
+                    return true;
+                }
+                rowY += 22;
+            }
+            return true;
+        }
+        if (view == View.SYNC) {
             return true;
         }
 
@@ -365,6 +450,8 @@ public final class CodexLaptopScreen extends Screen {
 
     private enum View {
         DESKTOP,
-        CODEX
+        CODEX,
+        SYNC,
+        DECRYPTOR
     }
 }

@@ -17,12 +17,25 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RiftSplinterEntity extends PathfinderMob implements Enemy {
+public class RiftSplinterEntity extends PathfinderMob implements Enemy, GeoEntity {
     private static final int DASH_COOLDOWN_TICKS = 80;
     private static final double DASH_MIN_DISTANCE_SQR = 4.0D;
     private static final double DASH_MAX_DISTANCE_SQR = 64.0D;
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("animation.rift_splinter.idle");
+    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("animation.rift_splinter.walk");
+    private static final RawAnimation HURT_ANIMATION = RawAnimation.begin().thenPlay("animation.rift_splinter.hurt");
+    private static final RawAnimation DEATH_ANIMATION = RawAnimation.begin().thenPlayAndHold("animation.rift_splinter.death");
+    private static final RawAnimation DASH_ANIMATION = RawAnimation.begin().thenPlay("animation.rift_splinter.dash_attack");
 
+    private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
     private int dashCooldown = 40;
 
     public RiftSplinterEntity(EntityType<? extends RiftSplinterEntity> entityType, Level level) {
@@ -78,6 +91,27 @@ public class RiftSplinterEntity extends PathfinderMob implements Enemy {
         Vec3 direction = target.position().subtract(position()).normalize();
         setDeltaMovement(direction.x * 1.25D, 0.18D, direction.z * 1.25D);
         hasImpulse = true;
+        triggerAnim("movement", "dash");
         dashCooldown = DASH_COOLDOWN_TICKS + random.nextInt(40);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "movement", 4, state -> {
+            if (deathTime > 0) {
+                return state.setAndContinue(DEATH_ANIMATION);
+            }
+
+            if (hurtTime > 0) {
+                return state.setAndContinue(HURT_ANIMATION);
+            }
+
+            return state.setAndContinue(state.isMoving() ? WALK_ANIMATION : IDLE_ANIMATION);
+        }).triggerableAnim("dash", DASH_ANIMATION));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return animationCache;
     }
 }
