@@ -13,6 +13,9 @@ It also includes the first RNA/Codex foundation:
 - an extensible Codex entry catalog and per-player unlock state;
 - telekinesis integrated with active RNA stats and meta-wear.
 
+The independent, data-driven Codex backend is configured through JSON/datapacks.
+See [docs/CODEX_BACKEND_ENTRIES.md](docs/CODEX_BACKEND_ENTRIES.md) for the copy-and-edit entry template and test commands.
+
 ## Current Scope
 
 - Spawns rifts by command.
@@ -54,19 +57,28 @@ RNA read commands are available to the executing player; mutation and test comma
 ### RNA and Meta-wear Commands
 
 - `/riftborne rna get [player]`
-- `/riftborne rna init`
-- `/riftborne rna reset`
-- `/riftborne rna set <nodeDensity|connectivity|throughput|overloadResistance> <0-100>`
-- `/riftborne rna path set <TRAINING|STRESS|ARTIFICIAL_BORN>`
-- `/riftborne metawear get`
-- `/riftborne metawear set <0-100>`
-- `/riftborne metawear add <1-100>`
-- `/riftborne metawear clear`
-- `/riftborne metawear collapse`
+- `/riftborne rna profile init <TRAINING|STRESS|ARTIFICIAL_BORN> [target]`
+- `/riftborne rna profile reset [target]`
+- `/riftborne rna profile path set <TRAINING|STRESS|ARTIFICIAL_BORN> [target]`
+- `/riftborne rna stats set <stat> <0-100> [target]`
+- `/riftborne rna stats add <stat> <amount> [source] [target]`
+- `/riftborne rna metawear get [target]`
+- `/riftborne rna metawear set <0-100> [target]`
+- `/riftborne rna metawear add <1-100> [source] [target]`
+- `/riftborne rna metawear clear [target]`
+- `/riftborne rna metawear collapse [target]`
+- `/riftborne rna abilities list [target]`
+- `/riftborne rna abilities grant <ability_id> [targets]`
+- `/riftborne rna abilities revoke <ability_id> [targets]`
+- `/riftborne rna abilities cooldown get <ability_id|all> [target]`
+- `/riftborne rna abilities cooldown clear <ability_id|all> [targets]`
+- `/riftborne rna abilities debug <ability_id> [target]`
 
 `TECHNOLOGICAL` and `INTERSPATIAL` are reserved save-stable path IDs and cannot be selected yet.
 
-Telekinesis is the first Aspect and is unlockable with `/riftborne aspects telekinesis grant`. It requires an active RNA profile. Grabs and throws add meta-wear through the shared RNA API.
+Telekinesis is the first registered RNA combat ability. Grant it with
+`/riftborne rna abilities grant riftborne:telekinesis`. It requires an active RNA profile.
+Successful grabs and throws use the shared combat backend for meta-wear and protected stat growth.
 
 `/riftborne rifts spawn` now uses the current procedural visual and saves as `riftborne:rift`.
 `/riftborne contour spawn` creates a Discard Contour Rift that leads to `riftborne:discard_contour`.

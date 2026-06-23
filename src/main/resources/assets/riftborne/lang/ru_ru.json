@@ -1,5 +1,8 @@
 {
   "itemGroup.riftborne": "Riftborne",
+  "itemGroup.riftborne.blocks": "Riftborne: Блоки",
+  "itemGroup.riftborne.mobs": "Riftborne: Мобы",
+  "itemGroup.riftborne.technical_blocks": "Riftborne: Технические блоки",
 
   "block.riftborne.rift": "Якорь разлома",
   "block.riftborne.contour_stone": "Камень Контура",
@@ -132,6 +135,12 @@
   "rna.riftborne.meta_wear_stage.architecture_break": "Срыв архитектуры",
   "rna.riftborne.source.command": "команда",
   "rna.riftborne.source.passive_decay": "пассивное восстановление",
+  "rna_source.telekinesis_grab": "захват телекинезом",
+  "rna_source.telekinesis_block_grab": "структурный захват телекинезом",
+  "rna_source.telekinesis_push": "силовой телекинетический бросок",
+  "rna_source.ability_debug": "проверка способности",
+  "rna_source.command": "команда",
+  "rna_ability.riftborne.telekinesis": "Телекинез",
 
   "command.riftborne.rifts.stage": "Стадия разломов Riftborne: %s",
   "command.riftborne.rifts.stage_unavailable": "Игровое правило стадии разломов Riftborne ещё не зарегистрировано.",
@@ -222,5 +231,15 @@
   "codex.riftborne.entry.riftwalker_interspace.title": "Межпространство Рифтволкера",
   "codex.riftborne.entry.riftwalker_interspace.short": "Яркий фрагментированный слой с нестабильной геометрией.",
   "codex.riftborne.entry.riftwalker_interspace.text": "Плавающие формации и энергетические жилы указывают на постоянное смещение.",
-  "codex.riftborne.entry.riftwalker_interspace.recommendation": "Отметьте точку возврата до начала движения."
+  "codex.riftborne.entry.riftwalker_interspace.recommendation": "Отметьте точку возврата до начала движения.",
+
+  "itemGroup.riftborne.equipment": "Riftborne: Экипировка",
+  "item.riftborne.riftwalker_hood": "Капюшон Рифтволкера",
+  "item.riftborne.riftwalker_coat": "Облачение Рифтволкера",
+  "item.riftborne.riftwalker_leggings": "Поножи Рифтволкера",
+  "item.riftborne.riftwalker_boots": "Сапоги Рифтволкера",
+  "command.riftborne.riftwalker.given": "Комплект Рифтволкера выдан.",
+  "key.riftborne.riftwalker.mask_lights": "Рифтволкер: подсветка маски",
+  "message.riftborne.riftwalker.mask_lights_on": "Подсветка маски включена.",
+  "message.riftborne.riftwalker.mask_lights_off": "Подсветка маски выключена."
 }
