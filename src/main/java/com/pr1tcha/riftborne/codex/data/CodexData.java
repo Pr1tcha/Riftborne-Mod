@@ -26,8 +26,7 @@ public final class CodexData {
     private int battery = 100;
 
     public CodexData() {
-        unlockedEntries.add("rna_overview");
-        unlockedEntries.add("node_density");
+        unlockAllEntries();
         notifications.add(translation("codex.riftborne.feed.ready"));
         recentData.add(translation("codex.riftborne.feed.rna_not_synchronized"));
     }
@@ -81,6 +80,10 @@ public final class CodexData {
         unlockedEntries.add(entryId);
         queuedEntries.remove(entryId);
         damagedEntries.remove(entryId);
+    }
+
+    private void unlockAllEntries() {
+        CodexEntries.all().forEach(entry -> unlockedEntries.add(entry.id()));
     }
 
     public void queue(String entryId) {

@@ -9,17 +9,17 @@ public final class CodexEntries {
     private static final Map<String, CodexEntry> ENTRIES = new LinkedHashMap<>();
 
     static {
-        register(entry("rna_overview", "rna", 1, false));
-        register(entry("node_density", "rna", 1, false));
-        register(entry("connectivity", "rna", 1, true));
-        register(entry("throughput", "rna", 2, true));
-        register(entry("overload_resistance", "rna", 2, true));
-        register(entry("meta_wear", "meta_wear", 3, true));
-        register(entry("rift_basic", "rifts", 3, true));
-        register(entry("rift_splinter", "entities", 2, true));
-        register(entry("discard_contour", "dimensions", 4, true));
-        register(entry("rna_interspace", "dimensions", 2, true));
-        register(entry("riftwalker_interspace", "dimensions", 3, true));
+        register(basicEntry("rna_overview", "rna", 1, false));
+        register(basicEntry("node_density", "rna", 1, false));
+        register(basicEntry("connectivity", "rna", 1, true));
+        register(basicEntry("throughput", "rna", 2, true));
+        register(basicEntry("overload_resistance", "rna", 2, true));
+        register(basicEntry("meta_wear", "meta_wear", 3, true));
+        register(fieldEntry("rift_basic", "rifts", 3, true));
+        register(fieldEntry("rift_splinter", "entities", 2, true));
+        register(fieldEntry("discard_contour", "dimensions", 4, true));
+        register(fieldEntry("rna_interspace", "dimensions", 2, true));
+        register(fieldEntry("riftwalker_interspace", "dimensions", 3, true));
     }
 
     private CodexEntries() {
@@ -29,7 +29,22 @@ public final class CodexEntries {
         ENTRIES.put(entry.id(), entry);
     }
 
-    private static CodexEntry entry(String id, String category, int threatLevel, boolean hiddenByDefault) {
+    private static CodexEntry basicEntry(String id, String category, int threatLevel, boolean hiddenByDefault) {
+        String baseKey = "codex.riftborne.entry." + id;
+        return new CodexEntry(
+                id,
+                baseKey + ".title",
+                "codex.riftborne.category." + category,
+                baseKey + ".brief",
+                baseKey + ".text",
+                null,
+                threatLevel,
+                baseKey + ".brief",
+                hiddenByDefault
+        );
+    }
+
+    private static CodexEntry fieldEntry(String id, String category, int threatLevel, boolean hiddenByDefault) {
         String baseKey = "codex.riftborne.entry." + id;
         return new CodexEntry(
                 id,
@@ -39,6 +54,7 @@ public final class CodexEntries {
                 baseKey + ".text",
                 baseKey + ".recommendation",
                 threatLevel,
+                baseKey + ".short",
                 hiddenByDefault
         );
     }

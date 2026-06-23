@@ -1,0 +1,9 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "riftborne:block/codex_diagnostic_capsule"
+      }
+    }
+  ]
+}

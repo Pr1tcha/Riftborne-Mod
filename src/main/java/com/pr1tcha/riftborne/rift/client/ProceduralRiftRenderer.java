@@ -73,6 +73,43 @@ public final class ProceduralRiftRenderer {
         poseStack.popPose();
     }
 
+    static void renderPortalBase(
+            PoseStack.Pose pose,
+            MultiBufferSource buffer,
+            long seed,
+            float height,
+            float baseWidth,
+            float age,
+            int primaryRed,
+            int primaryGreen,
+            int primaryBlue,
+            int secondaryRed,
+            int secondaryGreen,
+            int secondaryBlue
+    ) {
+        RiftStage stage = RiftStage.ACTIVE;
+        float alpha = 1.0F;
+
+        VertexConsumer solidBody = buffer.getBuffer(RenderType.entityCutoutNoCull(SOLID_TEXTURE));
+        renderSolidBody(pose, solidBody, seed, height, baseWidth, age, stage);
+
+        VertexConsumer body = buffer.getBuffer(RenderType.entityTranslucentEmissive(BODY_TEXTURE));
+        renderEnergySkin(pose, body, seed, height, baseWidth, alpha, age, stage,
+                primaryRed, primaryGreen, primaryBlue, secondaryRed, secondaryGreen, secondaryBlue);
+        renderGlowShell(pose, body, seed, height, baseWidth, alpha, age, stage,
+                primaryRed, primaryGreen, primaryBlue);
+        renderEdges(pose, body, seed, height, baseWidth, alpha, age, stage,
+                primaryRed, primaryGreen, primaryBlue, secondaryRed, secondaryGreen, secondaryBlue);
+        renderVeins(pose, body, seed, height, baseWidth, alpha, age, stage,
+                secondaryRed, secondaryGreen, secondaryBlue);
+
+        VertexConsumer haze = buffer.getBuffer(RenderType.entityTranslucentEmissive(HAZE_TEXTURE));
+        renderRefractionShell(pose, haze, seed, height, baseWidth, alpha, age, stage,
+                primaryRed, primaryGreen, primaryBlue, secondaryRed, secondaryGreen, secondaryBlue);
+        renderHaze(pose, haze, height, baseWidth, alpha, age, stage,
+                primaryRed, primaryGreen, primaryBlue, secondaryRed, secondaryGreen, secondaryBlue);
+    }
+
     private static void renderLayers(RiftBlockEntity rift, float partialTick, PoseStack.Pose pose, MultiBufferSource buffer) {
         float age = getAge(rift, partialTick);
         long seed = rift.getData().id.getMostSignificantBits() ^ rift.getData().id.getLeastSignificantBits();
@@ -134,6 +171,16 @@ public final class ProceduralRiftRenderer {
     }
 
     private static void renderEnergySkin(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage) {
+        renderEnergySkin(pose, consumer, seed, height, baseWidth, alpha, age, stage,
+                18, 112, 224, 24, 146, 246);
+    }
+
+    private static void renderEnergySkin(
+            PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth,
+            float alpha, float age, RiftStage stage,
+            int primaryRed, int primaryGreen, int primaryBlue,
+            int secondaryRed, int secondaryGreen, int secondaryBlue
+    ) {
         for (int i = 0; i < SEGMENTS; i++) {
             float t0 = i / (float) SEGMENTS;
             float t1 = (i + 1) / (float) SEGMENTS;
@@ -145,25 +192,37 @@ public final class ProceduralRiftRenderer {
                     a.rightInner(), a.y(), 0.004F, 0.82F, t0,
                     b.rightInner(), b.y(), 0.004F, 0.82F, t1,
                     b.leftInner(), b.y(), 0.004F, 0.18F, t1,
-                    2, 16, 38, Mth.clamp((int) (alpha * (62.0F + a.darkness() * 22.0F)), 0, 96));
+                    Math.max(1, primaryRed / 16),
+                    Math.max(1, primaryGreen / 12),
+                    Math.max(3, primaryBlue / 10),
+                    Mth.clamp((int) (alpha * (62.0F + a.darkness() * 22.0F)), 0, 96));
 
             texturedQuad(consumer, pose,
                     a.leftOuter(), a.y(), -0.006F, 0.0F, t0,
                     a.leftInner(), a.y(), -0.006F, 0.35F, t0,
                     b.leftInner(), b.y(), -0.006F, 0.35F, t1,
                     b.leftOuter(), b.y(), -0.006F, 0.0F, t1,
-                    18, 112, 224, Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
+                    primaryRed, primaryGreen, primaryBlue,
+                    Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
 
             texturedQuad(consumer, pose,
                     a.rightInner(), a.y(), -0.006F, 0.65F, t0,
                     a.rightOuter(), a.y(), -0.006F, 1.0F, t0,
                     b.rightOuter(), b.y(), -0.006F, 1.0F, t1,
                     b.rightInner(), b.y(), -0.006F, 0.65F, t1,
-                    24, 146, 246, Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
+                    secondaryRed, secondaryGreen, secondaryBlue,
+                    Mth.clamp((int) (alpha * (118.0F + a.edgeHeat() * 46.0F)), 0, 190));
         }
     }
 
     private static void renderGlowShell(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage) {
+        renderGlowShell(pose, consumer, seed, height, baseWidth, alpha, age, stage, 36, 168, 255);
+    }
+
+    private static void renderGlowShell(
+            PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth,
+            float alpha, float age, RiftStage stage, int red, int green, int blue
+    ) {
         for (int i = 0; i < SEGMENTS; i++) {
             float t0 = i / (float) SEGMENTS;
             float t1 = (i + 1) / (float) SEGMENTS;
@@ -177,11 +236,21 @@ public final class ProceduralRiftRenderer {
                     a.rightOuter(), a.y(), -0.022F, 1.0F, t0,
                     b.rightOuter(), b.y(), -0.022F, 1.0F, t1,
                     b.leftOuter(), b.y(), -0.022F, 0.0F, t1,
-                    36, 168, 255, shellAlpha);
+                    red, green, blue, shellAlpha);
         }
     }
 
     private static void renderRefractionShell(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage) {
+        renderRefractionShell(pose, consumer, seed, height, baseWidth, alpha, age, stage,
+                84, 196, 255, 38, 142, 255);
+    }
+
+    private static void renderRefractionShell(
+            PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth,
+            float alpha, float age, RiftStage stage,
+            int primaryRed, int primaryGreen, int primaryBlue,
+            int secondaryRed, int secondaryGreen, int secondaryBlue
+    ) {
         float stageStrength = switch (stage) {
             case OPENING -> 0.55F;
             case DORMANT -> 0.08F;
@@ -203,12 +272,19 @@ public final class ProceduralRiftRenderer {
             float flutter = ProceduralNoise.fbm(seed + 719L, t0 * 12.0F, time, 3, 2.1F, 0.5F);
             float strength = Mth.clamp((0.4F + envelope * 0.75F + flutter * 0.18F) * stageStrength, 0.0F, 1.35F);
 
-            renderRefractionSide(consumer, pose, a, b, -1.0F, t0, t1, strength, alpha, age, seed);
-            renderRefractionSide(consumer, pose, a, b, 1.0F, t0, t1, strength, alpha, age, seed + 37L);
+            renderRefractionSide(consumer, pose, a, b, -1.0F, t0, t1, strength, alpha, age, seed,
+                    primaryRed, primaryGreen, primaryBlue, secondaryRed, secondaryGreen, secondaryBlue);
+            renderRefractionSide(consumer, pose, a, b, 1.0F, t0, t1, strength, alpha, age, seed + 37L,
+                    primaryRed, primaryGreen, primaryBlue, secondaryRed, secondaryGreen, secondaryBlue);
         }
     }
 
-    private static void renderRefractionSide(VertexConsumer consumer, PoseStack.Pose pose, RiftSlice a, RiftSlice b, float side, float t0, float t1, float strength, float alpha, float age, long seed) {
+    private static void renderRefractionSide(
+            VertexConsumer consumer, PoseStack.Pose pose, RiftSlice a, RiftSlice b, float side,
+            float t0, float t1, float strength, float alpha, float age, long seed,
+            int primaryRed, int primaryGreen, int primaryBlue,
+            int secondaryRed, int secondaryGreen, int secondaryBlue
+    ) {
         float edgeA = side < 0.0F ? a.leftOuter() : a.rightOuter();
         float edgeB = side < 0.0F ? b.leftOuter() : b.rightOuter();
         float midA = side < 0.0F ? a.leftEdge() : a.rightEdge();
@@ -228,14 +304,14 @@ public final class ProceduralRiftRenderer {
                 outerA, a.y(), -0.035F, 0.72F, t0,
                 outerB, b.y(), -0.035F, 0.72F, t1,
                 midB, b.y(), -0.035F, 0.24F, t1,
-                84, 196, 255, innerAlpha);
+                primaryRed, primaryGreen, primaryBlue, innerAlpha);
 
         texturedQuad(consumer, pose,
                 edgeA, a.y(), -0.047F, 0.18F, t0,
                 farA, a.y(), -0.047F, 0.92F, t0,
                 farB, b.y(), -0.047F, 0.92F, t1,
                 edgeB, b.y(), -0.047F, 0.18F, t1,
-                38, 142, 255, outerAlpha);
+                secondaryRed, secondaryGreen, secondaryBlue, outerAlpha);
 
         if (((int) (t0 * 1000.0F) + (int) (seed & 7L)) % 11 == 0) {
             float glintY0 = Mth.lerp(0.35F, a.y(), b.y());
@@ -246,11 +322,24 @@ public final class ProceduralRiftRenderer {
                     glintX + side * (0.055F + shimmer * 0.045F), glintY0 + 0.025F, -0.028F, 0.72F, 0.0F,
                     glintX + side * (0.047F + shimmer * 0.04F), glintY1, -0.028F, 0.72F, 1.0F,
                     glintX - side * 0.01F, glintY1 - 0.018F, -0.028F, 0.35F, 1.0F,
-                    210, 244, 255, Mth.clamp((int) (alpha * strength * 105.0F), 0, 145));
+                    mixColor(secondaryRed, 255, 0.62F),
+                    mixColor(secondaryGreen, 255, 0.62F),
+                    mixColor(secondaryBlue, 255, 0.62F),
+                    Mth.clamp((int) (alpha * strength * 105.0F), 0, 145));
         }
     }
 
     private static void renderEdges(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage) {
+        renderEdges(pose, consumer, seed, height, baseWidth, alpha, age, stage,
+                30, 148, 255, 62, 192, 255);
+    }
+
+    private static void renderEdges(
+            PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth,
+            float alpha, float age, RiftStage stage,
+            int primaryRed, int primaryGreen, int primaryBlue,
+            int secondaryRed, int secondaryGreen, int secondaryBlue
+    ) {
         for (int i = 0; i < SEGMENTS; i++) {
             float t0 = i / (float) SEGMENTS;
             float t1 = (i + 1) / (float) SEGMENTS;
@@ -258,19 +347,34 @@ public final class ProceduralRiftRenderer {
             RiftSlice b = slice(seed, t1, height, baseWidth, age, stage);
             int edgeAlpha = Mth.clamp((int) (alpha * (122.0F + a.edgeHeat() * 72.0F + Mth.sin(age * 0.17F + i) * 28.0F)), 35, 210);
 
-            ribbon(consumer, pose, a.leftEdge(), a.y(), b.leftEdge(), b.y(), 0.017F, 30, 148, 255, edgeAlpha);
-            ribbon(consumer, pose, a.rightEdge(), a.y(), b.rightEdge(), b.y(), 0.017F, 62, 192, 255, edgeAlpha);
+            ribbon(consumer, pose, a.leftEdge(), a.y(), b.leftEdge(), b.y(), 0.017F,
+                    primaryRed, primaryGreen, primaryBlue, edgeAlpha);
+            ribbon(consumer, pose, a.rightEdge(), a.y(), b.rightEdge(), b.y(), 0.017F,
+                    secondaryRed, secondaryGreen, secondaryBlue, edgeAlpha);
 
             if (i % 9 == 0) {
-                ribbon(consumer, pose, a.leftOuter(), a.y(), b.leftOuter(), b.y(), 0.008F, 214, 246, 255, edgeAlpha / 2);
-                ribbon(consumer, pose, a.rightOuter(), a.y(), b.rightOuter(), b.y(), 0.008F, 214, 246, 255, edgeAlpha / 2);
+                int glintRed = mixColor(secondaryRed, 255, 0.72F);
+                int glintGreen = mixColor(secondaryGreen, 255, 0.72F);
+                int glintBlue = mixColor(secondaryBlue, 255, 0.72F);
+                ribbon(consumer, pose, a.leftOuter(), a.y(), b.leftOuter(), b.y(), 0.008F,
+                        glintRed, glintGreen, glintBlue, edgeAlpha / 2);
+                ribbon(consumer, pose, a.rightOuter(), a.y(), b.rightOuter(), b.y(), 0.008F,
+                        glintRed, glintGreen, glintBlue, edgeAlpha / 2);
             }
         }
 
-        renderEndpointSeams(pose, consumer, seed, height, baseWidth, alpha, age, stage);
+        renderEndpointSeams(pose, consumer, seed, height, baseWidth, alpha, age, stage,
+                secondaryRed, secondaryGreen, secondaryBlue);
     }
 
     private static void renderVeins(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage) {
+        renderVeins(pose, consumer, seed, height, baseWidth, alpha, age, stage, 188, 238, 255);
+    }
+
+    private static void renderVeins(
+            PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth,
+            float alpha, float age, RiftStage stage, int red, int green, int blue
+    ) {
         int veinCount = switch (stage) {
             case DORMANT -> 1;
             case REACTING -> 3;
@@ -290,7 +394,11 @@ public final class ProceduralRiftRenderer {
             float x1 = side < 0 ? b.leftEdge() : b.rightEdge();
             int veinAlpha = Mth.clamp((int) (alpha * (105.0F + Mth.sin(age * 0.55F + i * 1.3F) * 70.0F)), 30, 210);
 
-            ribbon(consumer, pose, x0, a.y(), x1, b.y(), 0.011F, 188, 238, 255, veinAlpha);
+            ribbon(consumer, pose, x0, a.y(), x1, b.y(), 0.011F,
+                    mixColor(red, 255, 0.42F),
+                    mixColor(green, 255, 0.42F),
+                    mixColor(blue, 255, 0.42F),
+                    veinAlpha);
         }
     }
 
@@ -398,15 +506,25 @@ public final class ProceduralRiftRenderer {
     }
 
     private static void renderEndpointSeams(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage) {
+        renderEndpointSeams(pose, consumer, seed, height, baseWidth, alpha, age, stage, 46, 170, 255);
+    }
+
+    private static void renderEndpointSeams(
+            PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth,
+            float alpha, float age, RiftStage stage, int red, int green, int blue
+    ) {
         if (stage == RiftStage.SCAR) {
             return;
         }
 
-        renderEndpointLine(pose, consumer, seed, height, baseWidth, alpha, age, stage, false);
-        renderEndpointLine(pose, consumer, seed, height, baseWidth, alpha, age, stage, true);
+        renderEndpointLine(pose, consumer, seed, height, baseWidth, alpha, age, stage, false, red, green, blue);
+        renderEndpointLine(pose, consumer, seed, height, baseWidth, alpha, age, stage, true, red, green, blue);
     }
 
-    private static void renderEndpointLine(PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth, float alpha, float age, RiftStage stage, boolean top) {
+    private static void renderEndpointLine(
+            PoseStack.Pose pose, VertexConsumer consumer, long seed, float height, float baseWidth,
+            float alpha, float age, RiftStage stage, boolean top, int red, int green, int blue
+    ) {
         float t = top ? 1.0F : 0.0F;
         RiftSlice slice = slice(seed, t, height, baseWidth, age, stage);
         float left = slice.leftEdge();
@@ -414,10 +532,20 @@ public final class ProceduralRiftRenderer {
         float y = slice.y();
         int seamAlpha = Mth.clamp((int) (alpha * 190.0F), 70, 210);
 
-        ribbon(consumer, pose, left, y, right, y, 0.017F, 46, 170, 255, seamAlpha);
+        ribbon(consumer, pose, left, y, right, y, 0.017F, red, green, blue, seamAlpha);
     }
 
     private static void renderHaze(PoseStack.Pose pose, VertexConsumer haze, float height, float baseWidth, float alpha, float age, RiftStage stage) {
+        renderHaze(pose, haze, height, baseWidth, alpha, age, stage,
+                54, 158, 232, 176, 230, 255);
+    }
+
+    private static void renderHaze(
+            PoseStack.Pose pose, VertexConsumer haze, float height, float baseWidth,
+            float alpha, float age, RiftStage stage,
+            int primaryRed, int primaryGreen, int primaryBlue,
+            int secondaryRed, int secondaryGreen, int secondaryBlue
+    ) {
         float stageAlpha = switch (stage) {
             case DORMANT -> 0.08F;
             case REACTING -> 0.18F;
@@ -430,8 +558,12 @@ public final class ProceduralRiftRenderer {
         };
         float breath = 1.0F + Mth.sin(age * 0.055F) * 0.055F;
 
-        hazeQuad(haze, pose, baseWidth * 3.0F * breath, height * 1.08F, -0.052F, 54, 158, 232, Mth.clamp((int) (alpha * stageAlpha * 178.0F), 0, 175));
-        hazeQuad(haze, pose, baseWidth * 2.18F, height * 1.16F, -0.06F, 176, 230, 255, Mth.clamp((int) (alpha * stageAlpha * 96.0F), 0, 112));
+        hazeQuad(haze, pose, baseWidth * 3.0F * breath, height * 1.08F, -0.052F,
+                primaryRed, primaryGreen, primaryBlue,
+                Mth.clamp((int) (alpha * stageAlpha * 178.0F), 0, 175));
+        hazeQuad(haze, pose, baseWidth * 2.18F, height * 1.16F, -0.06F,
+                secondaryRed, secondaryGreen, secondaryBlue,
+                Mth.clamp((int) (alpha * stageAlpha * 96.0F), 0, 112));
     }
 
     private static RiftSlice slice(long seed, float t, float height, float baseWidth, float age, RiftStage stage) {
@@ -498,6 +630,10 @@ public final class ProceduralRiftRenderer {
         value *= 0x94D049BB133111EBL;
         value ^= value >>> 31;
         return (value & 0xFFFFFF) / (float) 0xFFFFFF;
+    }
+
+    private static int mixColor(int from, int to, float amount) {
+        return Mth.clamp(Math.round(Mth.lerp(amount, from, to)), 0, 255);
     }
 
     private static void ribbon(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float thickness, int red, int green, int blue, int alpha) {

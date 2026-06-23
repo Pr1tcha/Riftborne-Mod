@@ -5,6 +5,7 @@ import com.pr1tcha.riftborne.command.RiftborneCommands;
 import com.pr1tcha.riftborne.config.Config;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rift.client.RiftBlockEntityRenderer;
+import com.pr1tcha.riftborne.rift.client.RiftPortalRenderer;
 import com.pr1tcha.riftborne.rift.client.RiftSkyEffects;
 import com.pr1tcha.riftborne.rift.client.RiftSplinterRenderer;
 import com.pr1tcha.riftborne.rift.client.VeilRiftDistortion;
@@ -16,6 +17,7 @@ import com.pr1tcha.riftborne.riftwalker.network.RiftwalkerNetwork;
 import com.pr1tcha.riftborne.codex.data.entry.CodexEntryReloadListener;
 import com.pr1tcha.riftborne.codex.client.CodexLaptopRenderer;
 import com.pr1tcha.riftborne.codex.client.CodexDockRenderer;
+import com.pr1tcha.riftborne.codex.client.CodexDiagnosticCapsuleRenderer;
 import com.pr1tcha.riftborne.client.model.RiftborneBakedModelFactory;
 import com.pr1tcha.riftborne.interspace.RnaFluidClient;
 import net.minecraft.client.Minecraft;
@@ -90,8 +92,13 @@ public class Riftborne {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModContent.RIFT_BE_TYPE.get(), RiftBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(ModContent.RIFT_PORTAL_BE_TYPE.get(), RiftPortalRenderer::new);
             event.registerBlockEntityRenderer(ModContent.CODEX_LAPTOP_BE_TYPE.get(), context -> new CodexLaptopRenderer());
             event.registerBlockEntityRenderer(ModContent.CODEX_DOCK_BE_TYPE.get(), context -> new CodexDockRenderer());
+            event.registerBlockEntityRenderer(
+                    ModContent.CODEX_DIAGNOSTIC_CAPSULE_BE_TYPE.get(),
+                    context -> new CodexDiagnosticCapsuleRenderer()
+            );
             event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
             event.registerEntityRenderer(ModContent.TELEKINETIC_BLOCK.get(), TelekineticBlockRenderer::new);
         }

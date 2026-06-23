@@ -10,7 +10,12 @@ public final class CodexClient {
     }
 
     public static void open(CodexNetwork.SnapshotPayload snapshot) {
-        Minecraft.getInstance().setScreen(new CodexLaptopScreen(snapshot));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen instanceof CodexLaptopScreen screen) {
+            screen.updateSnapshot(snapshot);
+        } else {
+            minecraft.setScreen(new CodexLaptopScreen(snapshot));
+        }
     }
 
     public static void openPocket(CodexNetwork.PocketSnapshotPayload snapshot) {

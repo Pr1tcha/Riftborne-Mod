@@ -688,18 +688,6 @@ def main():
         ]),
     ]
 
-    # Blockbench/GeckoLib's X rotation direction for this imported model is
-    # opposite to the pose convention used while drafting the motions. Flip
-    # every joint's X rotation once so the torso hunches forward, elbows fold
-    # inward, and knees bend backwards instead of producing an arched pose.
-    for item in animations:
-        for animator_data in item["animators"].values():
-            for keyframe in animator_data["keyframes"]:
-                if keyframe["channel"] != "rotation":
-                    continue
-                point = keyframe["data_points"][0]
-                point["x"] = str(-float(point["x"]))
-
     model = current
     model["meta"]["box_uv"] = False
     model["elements"] = elements

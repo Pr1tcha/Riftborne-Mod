@@ -1,6 +1,8 @@
 package com.pr1tcha.riftborne.codex.network;
 
 import com.pr1tcha.riftborne.Riftborne;
+import com.pr1tcha.riftborne.codex.block.CodexDiagnosticCapsuleBlockEntity;
+import com.pr1tcha.riftborne.codex.block.CodexLaptopBlockEntity;
 import com.pr1tcha.riftborne.codex.client.CodexClient;
 import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.codex.data.PocketCodexData;
@@ -10,6 +12,8 @@ import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rna.RnaApi;
 import com.pr1tcha.riftborne.rna.data.RnaData;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,16 +42,29 @@ public final class CodexNetwork {
         registrar.playToServer(PocketCyclePayload.TYPE, PocketCyclePayload.STREAM_CODEC, CodexNetwork::handlePocketCycle);
         registrar.playToServer(PocketActionPayload.TYPE, PocketActionPayload.STREAM_CODEC, CodexNetwork::handlePocketAction);
         registrar.playToServer(RestoreDamagedPayload.TYPE, RestoreDamagedPayload.STREAM_CODEC, CodexNetwork::handleRestoreDamaged);
+        registrar.playToServer(TransferEntryPayload.TYPE, TransferEntryPayload.STREAM_CODEC, CodexNetwork::handleTransferEntry);
     }
 
     public static void open(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, createSnapshot(player));
+        open(player, BlockPos.ZERO);
     }
 
-    private static SnapshotPayload createSnapshot(ServerPlayer player) {
+    public static void open(ServerPlayer player, BlockPos laptopPos) {
+        PacketDistributor.sendToPlayer(player, createSnapshot(player, laptopPos));
+    }
+
+    private static SnapshotPayload createSnapshot(ServerPlayer player, BlockPos laptopPos) {
         CodexData codex = RiftbornePlayerData.getCodex(player);
         RnaData rna = RnaApi.get(player);
+        boolean firstFlashInserted = false;
+        boolean secondFlashInserted = false;
+        if (player.level().getBlockEntity(laptopPos) instanceof CodexLaptopBlockEntity laptop) {
+            firstFlashInserted = laptop.hasFlashDrive(0);
+            secondFlashInserted = laptop.hasFlashDrive(1);
+        }
+        CodexDiagnosticCapsuleBlockEntity diagnostic = findDiagnosticCapsule(player, laptopPos);
         return new SnapshotPayload(
+                laptopPos.asLong(),
                 codex.devicePowered(),
                 codex.battery(),
                 join(codex.unlockedEntries().stream().toList()),
@@ -62,8 +79,48 @@ public final class CodexNetwork {
                 rna.overloadResistance(),
                 rna.metaWear(),
                 rna.metaWearStage().name(),
-                rna.formationPath().name()
+                rna.formationPath().name(),
+                firstFlashInserted,
+                secondFlashInserted,
+                "",
+                "",
+                diagnostic != null && diagnostic.hasDiagnosticData(),
+                diagnostic == null ? 0L : diagnostic.getBlockPos().asLong(),
+                diagnostic == null ? "" : diagnostic.subjectName(),
+                diagnostic != null && diagnostic.hasRna(),
+                diagnostic == null ? 0 : diagnostic.nodeDensity(),
+                diagnostic == null ? 0 : diagnostic.connectivity(),
+                diagnostic == null ? 0 : diagnostic.throughput(),
+                diagnostic == null ? 0 : diagnostic.overloadResistance(),
+                diagnostic == null ? 0 : diagnostic.metaWear(),
+                diagnostic == null ? "STABLE" : diagnostic.metaWearStage(),
+                diagnostic == null ? "UNKNOWN" : diagnostic.formationPath(),
+                ""
         );
+    }
+
+    private static CodexDiagnosticCapsuleBlockEntity findDiagnosticCapsule(ServerPlayer player, BlockPos laptopPos) {
+        if (laptopPos.equals(BlockPos.ZERO)) {
+            return null;
+        }
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            if (player.level().getBlockEntity(laptopPos.relative(direction))
+                    instanceof CodexDiagnosticCapsuleBlockEntity capsule) {
+                return capsule;
+            }
+        }
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        for (int x = -3; x <= 3; x++) {
+            for (int y = -1; y <= 2; y++) {
+                for (int z = -3; z <= 3; z++) {
+                    cursor.set(laptopPos.getX() + x, laptopPos.getY() + y, laptopPos.getZ() + z);
+                    if (player.level().getBlockEntity(cursor) instanceof CodexDiagnosticCapsuleBlockEntity capsule) {
+                        return capsule;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private static String join(List<String> values) {
@@ -155,11 +212,12 @@ public final class CodexNetwork {
             CodexData data = RiftbornePlayerData.getCodex(player);
             data.setDevicePowered(payload.powered());
             RiftbornePlayerData.saveCodex(player, data);
-            open(player);
+            open(player, BlockPos.of(payload.laptopPos()));
         }
     }
 
     public record SnapshotPayload(
+            long laptopPos,
             boolean powered,
             int battery,
             String unlockedEntries,
@@ -174,13 +232,30 @@ public final class CodexNetwork {
             int overloadResistance,
             int metaWear,
             String metaWearStage,
-            String formationPath
+            String formationPath,
+            boolean firstFlashInserted,
+            boolean secondFlashInserted,
+            String firstFlashEntries,
+            String secondFlashEntries,
+            boolean diagnosticAvailable,
+            long diagnosticCapsulePos,
+            String diagnosticSubjectName,
+            boolean diagnosticHasRna,
+            int diagnosticNodeDensity,
+            int diagnosticConnectivity,
+            int diagnosticThroughput,
+            int diagnosticOverloadResistance,
+            int diagnosticMetaWear,
+            String diagnosticMetaWearStage,
+            String diagnosticFormationPath,
+            String diagnosticNotice
     ) implements CustomPacketPayload {
         public static final Type<SnapshotPayload> TYPE = new Type<>(
                 ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "codex_snapshot")
         );
         public static final StreamCodec<RegistryFriendlyByteBuf, SnapshotPayload> STREAM_CODEC = StreamCodec.of(
                 (buffer, payload) -> {
+                    buffer.writeLong(payload.laptopPos);
                     buffer.writeBoolean(payload.powered);
                     buffer.writeVarInt(payload.battery);
                     buffer.writeUtf(payload.unlockedEntries);
@@ -196,8 +271,25 @@ public final class CodexNetwork {
                     buffer.writeVarInt(payload.metaWear);
                     buffer.writeUtf(payload.metaWearStage);
                     buffer.writeUtf(payload.formationPath);
+                    buffer.writeBoolean(payload.firstFlashInserted);
+                    buffer.writeBoolean(payload.secondFlashInserted);
+                    buffer.writeUtf(payload.firstFlashEntries);
+                    buffer.writeUtf(payload.secondFlashEntries);
+                    buffer.writeBoolean(payload.diagnosticAvailable);
+                    buffer.writeLong(payload.diagnosticCapsulePos);
+                    buffer.writeUtf(payload.diagnosticSubjectName);
+                    buffer.writeBoolean(payload.diagnosticHasRna);
+                    buffer.writeVarInt(payload.diagnosticNodeDensity);
+                    buffer.writeVarInt(payload.diagnosticConnectivity);
+                    buffer.writeVarInt(payload.diagnosticThroughput);
+                    buffer.writeVarInt(payload.diagnosticOverloadResistance);
+                    buffer.writeVarInt(payload.diagnosticMetaWear);
+                    buffer.writeUtf(payload.diagnosticMetaWearStage);
+                    buffer.writeUtf(payload.diagnosticFormationPath);
+                    buffer.writeUtf(payload.diagnosticNotice);
                 },
                 buffer -> new SnapshotPayload(
+                        buffer.readLong(),
                         buffer.readBoolean(),
                         buffer.readVarInt(),
                         buffer.readUtf(),
@@ -211,6 +303,22 @@ public final class CodexNetwork {
                         buffer.readVarInt(),
                         buffer.readVarInt(),
                         buffer.readVarInt(),
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readBoolean(),
+                        buffer.readBoolean(),
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readBoolean(),
+                        buffer.readLong(),
+                        buffer.readUtf(),
+                        buffer.readBoolean(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readUtf(),
                         buffer.readUtf(),
                         buffer.readUtf()
                 )
@@ -222,14 +330,16 @@ public final class CodexNetwork {
         }
     }
 
-    public record TogglePowerPayload(boolean powered) implements CustomPacketPayload {
+    public record TogglePowerPayload(boolean powered, long laptopPos) implements CustomPacketPayload {
         public static final Type<TogglePowerPayload> TYPE = new Type<>(
                 ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "codex_toggle_power")
         );
-        public static final StreamCodec<RegistryFriendlyByteBuf, TogglePowerPayload> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.BOOL,
-                TogglePowerPayload::powered,
-                TogglePowerPayload::new
+        public static final StreamCodec<RegistryFriendlyByteBuf, TogglePowerPayload> STREAM_CODEC = StreamCodec.of(
+                (buffer, payload) -> {
+                    buffer.writeBoolean(payload.powered);
+                    buffer.writeLong(payload.laptopPos);
+                },
+                buffer -> new TogglePowerPayload(buffer.readBoolean(), buffer.readLong())
         );
 
         @Override
@@ -247,7 +357,7 @@ public final class CodexNetwork {
             data.addTranslatedNotification("codex.riftborne.feed.restored", payload.entryId());
             RiftbornePlayerData.saveCodex(player, data);
         }
-        open(player);
+        open(player, BlockPos.of(payload.laptopPos()));
     }
 
     public record PocketSnapshotPayload(
@@ -315,18 +425,51 @@ public final class CodexNetwork {
         }
     }
 
-    public record RestoreDamagedPayload(String entryId) implements CustomPacketPayload {
+    public record RestoreDamagedPayload(long laptopPos, String entryId) implements CustomPacketPayload {
         public static final Type<RestoreDamagedPayload> TYPE = new Type<>(
                 ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "codex_restore_damaged")
         );
-        public static final StreamCodec<RegistryFriendlyByteBuf, RestoreDamagedPayload> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.STRING_UTF8,
-                RestoreDamagedPayload::entryId,
-                RestoreDamagedPayload::new
+        public static final StreamCodec<RegistryFriendlyByteBuf, RestoreDamagedPayload> STREAM_CODEC = StreamCodec.of(
+                (buffer, payload) -> {
+                    buffer.writeLong(payload.laptopPos);
+                    buffer.writeUtf(payload.entryId);
+                },
+                buffer -> new RestoreDamagedPayload(buffer.readLong(), buffer.readUtf())
         );
 
         @Override
         public Type<RestoreDamagedPayload> type() {
+            return TYPE;
+        }
+    }
+
+    private static void handleTransferEntry(TransferEntryPayload payload, IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) {
+            return;
+        }
+        CodexData data = RiftbornePlayerData.getCodex(player);
+        if (data.synchronize(List.of(payload.entryId())) > 0) {
+            data.addTranslatedNotification("codex.riftborne.feed.synchronized", payload.entryId());
+            RiftbornePlayerData.saveCodex(player, data);
+        }
+        open(player, BlockPos.of(payload.laptopPos()));
+    }
+
+    public record TransferEntryPayload(long laptopPos, int driveSlot, String entryId) implements CustomPacketPayload {
+        public static final Type<TransferEntryPayload> TYPE = new Type<>(
+                ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "codex_transfer_entry")
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, TransferEntryPayload> STREAM_CODEC = StreamCodec.of(
+                (buffer, payload) -> {
+                    buffer.writeLong(payload.laptopPos);
+                    buffer.writeVarInt(payload.driveSlot);
+                    buffer.writeUtf(payload.entryId);
+                },
+                buffer -> new TransferEntryPayload(buffer.readLong(), buffer.readVarInt(), buffer.readUtf())
+        );
+
+        @Override
+        public Type<TransferEntryPayload> type() {
             return TYPE;
         }
     }

@@ -1,6 +1,9 @@
 package com.pr1tcha.riftborne.rift.dimension;
 
 import java.util.Optional;
+import java.util.UUID;
+import com.pr1tcha.riftborne.rift.run.RiftRunData;
+import com.pr1tcha.riftborne.rift.run.RiftRunSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -21,6 +24,8 @@ public final class RiftDimensions {
     private static final String RETURN_X = "RiftborneRiftReturnX";
     private static final String RETURN_Y = "RiftborneRiftReturnY";
     private static final String RETURN_Z = "RiftborneRiftReturnZ";
+    private static final String CURRENT_RUN = "RiftborneCurrentRun";
+    private static final String PORTAL_COOLDOWN = "RiftbornePortalCooldown";
     private static final int RETURN_SEARCH_RADIUS = 8;
     private static final int RETURN_VERTICAL_RANGE = 12;
 
@@ -28,7 +33,13 @@ public final class RiftDimensions {
     }
 
     public static boolean enter(ServerPlayer player, RiftTier tier) {
-        ServerLevel target = player.getServer().getLevel(tier.dimension());
+        RiftRunData run = RiftRunSavedData.get(player.getServer())
+                .createRun(player.serverLevel(), player.blockPosition(), tier);
+        return enter(player, run);
+    }
+
+    public static boolean enter(ServerPlayer player, RiftRunData run) {
+        ServerLevel target = player.getServer().getLevel(run.riftDimension());
         if (target == null) {
             return false;
         }
@@ -37,8 +48,11 @@ public final class RiftDimensions {
             rememberReturn(player);
         }
 
-        buildArrivalPlatform(target, tier);
-        teleport(player, target, Vec3.atBottomCenterOf(ARRIVAL));
+        RiftRunSavedData storage = RiftRunSavedData.get(player.getServer());
+        storage.playerJoined(run, player.getUUID());
+        player.getPersistentData().putUUID(CURRENT_RUN, run.runId());
+        buildArrivalPlatform(target, run.tier(), run.anchorPos());
+        teleport(player, target, Vec3.atBottomCenterOf(run.anchorPos()));
         return true;
     }
 
@@ -49,13 +63,21 @@ public final class RiftDimensions {
 
         CompoundTag data = player.getPersistentData();
         MinecraftServer server = player.getServer();
-        ServerLevel target = resolveReturnLevel(server, data);
-        Vec3 requested = readReturnPosition(target, data);
-        Vec3 safe = findSafeReturn(target, BlockPos.containing(requested))
+        RiftRunData run = currentRun(player).orElse(null);
+        ServerLevel target = run == null ? resolveReturnLevel(server, data) : server.getLevel(run.sourceDimension());
+        if (target == null) {
+            target = server.overworld();
+        }
+        ServerLevel returnLevel = target;
+        Vec3 requested = run == null
+                ? readReturnPosition(returnLevel, data)
+                : Vec3.atBottomCenterOf(run.sourcePos().offset(3, 1, 0));
+        Vec3 safe = findSafeReturn(returnLevel, BlockPos.containing(requested))
                 .map(Vec3::atBottomCenterOf)
-                .orElseGet(() -> Vec3.atBottomCenterOf(target.getSharedSpawnPos().above()));
+                .orElseGet(() -> Vec3.atBottomCenterOf(returnLevel.getSharedSpawnPos().above()));
 
-        teleport(player, target, safe);
+        data.putLong(PORTAL_COOLDOWN, returnLevel.getGameTime() + 100L);
+        teleport(player, returnLevel, safe);
         clearReturn(player);
         return true;
     }
@@ -69,7 +91,11 @@ public final class RiftDimensions {
     }
 
     public static void buildArrivalPlatform(ServerLevel level, RiftTier tier) {
-        BlockPos floor = ARRIVAL.below();
+        buildArrivalPlatform(level, tier, ARRIVAL);
+    }
+
+    public static void buildArrivalPlatform(ServerLevel level, RiftTier tier, BlockPos arrival) {
+        BlockPos floor = arrival.below();
         var floorState = tier.platformBlock().defaultBlockState();
         var accentState = tier.level() >= 4
                 ? Blocks.CRYING_OBSIDIAN.defaultBlockState()
@@ -166,6 +192,16 @@ public final class RiftDimensions {
         data.remove(RETURN_X);
         data.remove(RETURN_Y);
         data.remove(RETURN_Z);
+        data.remove(CURRENT_RUN);
+    }
+
+    public static Optional<RiftRunData> currentRun(ServerPlayer player) {
+        CompoundTag data = player.getPersistentData();
+        if (!data.hasUUID(CURRENT_RUN)) {
+            return Optional.empty();
+        }
+        UUID runId = data.getUUID(CURRENT_RUN);
+        return RiftRunSavedData.get(player.getServer()).getRun(runId);
     }
 
     private static void teleport(ServerPlayer player, ServerLevel level, Vec3 position) {

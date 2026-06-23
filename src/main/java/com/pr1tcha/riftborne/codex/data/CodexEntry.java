@@ -8,6 +8,7 @@ public record CodexEntry(
         String textKey,
         String recommendationKey,
         int threatLevel,
+        String briefTextKey,
         boolean hiddenByDefault
 ) {
 }

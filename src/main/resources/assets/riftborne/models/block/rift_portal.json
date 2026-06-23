@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "frame": "minecraft:block/crying_obsidian",
+    "portal": "minecraft:block/purple_concrete",
+    "particle": "minecraft:block/crying_obsidian"
+  },
+  "elements": [
+    {
+      "from": [-8, 0, 6],
+      "to": [24, 32, 10],
+      "faces": {
+        "north": {"texture": "#frame"},
+        "south": {"texture": "#frame"},
+        "east": {"texture": "#frame"},
+        "west": {"texture": "#frame"},
+        "up": {"texture": "#frame"},
+        "down": {"texture": "#frame"}
+      }
+    },
+    {
+      "from": [-5, 3, 5],
+      "to": [21, 29, 11],
+      "faces": {
+        "north": {"texture": "#portal"},
+        "south": {"texture": "#portal"}
+      }
+    }
+  ]
+}

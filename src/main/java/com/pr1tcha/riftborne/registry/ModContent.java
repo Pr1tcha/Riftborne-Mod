@@ -3,11 +3,15 @@ package com.pr1tcha.riftborne.registry;
 import com.pr1tcha.riftborne.rift.block.RiftBlock;
 import com.pr1tcha.riftborne.rift.block.RiftBlockEntity;
 import com.pr1tcha.riftborne.rift.entity.RiftSplinterEntity;
+import com.pr1tcha.riftborne.rift.portal.RiftPortalBlock;
+import com.pr1tcha.riftborne.rift.portal.RiftPortalBlockEntity;
 import com.pr1tcha.riftborne.Riftborne;
 import com.pr1tcha.riftborne.codex.block.CodexLaptopBlock;
 import com.pr1tcha.riftborne.codex.block.CodexLaptopBlockEntity;
 import com.pr1tcha.riftborne.codex.block.CodexDockBlock;
 import com.pr1tcha.riftborne.codex.block.CodexDockBlockEntity;
+import com.pr1tcha.riftborne.codex.block.CodexDiagnosticCapsuleBlock;
+import com.pr1tcha.riftborne.codex.block.CodexDiagnosticCapsuleBlockEntity;
 import com.pr1tcha.riftborne.codex.item.CodexLaptopItem;
 import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.riftwalker.item.RiftwalkerArmorItem;
@@ -72,6 +76,17 @@ public class ModContent {
             () -> new CodexLaptopBlock(BlockBehaviour.Properties.of().strength(2.5F, 5.0F).noOcclusion()));
     public static final Supplier<Block> CODEX_DOCK = BLOCKS.register("codex_dock",
             () -> new CodexDockBlock(BlockBehaviour.Properties.of().strength(2.5F, 5.0F).noOcclusion()));
+    public static final Supplier<Block> CODEX_DIAGNOSTIC_CAPSULE = BLOCKS.register("codex_diagnostic_capsule",
+            () -> new CodexDiagnosticCapsuleBlock(BlockBehaviour.Properties.of()
+                    .strength(2.8F, 6.0F)
+                    .lightLevel(state -> 5)
+                    .noOcclusion()));
+    public static final Supplier<Block> RIFT_PORTAL = BLOCKS.register("rift_portal",
+            () -> new RiftPortalBlock(BlockBehaviour.Properties.of()
+                    .noCollission()
+                    .noLootTable()
+                    .strength(-1.0F, 3600000.0F)
+                    .lightLevel(state -> 11)));
     public static final Supplier<Block> RNA_INTERSPACE_STONE = interspaceBlock("rna_interspace_stone", 1);
     public static final Supplier<Block> RNA_INTERSPACE_SURFACE = interspaceBlock("rna_interspace_surface", 3);
     public static final Supplier<Block> RNA_INTERSPACE_VEIN = interspaceBlock("rna_interspace_vein", 8);
@@ -119,6 +134,15 @@ public class ModContent {
     public static final Supplier<BlockEntityType<CodexDockBlockEntity>> CODEX_DOCK_BE_TYPE =
             BLOCK_ENTITIES.register("codex_dock",
                     () -> BlockEntityType.Builder.of(CodexDockBlockEntity::new, CODEX_DOCK.get()).build(null));
+    public static final Supplier<BlockEntityType<CodexDiagnosticCapsuleBlockEntity>> CODEX_DIAGNOSTIC_CAPSULE_BE_TYPE =
+            BLOCK_ENTITIES.register("codex_diagnostic_capsule",
+                    () -> BlockEntityType.Builder.of(
+                            CodexDiagnosticCapsuleBlockEntity::new,
+                            CODEX_DIAGNOSTIC_CAPSULE.get()
+                    ).build(null));
+    public static final Supplier<BlockEntityType<RiftPortalBlockEntity>> RIFT_PORTAL_BE_TYPE =
+            BLOCK_ENTITIES.register("rift_portal",
+                    () -> BlockEntityType.Builder.of(RiftPortalBlockEntity::new, RIFT_PORTAL.get()).build(null));
 
     public static final Supplier<Item> RIFT_SHARD = ITEMS.register("rift_shard",
             () -> new Item(new Item.Properties()));
@@ -145,8 +169,12 @@ public class ModContent {
             () -> new CodexLaptopItem(CODEX_LAPTOP.get(), new Item.Properties()));
     public static final Supplier<Item> CODEX_DOCK_ITEM = ITEMS.register("codex_dock",
             () -> new BlockItem(CODEX_DOCK.get(), new Item.Properties()));
+    public static final Supplier<Item> CODEX_DIAGNOSTIC_CAPSULE_ITEM = ITEMS.register("codex_diagnostic_capsule",
+            () -> new BlockItem(CODEX_DIAGNOSTIC_CAPSULE.get(), new Item.Properties()));
     public static final Supplier<Item> POCKET_CODEX = ITEMS.register("pocket_codex",
             () -> new PocketCodexItem(new Item.Properties().stacksTo(1)));
+    public static final Supplier<Item> CODEX_FLASH_DRIVE = ITEMS.register("codex_flash_drive",
+            () -> new Item(new Item.Properties().stacksTo(16)));
     public static final Supplier<Item> RIFTWALKER_HOOD = ITEMS.register("riftwalker_hood",
             () -> new RiftwalkerArmorItem(ArmorItem.Type.HELMET, new Item.Properties().stacksTo(1).fireResistant()));
     public static final Supplier<Item> RIFTWALKER_COAT = ITEMS.register("riftwalker_coat",
@@ -219,7 +247,9 @@ public class ModContent {
                             .displayItems((parameters, output) -> {
                                 output.accept(CODEX_LAPTOP_ITEM.get());
                                 output.accept(CODEX_DOCK_ITEM.get());
+                                output.accept(CODEX_DIAGNOSTIC_CAPSULE_ITEM.get());
                                 output.accept(POCKET_CODEX.get());
+                                output.accept(CODEX_FLASH_DRIVE.get());
                             })
                             .build());
 
