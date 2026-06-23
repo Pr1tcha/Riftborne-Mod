@@ -1,0 +1,20 @@
+{
+  "id": "riftborne:archive_signal_01",
+  "title": "Архивный сигнал 01",
+  "category": "SIGNALS",
+  "state": "ENCRYPTED",
+  "summary": "Повторяющаяся передача с повреждённым заголовком.",
+  "fullContent": "Содержимое передачи станет доступно после восстановления всех фрагментов.",
+  "sourceType": "SIGNAL",
+  "flags": ["lore", "encrypted"],
+  "metadata": {
+    "frequency": "17.4",
+    "origin": "unknown"
+  },
+  "requirements": ["signal:archive_01"],
+  "decryptData": {
+    "type": "ENCRYPTED",
+    "requiredFragments": 3,
+    "successState": "UNLOCKED"
+  }
+}

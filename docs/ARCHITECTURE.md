@@ -44,6 +44,10 @@ This document describes the current v0.1 rift implementation as it exists in cod
   - Serializable RNA model, formation paths, stages, and stat identifiers.
 - `rna.command`
   - RNA and meta-wear test commands.
+- `rna.combat`
+  - Shared server authority for registered RNA abilities, access checks, costs, cooldowns, stage modifiers, growth, and legacy migration.
+- `rna.combat.data`
+  - Persistent unlocked abilities, active states, cooldowns, last-use ticks, growth cooldowns, and schema version.
 - `codex`
   - Extensible Codex entry catalog.
 - `codex.data`
@@ -75,6 +79,9 @@ Gameplay systems do not manipulate these tags directly. They use `RnaApi` or `Ri
 - The existing telekinesis unlock now requires active RNA.
 - RNA throughput, density, connectivity, and overload resistance tune telekinesis behavior or cost.
 - Telekinesis adds meta-wear only through `RnaApi`, so future abilities can use the same path.
+- `riftborne:telekinesis` is registered in the shared RNA combat registry.
+- The legacy `RiftborneTelekinesis` player flag is migrated into `Riftborne.RNA.Combat.UnlockedAbilities`.
+- Combat ability commands live under `/riftborne rna abilities`; the old top-level meta-wear and aspects branches are no longer registered.
 
 ## Field Codex Laptop
 

@@ -186,9 +186,13 @@ public final class RnaApi {
     }
 
     private static String localizeSource(String source) {
-        String key = "rna.riftborne.source." + source;
         return switch (source) {
-            case "command", "passive_decay" -> CodexData.translationArgument(key);
+            case "telekinesis_grab",
+                 "telekinesis_block_grab",
+                 "telekinesis_push",
+                 "ability_debug",
+                 "command" -> CodexData.translationArgument("rna_source." + source);
+            case "passive_decay" -> CodexData.translationArgument("rna.riftborne.source.passive_decay");
             default -> source;
         };
     }

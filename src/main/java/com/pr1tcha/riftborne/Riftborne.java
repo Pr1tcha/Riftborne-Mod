@@ -12,6 +12,8 @@ import com.pr1tcha.riftborne.rift.RiftWorldStage;
 import com.pr1tcha.riftborne.aspects.telekinesis.client.TelekineticBlockRenderer;
 import com.pr1tcha.riftborne.aspects.telekinesis.TelekinesisNetwork;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
+import com.pr1tcha.riftborne.riftwalker.network.RiftwalkerNetwork;
+import com.pr1tcha.riftborne.codex.data.entry.CodexEntryReloadListener;
 import com.pr1tcha.riftborne.codex.client.CodexLaptopRenderer;
 import com.pr1tcha.riftborne.codex.client.CodexDockRenderer;
 import com.pr1tcha.riftborne.client.model.RiftborneBakedModelFactory;
@@ -31,6 +33,7 @@ import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.slf4j.Logger;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -46,6 +49,7 @@ public class Riftborne {
         modEventBus.addListener(ModContent::registerEntityAttributes);
         modEventBus.addListener(TelekinesisNetwork::register);
         modEventBus.addListener(CodexNetwork::register);
+        modEventBus.addListener(RiftwalkerNetwork::register);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);
@@ -60,6 +64,11 @@ public class Riftborne {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         RiftborneCommands.register(event.getServer().getCommands().getDispatcher());
+    }
+
+    @SubscribeEvent
+    public void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(CodexEntryReloadListener.INSTANCE);
     }
 
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

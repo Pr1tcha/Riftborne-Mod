@@ -1,5 +1,8 @@
 {
   "itemGroup.riftborne": "Riftborne",
+  "itemGroup.riftborne.blocks": "Riftborne: Blocks",
+  "itemGroup.riftborne.mobs": "Riftborne: Mobs",
+  "itemGroup.riftborne.technical_blocks": "Riftborne: Technical Blocks",
 
   "block.riftborne.rift": "Rift Anchor",
   "block.riftborne.contour_stone": "Contour Stone",
@@ -132,6 +135,12 @@
   "rna.riftborne.meta_wear_stage.architecture_break": "Architecture break",
   "rna.riftborne.source.command": "command",
   "rna.riftborne.source.passive_decay": "passive recovery",
+  "rna_source.telekinesis_grab": "telekinetic grab",
+  "rna_source.telekinesis_block_grab": "telekinetic structural grab",
+  "rna_source.telekinesis_push": "telekinetic force throw",
+  "rna_source.ability_debug": "ability debug",
+  "rna_source.command": "command",
+  "rna_ability.riftborne.telekinesis": "Telekinesis",
 
   "command.riftborne.rifts.stage": "Riftborne rift stage: %s",
   "command.riftborne.rifts.stage_unavailable": "The Riftborne rift stage gamerule is not registered yet.",
@@ -222,5 +231,15 @@
   "codex.riftborne.entry.riftwalker_interspace.title": "Riftwalker Interspace",
   "codex.riftborne.entry.riftwalker_interspace.short": "A bright fragmented layer with unstable geometry.",
   "codex.riftborne.entry.riftwalker_interspace.text": "Floating formations and energetic veins indicate persistent spatial displacement.",
-  "codex.riftborne.entry.riftwalker_interspace.recommendation": "Mark the return point before moving away."
+  "codex.riftborne.entry.riftwalker_interspace.recommendation": "Mark the return point before moving away.",
+
+  "itemGroup.riftborne.equipment": "Riftborne: Equipment",
+  "item.riftborne.riftwalker_hood": "Riftwalker Hood",
+  "item.riftborne.riftwalker_coat": "Riftwalker Coat",
+  "item.riftborne.riftwalker_leggings": "Riftwalker Leggings",
+  "item.riftborne.riftwalker_boots": "Riftwalker Boots",
+  "command.riftborne.riftwalker.given": "Riftwalker equipment issued.",
+  "key.riftborne.riftwalker.mask_lights": "Riftwalker: Toggle Mask Lights",
+  "message.riftborne.riftwalker.mask_lights_on": "Mask lights enabled.",
+  "message.riftborne.riftwalker.mask_lights_off": "Mask lights disabled."
 }

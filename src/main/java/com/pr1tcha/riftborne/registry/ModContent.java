@@ -10,6 +10,7 @@ import com.pr1tcha.riftborne.codex.block.CodexDockBlock;
 import com.pr1tcha.riftborne.codex.block.CodexDockBlockEntity;
 import com.pr1tcha.riftborne.codex.item.CodexLaptopItem;
 import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
+import com.pr1tcha.riftborne.riftwalker.item.RiftwalkerArmorItem;
 import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,6 +20,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -145,6 +147,14 @@ public class ModContent {
             () -> new BlockItem(CODEX_DOCK.get(), new Item.Properties()));
     public static final Supplier<Item> POCKET_CODEX = ITEMS.register("pocket_codex",
             () -> new PocketCodexItem(new Item.Properties().stacksTo(1)));
+    public static final Supplier<Item> RIFTWALKER_HOOD = ITEMS.register("riftwalker_hood",
+            () -> new RiftwalkerArmorItem(ArmorItem.Type.HELMET, new Item.Properties().stacksTo(1).fireResistant()));
+    public static final Supplier<Item> RIFTWALKER_COAT = ITEMS.register("riftwalker_coat",
+            () -> new RiftwalkerArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Properties().stacksTo(1).fireResistant()));
+    public static final Supplier<Item> RIFTWALKER_LEGGINGS = ITEMS.register("riftwalker_leggings",
+            () -> new RiftwalkerArmorItem(ArmorItem.Type.LEGGINGS, new Item.Properties().stacksTo(1).fireResistant()));
+    public static final Supplier<Item> RIFTWALKER_BOOTS = ITEMS.register("riftwalker_boots",
+            () -> new RiftwalkerArmorItem(ArmorItem.Type.BOOTS, new Item.Properties().stacksTo(1).fireResistant()));
     public static final Supplier<Item> RNA_INTERSPACE_STONE_ITEM = blockItem("rna_interspace_stone", RNA_INTERSPACE_STONE);
     public static final Supplier<Item> RNA_INTERSPACE_SURFACE_ITEM = blockItem("rna_interspace_surface", RNA_INTERSPACE_SURFACE);
     public static final Supplier<Item> RNA_INTERSPACE_VEIN_ITEM = blockItem("rna_interspace_vein", RNA_INTERSPACE_VEIN);
@@ -171,9 +181,9 @@ public class ModContent {
     public static final Supplier<Item> RIFT_SPLINTER_SPAWN_EGG = ITEMS.register("rift_splinter_spawn_egg",
             () -> new SpawnEggItem(RIFT_SPLINTER.get(), 0x1B1425, 0x8E35FF, new Item.Properties()));
 
-    public static final Supplier<CreativeModeTab> RIFTBORNE_TAB = CREATIVE_MODE_TABS.register("riftborne",
+    public static final Supplier<CreativeModeTab> RIFTBORNE_BLOCKS_TAB = CREATIVE_MODE_TABS.register("blocks",
             () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.riftborne"))
+                    .title(Component.translatable("itemGroup.riftborne.blocks"))
                     .icon(() -> new ItemStack(CONTOUR_VEIN.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(RIFT_SHARD.get());
@@ -183,18 +193,48 @@ public class ModContent {
                         output.accept(CONTOUR_STONE_VEIN_ITEM.get());
                         output.accept(CONTOUR_WEEPING_STONE_ITEM.get());
                         output.accept(CONTOUR_VEIN_ITEM.get());
-                        output.accept(CODEX_LAPTOP_ITEM.get());
-                        output.accept(CODEX_DOCK_ITEM.get());
-                        output.accept(POCKET_CODEX.get());
                         output.accept(RNA_INTERSPACE_STONE_ITEM.get());
                         output.accept(RNA_INTERSPACE_SURFACE_ITEM.get());
                         output.accept(RNA_INTERSPACE_VEIN_ITEM.get());
                         output.accept(RIFTWALKER_INTERSPACE_STONE_ITEM.get());
                         output.accept(RIFTWALKER_INTERSPACE_SURFACE_ITEM.get());
                         output.accept(RIFTWALKER_INTERSPACE_VEIN_ITEM.get());
+                    })
+                    .build());
+
+    public static final Supplier<CreativeModeTab> RIFTBORNE_MOBS_TAB = CREATIVE_MODE_TABS.register("mobs",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.riftborne.mobs"))
+                    .icon(() -> new ItemStack(RIFT_SPLINTER_SPAWN_EGG.get()))
+                    .displayItems((parameters, output) -> {
                         output.accept(RIFT_SPLINTER_SPAWN_EGG.get());
                     })
                     .build());
+
+    public static final Supplier<CreativeModeTab> RIFTBORNE_TECHNICAL_BLOCKS_TAB =
+            CREATIVE_MODE_TABS.register("technical_blocks",
+                    () -> CreativeModeTab.builder()
+                            .title(Component.translatable("itemGroup.riftborne.technical_blocks"))
+                            .icon(() -> new ItemStack(CODEX_LAPTOP_ITEM.get()))
+                            .displayItems((parameters, output) -> {
+                                output.accept(CODEX_LAPTOP_ITEM.get());
+                                output.accept(CODEX_DOCK_ITEM.get());
+                                output.accept(POCKET_CODEX.get());
+                            })
+                            .build());
+
+    public static final Supplier<CreativeModeTab> RIFTBORNE_EQUIPMENT_TAB =
+            CREATIVE_MODE_TABS.register("equipment",
+                    () -> CreativeModeTab.builder()
+                            .title(Component.translatable("itemGroup.riftborne.equipment"))
+                            .icon(() -> new ItemStack(RIFTWALKER_HOOD.get()))
+                            .displayItems((parameters, output) -> {
+                                output.accept(RIFTWALKER_HOOD.get());
+                                output.accept(RIFTWALKER_COAT.get());
+                                output.accept(RIFTWALKER_LEGGINGS.get());
+                                output.accept(RIFTWALKER_BOOTS.get());
+                            })
+                            .build());
 
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);

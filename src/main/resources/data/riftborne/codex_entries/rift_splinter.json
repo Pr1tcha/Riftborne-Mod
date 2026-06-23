@@ -1,0 +1,14 @@
+{
+  "id": "riftborne:rift_splinter",
+  "title": "Осколок разлома",
+  "category": "MOBS",
+  "state": "LOCKED",
+  "summary": "Подвижная сущность, связанная с активным разломом.",
+  "fullContent": "Поведение осколка зависит от состояния породившего его разлома. Рекомендуется наблюдение с безопасной дистанции.",
+  "sourceType": "SCAN",
+  "flags": ["entity", "field_data"],
+  "metadata": {
+    "threat": "2"
+  },
+  "requirements": ["scan:rift_splinter"]
+}

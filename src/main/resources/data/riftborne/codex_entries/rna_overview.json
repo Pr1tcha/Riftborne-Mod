@@ -1,0 +1,14 @@
+{
+  "id": "riftborne:rna_overview",
+  "title": "Обзор РНА",
+  "category": "RNA",
+  "state": "PARTIAL",
+  "summary": "Основные сведения о резонансной нейронной архитектуре.",
+  "fullContent": "РНА формирует устойчивую связь между субъектом и межпространственными процессами.",
+  "sourceType": "AUTO_UNLOCK",
+  "flags": ["subject_data"],
+  "metadata": {
+    "threat": "1"
+  },
+  "requirements": []
+}
