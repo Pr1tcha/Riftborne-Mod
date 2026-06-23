@@ -1,0 +1,20 @@
+{
+  "id": "riftborne:discard_contour",
+  "title": "Контур Отброса",
+  "category": "DIMENSIONS",
+  "state": "DAMAGED",
+  "summary": "Фрагментарные координаты нестабильного межпространства.",
+  "fullContent": "Восстановленные данные указывают на замкнутый контур, из которого затруднён обычный выход.",
+  "sourceType": "SIGNAL",
+  "flags": ["lore", "dangerous", "damaged"],
+  "metadata": {
+    "threat": "5",
+    "signal_band": "unknown"
+  },
+  "requirements": ["signal:discard_contour"],
+  "decryptData": {
+    "type": "FRAGMENTED",
+    "requiredFragments": 4,
+    "successState": "PARTIAL"
+  }
+}

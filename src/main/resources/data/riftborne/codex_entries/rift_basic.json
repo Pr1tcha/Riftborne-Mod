@@ -1,0 +1,20 @@
+{
+  "id": "riftborne:rift_basic",
+  "title": "Базовые сведения о разломах",
+  "category": "RIFTS",
+  "state": "LOCKED",
+  "summary": "Нестабильные пространственные разрывы неизвестного происхождения.",
+  "fullContent": "Разлом искажает пространство вокруг точки возникновения. При работе рядом требуется соблюдать дистанцию и отслеживать изменение стадии.",
+  "sourceType": "SCAN",
+  "flags": ["field_data"],
+  "metadata": {
+    "threat": "3",
+    "author": "Riftborne Research"
+  },
+  "requirements": ["scan:rift"],
+  "decryptData": {
+    "type": "NONE",
+    "requiredFragments": 0,
+    "successState": "UNLOCKED"
+  }
+}
