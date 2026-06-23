@@ -3,6 +3,10 @@ package com.pr1tcha.riftborne.aspects.telekinesis;
 import com.pr1tcha.riftborne.Riftborne;
 import com.pr1tcha.riftborne.rna.RnaApi;
 import com.pr1tcha.riftborne.rna.data.RnaData;
+import com.pr1tcha.riftborne.rna.combat.RnaAbilityManager;
+import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityResult;
+import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityUseContext;
+import com.pr1tcha.riftborne.rna.combat.registry.RnaAbilityRegistry;
 import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +44,6 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = Riftborne.MODID)
 public final class TelekinesisAbility {
-    private static final String ABILITY_TAG = "RiftborneTelekinesis";
     private static final double MAX_GRAB_RANGE = 22.0D;
     private static final double MIN_HOLD_DISTANCE = 2.5D;
     private static final double MIN_ITEM_HOLD_DISTANCE = 0.75D;
@@ -65,11 +68,17 @@ public final class TelekinesisAbility {
     }
 
     public static boolean hasAbility(Player player) {
-        return player.getPersistentData().getBoolean(ABILITY_TAG) && RnaApi.hasActiveRna(player);
+        return player instanceof ServerPlayer serverPlayer
+                && RnaAbilityManager.isUnlocked(serverPlayer, RnaAbilityRegistry.TELEKINESIS_ID)
+                && RnaApi.hasActiveRna(player);
     }
 
     public static void setAbility(ServerPlayer player, boolean enabled) {
-        player.getPersistentData().putBoolean(ABILITY_TAG, enabled);
+        if (enabled) {
+            RnaAbilityManager.grant(player, RnaAbilityRegistry.TELEKINESIS_ID);
+        } else {
+            RnaAbilityManager.revoke(player, RnaAbilityRegistry.TELEKINESIS_ID);
+        }
         if (!enabled) {
             HOLDING_PLAYERS.remove(player.getUUID());
             cancelBlockCharge(player.getUUID());
@@ -113,27 +122,36 @@ public final class TelekinesisAbility {
     }
 
     public static void pushHeldTarget(ServerPlayer player) {
-        GrabState state = ACTIVE_GRABS.remove(player.getUUID());
+        GrabState state = ACTIVE_GRABS.get(player.getUUID());
         if (state == null) {
             return;
         }
 
-        TelekinesisNetwork.sendGrabState(player, false);
         if (!hasAbility(player) || !player.serverLevel().dimension().equals(state.dimension)) {
-            restoreTargetGravity(player.getServer(), state, player);
-            return;
-        }
-
-        HOLDING_PLAYERS.remove(player.getUUID());
-        cancelBlockCharge(player.getUUID());
-
-        RnaApi.addMetaWear(player, 2, "telekinesis_push");
-        if (!hasAbility(player)) {
+            ACTIVE_GRABS.remove(player.getUUID());
+            TelekinesisNetwork.sendGrabState(player, false);
             restoreTargetGravity(player.getServer(), state, player);
             return;
         }
 
         Entity target = player.serverLevel().getEntity(state.entityId);
+        RnaAbilityUseContext useContext = RnaAbilityUseContext.action(
+                player,
+                target,
+                null,
+                "push",
+                "telekinesis_push"
+        );
+        if (RnaAbilityManager.checkUse(player, RnaAbilityRegistry.TELEKINESIS_ID, useContext)
+                != RnaAbilityResult.SUCCESS) {
+            return;
+        }
+
+        ACTIVE_GRABS.remove(player.getUUID());
+        TelekinesisNetwork.sendGrabState(player, false);
+        HOLDING_PLAYERS.remove(player.getUUID());
+        cancelBlockCharge(player.getUUID());
+
         if (!canGrabTarget(player, target)) {
             restoreTargetGravity(player.getServer(), state);
             return;
@@ -157,6 +175,12 @@ public final class TelekinesisAbility {
                     player.serverLevel().getGameTime() + THROWN_IMPACT_TRACK_TICKS
             ));
         }
+
+        RnaAbilityManager.completeSuccessfulUse(
+                player,
+                RnaAbilityRegistry.TELEKINESIS_ID,
+                useContext
+        );
     }
 
     private static boolean tryStartEntityGrab(ServerPlayer player) {
@@ -173,8 +197,16 @@ public final class TelekinesisAbility {
         if (!canGrabTarget(player, target)) {
             return false;
         }
-        int wear = target instanceof TelekineticBlockEntity ? 2 : 1;
-        if (!RnaApi.addMetaWear(player, wear, "telekinesis_grab") || !RnaApi.hasActiveRna(player)) {
+        boolean blockGrab = target instanceof TelekineticBlockEntity;
+        RnaAbilityUseContext useContext = RnaAbilityUseContext.action(
+                player,
+                target,
+                blockGrab ? target.blockPosition() : null,
+                blockGrab ? "block_grab" : "grab",
+                blockGrab ? "telekinesis_block_grab" : "telekinesis_grab"
+        );
+        if (RnaAbilityManager.checkUse(player, RnaAbilityRegistry.TELEKINESIS_ID, useContext)
+                != RnaAbilityResult.SUCCESS) {
             return false;
         }
 
@@ -196,6 +228,18 @@ public final class TelekinesisAbility {
         }
         ACTIVE_GRABS.put(player.getUUID(), state);
         TelekinesisNetwork.sendGrabState(player, true);
+        RnaAbilityResult result = RnaAbilityManager.completeSuccessfulUse(
+                player,
+                RnaAbilityRegistry.TELEKINESIS_ID,
+                useContext
+        );
+        if (result != RnaAbilityResult.SUCCESS || !RnaApi.hasActiveRna(player)) {
+            ACTIVE_GRABS.remove(player.getUUID());
+            target.setNoGravity(state.originalNoGravity);
+            restoreItemPickupTarget(target, state);
+            TelekinesisNetwork.sendGrabState(player, false);
+            return false;
+        }
         return true;
     }
 
@@ -530,9 +574,6 @@ public final class TelekinesisAbility {
             stopGrab(originalPlayer);
         }
 
-        if (event.getOriginal().getPersistentData().getBoolean(ABILITY_TAG)) {
-            event.getEntity().getPersistentData().putBoolean(ABILITY_TAG, true);
-        }
     }
 
     @SubscribeEvent
