@@ -1,5 +1,6 @@
 package com.pr1tcha.riftborne.rna.command;
 
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -10,6 +11,8 @@ import com.pr1tcha.riftborne.rna.combat.ability.RnaAbility;
 import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityData;
 import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityResult;
 import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityUseContext;
+import com.pr1tcha.riftborne.rna.combat.data.RnaAffinityTag;
+import com.pr1tcha.riftborne.rna.combat.data.RnaLoadBand;
 import com.pr1tcha.riftborne.rna.combat.registry.RnaAbilityRegistry;
 import com.pr1tcha.riftborne.rna.data.FormationPath;
 import com.pr1tcha.riftborne.rna.data.RnaData;
@@ -18,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -26,6 +30,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 
 public final class RnaCommand {
     private RnaCommand() {
@@ -38,6 +43,11 @@ public final class RnaCommand {
                 .then(statsCommand())
                 .then(metaWearCommand())
                 .then(abilitiesCommand())
+                .then(loadCommand())
+                .then(skillCommand())
+                .then(cooldownCommand())
+                .then(affinityCommand())
+                .then(debugCommand())
                 // Compatibility aliases. They call the same implementation as the new tree.
                 .then(Commands.literal("init")
                         .requires(RnaCommand::operator)
@@ -225,6 +235,111 @@ public final class RnaCommand {
                                 context.getSource().getPlayerOrException()))
                         .then(Commands.argument("target", EntityArgument.player())
                                 .executes(context -> collapse(
+                                        context.getSource(),
+                                        EntityArgument.getPlayer(context, "target")))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> loadCommand() {
+        return Commands.literal("load")
+                .then(Commands.literal("get")
+                        .executes(context -> showLoad(
+                                context.getSource(),
+                                context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .requires(RnaCommand::operator)
+                                .executes(context -> showLoad(
+                                        context.getSource(),
+                                        EntityArgument.getPlayer(context, "target")))))
+                .then(Commands.literal("set")
+                        .requires(RnaCommand::operator)
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .then(Commands.argument("value", FloatArgumentType.floatArg(0.0F, 100.0F))
+                                        .executes(context -> setLoad(
+                                                context.getSource(),
+                                                EntityArgument.getPlayer(context, "target"),
+                                                FloatArgumentType.getFloat(context, "value"))))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> skillCommand() {
+        return Commands.literal("skill")
+                .then(Commands.literal("list")
+                        .executes(context -> listAbilities(
+                                context.getSource(),
+                                context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .requires(RnaCommand::operator)
+                                .executes(context -> listAbilities(
+                                        context.getSource(),
+                                        EntityArgument.getPlayer(context, "target")))))
+                .then(Commands.literal("unlock")
+                        .requires(RnaCommand::operator)
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .then(abilityArgument()
+                                        .executes(context -> changeAbility(
+                                                context.getSource(),
+                                                List.of(EntityArgument.getPlayer(context, "target")),
+                                                abilityId(context),
+                                                true)))))
+                .then(Commands.literal("lock")
+                        .requires(RnaCommand::operator)
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .then(abilityArgument()
+                                        .executes(context -> changeAbility(
+                                                context.getSource(),
+                                                List.of(EntityArgument.getPlayer(context, "target")),
+                                                abilityId(context),
+                                                false)))))
+                .then(Commands.literal("use")
+                        .requires(RnaCommand::operator)
+                        .then(abilityArgument()
+                                .executes(context -> useSkill(
+                                        context.getSource(),
+                                        context.getSource().getPlayerOrException(),
+                                        abilityId(context)))
+                                .then(Commands.argument("target", EntityArgument.player())
+                                        .executes(context -> useSkill(
+                                                context.getSource(),
+                                                EntityArgument.getPlayer(context, "target"),
+                                                abilityId(context))))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> cooldownCommand() {
+        return Commands.literal("cooldown")
+                .then(Commands.literal("reset")
+                        .requires(RnaCommand::operator)
+                        .executes(context -> clearCooldown(
+                                context.getSource(),
+                                List.of(context.getSource().getPlayerOrException()),
+                                "all"))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .executes(context -> clearCooldown(
+                                        context.getSource(),
+                                        List.of(EntityArgument.getPlayer(context, "target")),
+                                        "all"))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> affinityCommand() {
+        return Commands.literal("affinity")
+                .then(Commands.literal("get")
+                        .executes(context -> showAffinity(
+                                context.getSource(),
+                                context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .requires(RnaCommand::operator)
+                                .executes(context -> showAffinity(
+                                        context.getSource(),
+                                        EntityArgument.getPlayer(context, "target")))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> debugCommand() {
+        return Commands.literal("debug")
+                .then(Commands.literal("clear")
+                        .requires(RnaCommand::operator)
+                        .executes(context -> clearCombatDebug(
+                                context.getSource(),
+                                context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .executes(context -> clearCombatDebug(
                                         context.getSource(),
                                         EntityArgument.getPlayer(context, "target")))));
     }
@@ -430,6 +545,73 @@ public final class RnaCommand {
     private static int collapse(CommandSourceStack source, ServerPlayer target) {
         RnaApi.collapse(target, "command");
         source.sendSuccess(() -> Component.literal("RNA collapsed: " + target.getGameProfile().getName()), true);
+        return 1;
+    }
+
+    private static int showLoad(CommandSourceStack source, ServerPlayer target) {
+        RnaAbilityData data = RnaAbilityManager.getData(target);
+        RnaLoadBand band = RnaAbilityManager.loadBand(data);
+        source.sendSuccess(() -> Component.literal(target.getGameProfile().getName()
+                + ": RNA combat load="
+                + String.format(Locale.ROOT, "%.1f", data.currentLoad())
+                + " band=" + band
+                + " instability="
+                + Math.max(0L, data.instabilityUntilTick() - target.serverLevel().getGameTime())
+                + "t"), false);
+        return Mth.floor(data.currentLoad());
+    }
+
+    private static int setLoad(CommandSourceStack source, ServerPlayer target, float value) {
+        RnaAbilityManager.setCurrentLoad(target, value);
+        return showLoad(source, target);
+    }
+
+    private static int useSkill(
+            CommandSourceStack source,
+            ServerPlayer target,
+            ResourceLocation abilityId
+    ) {
+        RnaAbility ability = RnaAbilityRegistry.get(abilityId);
+        if (ability == null) {
+            source.sendFailure(Component.literal("Unknown RNA skill: " + abilityId));
+            return 0;
+        }
+        RnaAbilityResult result = RnaAbilityManager.activateBasicSkill(
+                target,
+                abilityId,
+                RnaAbilityUseContext.action(
+                        target,
+                        null,
+                        target.blockPosition(),
+                        "command_use",
+                        "command"
+                )
+        );
+        source.sendSuccess(() -> Component.literal("RNA skill use "
+                + abilityId
+                + ": "
+                + RnaAbilityManager.describeResult(result)), true);
+        showLoad(source, target);
+        return result == RnaAbilityResult.SUCCESS ? 1 : 0;
+    }
+
+    private static int showAffinity(CommandSourceStack source, ServerPlayer target) {
+        RnaAbilityData data = RnaAbilityManager.getData(target);
+        Map<RnaAffinityTag, Integer> affinity = data.affinityCounters();
+        source.sendSuccess(() -> Component.literal("RNA affinity counters ["
+                + target.getGameProfile().getName()
+                + "]"), false);
+        for (RnaAffinityTag tag : RnaAffinityTag.values()) {
+            int value = affinity.getOrDefault(tag, 0);
+            source.sendSuccess(() -> Component.literal(tag.id() + "=" + value), false);
+        }
+        return affinity.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    private static int clearCombatDebug(CommandSourceStack source, ServerPlayer target) {
+        RnaAbilityManager.clearCombatDebugState(target);
+        source.sendSuccess(() -> Component.literal("RNA combat debug state cleared: "
+                + target.getGameProfile().getName()), true);
         return 1;
     }
 

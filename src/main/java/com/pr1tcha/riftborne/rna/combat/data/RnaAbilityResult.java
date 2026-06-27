@@ -6,6 +6,7 @@ public enum RnaAbilityResult {
     FAIL_NO_RNA,
     FAIL_LOCKED,
     FAIL_COOLDOWN,
+    FAIL_OVERLOAD,
     FAIL_REQUIREMENT,
     FAIL_STAGE,
     FAIL_CONTEXT

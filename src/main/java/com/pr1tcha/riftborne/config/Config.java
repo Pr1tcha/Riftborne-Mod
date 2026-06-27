@@ -18,6 +18,12 @@ public class Config {
     public static final ModConfigSpec.IntValue metaWearStrainDecayInterval;
     public static final ModConfigSpec.IntValue metaWearDistortionDecayInterval;
     public static final ModConfigSpec.IntValue metaWearRejectionDecayInterval;
+    public static final ModConfigSpec.DoubleValue basicRnaLoadDecayPerSecond;
+    public static final ModConfigSpec.IntValue basicRnaOverloadWarningThreshold;
+    public static final ModConfigSpec.IntValue basicRnaOverloadLockThreshold;
+    public static final ModConfigSpec.IntValue basicRnaFocusCooldown;
+    public static final ModConfigSpec.IntValue basicRnaImpulseStepCooldown;
+    public static final ModConfigSpec.IntValue basicRnaOverloadVentCooldown;
     public static final ModConfigSpec.DoubleValue codexScanDistance;
 
     static {
@@ -66,6 +72,34 @@ public class Config {
         metaWearRejectionDecayInterval = BUILDER
                 .comment("Ticks required to passively remove one meta-wear point in REJECTION")
                 .defineInRange("rejectionDecayInterval", 2400, 20, 72000);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Basic pre-aspect RNA combat settings").push("basic_rna_combat");
+
+        basicRnaLoadDecayPerSecond = BUILDER
+                .comment("Resonant combat load removed per second while the player is not adding new load")
+                .defineInRange("loadDecayPerSecond", 4.0D, 0.0D, 100.0D);
+
+        basicRnaOverloadWarningThreshold = BUILDER
+                .comment("Combat load where overload warnings and unstable skill behavior may begin")
+                .defineInRange("overloadWarningThreshold", 75, 1, 100);
+
+        basicRnaOverloadLockThreshold = BUILDER
+                .comment("Combat load where new basic RNA skills are blocked")
+                .defineInRange("overloadLockThreshold", 90, 1, 100);
+
+        basicRnaFocusCooldown = BUILDER
+                .comment("Cooldown for rna_focus in ticks")
+                .defineInRange("rnaFocusCooldown", 80, 0, 72000);
+
+        basicRnaImpulseStepCooldown = BUILDER
+                .comment("Cooldown for rna_impulse_step in ticks")
+                .defineInRange("rnaImpulseStepCooldown", 60, 0, 72000);
+
+        basicRnaOverloadVentCooldown = BUILDER
+                .comment("Cooldown for rna_overload_vent in ticks")
+                .defineInRange("rnaOverloadVentCooldown", 400, 0, 72000);
 
         BUILDER.pop();
     }

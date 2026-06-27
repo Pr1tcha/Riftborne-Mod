@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.util.Mth;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -18,6 +19,12 @@ public final class RnaAbilityData {
     private final Map<String, Long> cooldowns = new LinkedHashMap<>();
     private final Map<String, Long> lastUseTicks = new LinkedHashMap<>();
     private final Map<String, Long> growthCooldowns = new LinkedHashMap<>();
+    private final Map<String, Long> activeStateUntil = new LinkedHashMap<>();
+    private final Map<RnaAffinityTag, Integer> affinityCounters = new LinkedHashMap<>();
+    private float currentLoad;
+    private long lastLoadTick;
+    private long instabilityUntilTick;
+    private String lastCombatAction = "";
     private int version = CURRENT_VERSION;
 
     public static RnaAbilityData load(CompoundTag tag) {
@@ -27,6 +34,12 @@ public final class RnaAbilityData {
         readLongMap(tag, "Cooldowns", data.cooldowns);
         readLongMap(tag, "LastUseTicks", data.lastUseTicks);
         readLongMap(tag, "GrowthCooldowns", data.growthCooldowns);
+        readLongMap(tag, "ActiveStateUntil", data.activeStateUntil);
+        readAffinityCounters(tag.getCompound("AffinityCounters"), data.affinityCounters);
+        data.currentLoad = tag.contains("CurrentLoad") ? Mth.clamp(tag.getFloat("CurrentLoad"), 0.0F, 100.0F) : 0.0F;
+        data.lastLoadTick = tag.contains("LastLoadTick") ? tag.getLong("LastLoadTick") : 0L;
+        data.instabilityUntilTick = tag.contains("InstabilityUntilTick") ? tag.getLong("InstabilityUntilTick") : 0L;
+        data.lastCombatAction = tag.getString("LastCombatAction");
         data.version = tag.contains("Version") ? tag.getInt("Version") : CURRENT_VERSION;
         return data;
     }
@@ -38,6 +51,12 @@ public final class RnaAbilityData {
         tag.put("Cooldowns", writeLongMap(cooldowns));
         tag.put("LastUseTicks", writeLongMap(lastUseTicks));
         tag.put("GrowthCooldowns", writeLongMap(growthCooldowns));
+        tag.put("ActiveStateUntil", writeLongMap(activeStateUntil));
+        tag.put("AffinityCounters", writeAffinityCounters(affinityCounters));
+        tag.putFloat("CurrentLoad", currentLoad);
+        tag.putLong("LastLoadTick", lastLoadTick);
+        tag.putLong("InstabilityUntilTick", instabilityUntilTick);
+        tag.putString("LastCombatAction", lastCombatAction);
         tag.putInt("Version", CURRENT_VERSION);
         return tag;
     }
@@ -54,6 +73,7 @@ public final class RnaAbilityData {
         activeAbilities.remove(id);
         cooldowns.remove(id);
         lastUseTicks.remove(id);
+        activeStateUntil.remove(id);
         growthCooldowns.keySet().removeIf(key -> key.startsWith(id + "|"));
         return unlockedAbilities.remove(id);
     }
@@ -102,6 +122,90 @@ public final class RnaAbilityData {
         growthCooldowns.put(growthKey(abilityId, stat), tick);
     }
 
+    public float currentLoad() {
+        return currentLoad;
+    }
+
+    public void setCurrentLoad(float currentLoad) {
+        this.currentLoad = Mth.clamp(currentLoad, 0.0F, 100.0F);
+    }
+
+    public void addLoad(float amount) {
+        setCurrentLoad(currentLoad + amount);
+    }
+
+    public long lastLoadTick() {
+        return lastLoadTick;
+    }
+
+    public void setLastLoadTick(long lastLoadTick) {
+        this.lastLoadTick = Math.max(0L, lastLoadTick);
+    }
+
+    public long instabilityUntilTick() {
+        return instabilityUntilTick;
+    }
+
+    public void setInstabilityUntilTick(long instabilityUntilTick) {
+        this.instabilityUntilTick = Math.max(0L, instabilityUntilTick);
+    }
+
+    public String lastCombatAction() {
+        return lastCombatAction;
+    }
+
+    public void setLastCombatAction(String lastCombatAction) {
+        this.lastCombatAction = lastCombatAction == null ? "" : lastCombatAction;
+    }
+
+    public long activeStateUntil(String id) {
+        return activeStateUntil.getOrDefault(id, 0L);
+    }
+
+    public void setActiveStateUntil(String id, long tick) {
+        if (tick <= 0L) {
+            activeAbilities.remove(id);
+            activeStateUntil.remove(id);
+        } else {
+            activeAbilities.add(id);
+            activeStateUntil.put(id, tick);
+        }
+    }
+
+    public void expireActiveStates(long gameTime) {
+        activeStateUntil.entrySet().removeIf(entry -> {
+            boolean expired = entry.getValue() <= gameTime;
+            if (expired) {
+                activeAbilities.remove(entry.getKey());
+            }
+            return expired;
+        });
+    }
+
+    public int affinity(RnaAffinityTag tag) {
+        return affinityCounters.getOrDefault(tag, 0);
+    }
+
+    public void addAffinity(RnaAffinityTag tag, int amount) {
+        if (tag != null && amount > 0) {
+            affinityCounters.merge(tag, amount, Integer::sum);
+        }
+    }
+
+    public Map<RnaAffinityTag, Integer> affinityCounters() {
+        return Map.copyOf(affinityCounters);
+    }
+
+    public void clearCombatState() {
+        activeAbilities.clear();
+        cooldowns.clear();
+        activeStateUntil.clear();
+        currentLoad = 0.0F;
+        lastLoadTick = 0L;
+        instabilityUntilTick = 0L;
+        lastCombatAction = "";
+    }
+
     public int version() {
         return version;
     }
@@ -136,4 +240,18 @@ public final class RnaAbilityData {
         }
     }
 
+    private static CompoundTag writeAffinityCounters(Map<RnaAffinityTag, Integer> values) {
+        CompoundTag tag = new CompoundTag();
+        values.forEach((affinity, amount) -> tag.putInt(affinity.id(), amount));
+        return tag;
+    }
+
+    private static void readAffinityCounters(CompoundTag tag, Map<RnaAffinityTag, Integer> target) {
+        for (String entryKey : tag.getAllKeys()) {
+            RnaAffinityTag affinity = RnaAffinityTag.fromId(entryKey);
+            if (affinity != null) {
+                target.put(affinity, Math.max(0, tag.getInt(entryKey)));
+            }
+        }
+    }
 }
