@@ -4,6 +4,9 @@ import com.pr1tcha.riftborne.codex.CodexEntries;
 import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.codex.data.CodexEntry;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
+import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -21,8 +24,9 @@ public final class CodexLaptopScreen extends Screen {
     private static final int PANEL_HEIGHT = 340;
     private static final int STATUS_HEIGHT = 22;
     private static final int SCREEN_MARGIN = 12;
-    private static final int TOAST_MIN_WIDTH = 220;
-    private static final int TOAST_MAX_WIDTH = 300;
+    private static final int ICON_HIT_WIDTH = 58;
+    private static final int ICON_HIT_HEIGHT = 72;
+    private static final int ICON_STEP_X = 76;
     private static final int COLOR_SHELL = 0xF2080C11;
     private static final int COLOR_DESKTOP = 0xFF0B1520;
     private static final int COLOR_WINDOW = 0xF20C121A;
@@ -36,6 +40,18 @@ public final class CodexLaptopScreen extends Screen {
     private String selectedEntryId = "rna_overview";
     private boolean briefInformation;
     private int selectedDrive;
+    private int explorerScroll;
+    private final List<DesktopItem> desktopItems = new ArrayList<>();
+    private DesktopItem openedFolder;
+    private DesktopItem draggingItem;
+    private boolean desktopItemsInitialized;
+    private int draggingStartX;
+    private int draggingStartY;
+    private int draggingOffsetX;
+    private int draggingOffsetY;
+    private boolean draggingMoved;
+    private boolean renamingFolder;
+    private String folderRenameBuffer = "";
 
     public CodexLaptopScreen(CodexNetwork.SnapshotPayload snapshot) {
         super(Component.translatable("screen.riftborne.codex_laptop"));
@@ -62,6 +78,7 @@ public final class CodexLaptopScreen extends Screen {
         int scaledMouseY = (int) (mouseY / scale);
         int left = panelLeft();
         int top = panelTop();
+        setupDesktopItems(left, top);
 
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 1.0F);
@@ -73,6 +90,7 @@ public final class CodexLaptopScreen extends Screen {
                 case CODEX, SYNC, DECRYPTOR -> renderCodexWindow(graphics, left, top, scaledMouseX, scaledMouseY);
                 case EXPLORER -> renderExplorerWindow(graphics, left, top, scaledMouseX, scaledMouseY);
                 case DIAGNOSTICS -> renderDiagnosticsWindow(graphics, left, top, scaledMouseX, scaledMouseY);
+                case FOLDER -> renderFolderWindow(graphics, left, top, scaledMouseX, scaledMouseY);
             }
         } else {
             renderStandby(graphics, left, top);
@@ -105,81 +123,55 @@ public final class CodexLaptopScreen extends Screen {
     }
 
     private void renderDesktop(GuiGraphics graphics, int left, int top, int mouseX, int mouseY) {
-        int iconX = left + 24;
-        int iconY = top + 35;
-        boolean hovered = inside(mouseX, mouseY, iconX - 6, iconY - 5, 58, 72);
-        if (hovered) {
-            graphics.fill(iconX - 6, iconY - 5, iconX + 52, iconY + 67, 0x55345D66);
-            graphics.renderOutline(iconX - 6, iconY - 5, 58, 72, 0x8855E1D5);
+        for (DesktopItem item : desktopItems) {
+            if (item == draggingItem && draggingMoved) {
+                continue;
+            }
+            drawDesktopItem(graphics, item, item.x, item.y, mouseX, mouseY, false);
         }
 
-        drawCodexIcon(graphics, iconX, iconY);
-        graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.icon"), iconX + 22, iconY + 51, COLOR_TEXT);
-        drawDesktopApp(graphics, left + 100, iconY, mouseX, mouseY, "SYNC",
-                "screen.riftborne.codex.sync", CodexNetwork.split(snapshot.queuedEntries()).size());
-        drawDesktopApp(graphics, left + 176, iconY, mouseX, mouseY, "DEC",
-                "screen.riftborne.codex.decryptor", CodexNetwork.split(snapshot.damagedEntries()).size());
-
-        int explorerX = left + 252;
-        boolean explorerHovered = inside(mouseX, mouseY, explorerX - 6, iconY - 5, 58, 72);
-        if (explorerHovered) {
-            graphics.fill(explorerX - 6, iconY - 5, explorerX + 52, iconY + 67, 0x55345D66);
-            graphics.renderOutline(explorerX - 6, iconY - 5, 58, 72, 0x8855E1D5);
-        }
-        drawExplorerIcon(graphics, explorerX, iconY);
-        graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.explorer_icon"),
-                explorerX + 22, iconY + 51, COLOR_TEXT);
-        drawDesktopApp(graphics, left + 328, iconY, mouseX, mouseY, "RNA",
-                "screen.riftborne.codex.synapsis", snapshot.diagnosticAvailable() ? 1 : 0);
-
-        List<String> notifications = CodexNetwork.split(snapshot.notifications());
-        List<String> recent = CodexNetwork.split(snapshot.recentData());
-        if (!notifications.isEmpty() || !recent.isEmpty()) {
-            Component systemText = Component.translatable("screen.riftborne.codex.system");
-            Component notificationText = notifications.isEmpty() ? Component.empty() : feedComponent(notifications.get(0));
-            Component recentText = recent.isEmpty() ? Component.empty() : feedComponent(recent.get(0));
-            int toastWidth = Math.clamp(
-                    Math.max(font.width(systemText), Math.max(font.width(notificationText), font.width(recentText))) + 14,
-                    TOAST_MIN_WIDTH,
-                    TOAST_MAX_WIDTH
-            );
-            int toastX = left + PANEL_WIDTH - toastWidth - 18;
-            int toastY = top + 18;
-            graphics.fill(toastX, toastY, toastX + toastWidth, toastY + 53, 0xB5091119);
-            graphics.renderOutline(toastX, toastY, toastWidth, 53, 0x6638A9A4);
-            graphics.drawString(font, systemText, toastX + 7, toastY + 7, COLOR_ACCENT, false);
-            if (!notifications.isEmpty()) {
-                drawTrimmed(graphics, notificationText, toastX + 7, toastY + 20, toastWidth - 14, COLOR_TEXT);
+        if (draggingItem != null && draggingMoved) {
+            DesktopItem target = desktopItemAt(mouseX, mouseY, draggingItem);
+            if (target != null && (target.isFolder() || !draggingItem.isFolder())) {
+                graphics.renderOutline(target.x - 8, target.y - 7, ICON_HIT_WIDTH + 4, ICON_HIT_HEIGHT + 4,
+                        0xCC55E1D5);
             }
-            if (!recent.isEmpty()) {
-                drawTrimmed(graphics, recentText, toastX + 7, toastY + 34, toastWidth - 14, COLOR_MUTED);
-            }
+            drawDesktopItem(graphics, draggingItem, draggingItem.x, draggingItem.y, mouseX, mouseY, true);
         }
     }
 
-    private void drawDesktopApp(
+    private void drawDesktopItem(
             GuiGraphics graphics,
+            DesktopItem item,
             int x,
             int y,
             int mouseX,
             int mouseY,
-            String glyph,
-            String titleKey,
-            int count
+            boolean ghost
     ) {
-        boolean hovered = inside(mouseX, mouseY, x - 6, y - 5, 58, 72);
+        boolean hovered = inside(mouseX, mouseY, x - 6, y - 5, ICON_HIT_WIDTH, ICON_HIT_HEIGHT);
+        int alphaFill = ghost ? 0x77345D66 : 0x55345D66;
         if (hovered) {
-            graphics.fill(x - 6, y - 5, x + 52, y + 67, 0x55345D66);
-            graphics.renderOutline(x - 6, y - 5, 58, 72, 0x8855E1D5);
+            graphics.fill(x - 6, y - 5, x + 52, y + 67, alphaFill);
+            graphics.renderOutline(x - 6, y - 5, ICON_HIT_WIDTH, ICON_HIT_HEIGHT, 0x8855E1D5);
         }
-        graphics.fill(x, y + 4, x + 40, y + 45, 0xFF18313A);
-        graphics.renderOutline(x, y + 4, 40, 41, COLOR_ACCENT);
-        graphics.drawCenteredString(font, glyph, x + 20, y + 20, COLOR_ACCENT);
+        if (item.isFolder()) {
+            drawFolderShortcutIcon(graphics, x, y);
+        } else if (item.view == View.CODEX) {
+            drawCodexIcon(graphics, x, y);
+        } else if (item.view == View.EXPLORER) {
+            drawExplorerIcon(graphics, x, y);
+        } else {
+            graphics.fill(x, y + 4, x + 40, y + 45, 0xFF18313A);
+            graphics.renderOutline(x, y + 4, 40, 41, COLOR_ACCENT);
+            graphics.drawCenteredString(font, item.glyph, x + 20, y + 20, COLOR_ACCENT);
+        }
+        int count = itemBadge(item);
         if (count > 0) {
             graphics.fill(x + 29, y, x + 43, y + 14, 0xFF9A3543);
             graphics.drawCenteredString(font, Integer.toString(count), x + 36, y + 3, COLOR_TEXT);
         }
-        graphics.drawCenteredString(font, Component.translatable(titleKey), x + 20, y + 51, COLOR_TEXT);
+        drawIconLabel(graphics, item.title(), x + 20, y + 51);
     }
 
     private void drawCodexIcon(GuiGraphics graphics, int x, int y) {
@@ -199,6 +191,23 @@ public final class CodexLaptopScreen extends Screen {
         graphics.renderOutline(x, y + 13, 37, 34, COLOR_ACCENT);
         graphics.fill(x + 7, y + 22, x + 30, y + 25, 0xFF55E1D5);
         graphics.fill(x + 7, y + 31, x + 25, y + 33, 0xFF3B8D90);
+    }
+
+    private void drawFolderShortcutIcon(GuiGraphics graphics, int x, int y) {
+        graphics.fill(x + 2, y + 12, x + 19, y + 20, 0xFF28545C);
+        graphics.fill(x, y + 18, x + 42, y + 46, 0xFF203A43);
+        graphics.fill(x + 3, y + 22, x + 39, y + 43, 0xFF24454D);
+        graphics.renderOutline(x, y + 18, 42, 28, COLOR_ACCENT);
+        graphics.fill(x + 8, y + 29, x + 34, y + 32, 0xFF55E1D5);
+        graphics.fill(x + 8, y + 36, x + 28, y + 38, 0xFF3B8D90);
+    }
+
+    private void drawIconLabel(GuiGraphics graphics, Component title, int centerX, int y) {
+        List<FormattedCharSequence> lines = font.split(title, 58);
+        int lineCount = Math.min(2, lines.size());
+        for (int index = 0; index < lineCount; index++) {
+            graphics.drawCenteredString(font, lines.get(index), centerX, y + index * 11, COLOR_TEXT);
+        }
     }
 
     private void renderExplorerWindow(GuiGraphics graphics, int left, int top, int mouseX, int mouseY) {
@@ -237,6 +246,8 @@ public final class CodexLaptopScreen extends Screen {
             case 2 -> new HashSet<>(CodexNetwork.split(snapshot.secondFlashEntries()));
             default -> new HashSet<>(CodexNetwork.split(snapshot.unlockedEntries()));
         };
+        int visibleRows = Math.max(1, (windowY + windowHeight - 8 - (drivesY + 44)) / 22);
+        explorerScroll = Math.clamp(explorerScroll, 0, Math.max(0, explorerEntryCount(entries) - visibleRows));
         Component heading = selectedDrive == 0
                 ? Component.translatable("screen.riftborne.codex.internal_records")
                 : Component.translatable("screen.riftborne.codex.flash_records");
@@ -246,11 +257,20 @@ public final class CodexLaptopScreen extends Screen {
                         : "screen.riftborne.codex.flash_hint"),
                 contentX + 9, drivesY + 24, COLOR_MUTED, false);
 
-        int rowY = drivesY + 44;
+        int rowIndex = 0;
+        int rowY = drivesY + 44 - explorerScroll * 22;
+        int contentBottom = windowY + windowHeight - 8;
         Set<String> internal = new HashSet<>(CodexNetwork.split(snapshot.unlockedEntries()));
         for (CodexEntry entry : CodexEntries.all()) {
             if (!entries.contains(entry.id())) {
                 continue;
+            }
+            if (rowIndex++ < explorerScroll) {
+                rowY += 22;
+                continue;
+            }
+            if (rowY + 20 > contentBottom) {
+                break;
             }
             boolean hovered = inside(mouseX, mouseY, contentX + 6, rowY, contentWidth - 12, 20);
             if (hovered) {
@@ -265,6 +285,17 @@ public final class CodexLaptopScreen extends Screen {
             graphics.drawString(font, status, contentX + contentWidth - statusWidth - 11, rowY + 6,
                     selectedDrive == 0 || internal.contains(entry.id()) ? COLOR_MUTED : COLOR_ACCENT, false);
             rowY += 22;
+        }
+
+        int totalRows = explorerEntryCount(entries);
+        if (totalRows > visibleRows) {
+            int trackX = contentX + contentWidth - 6;
+            int trackTop = drivesY + 44;
+            int trackHeight = contentBottom - trackTop;
+            int knobHeight = Math.max(14, trackHeight * visibleRows / totalRows);
+            int knobY = trackTop + (trackHeight - knobHeight) * explorerScroll / Math.max(1, totalRows - visibleRows);
+            graphics.fill(trackX, trackTop, trackX + 2, contentBottom, 0x66304C4A);
+            graphics.fill(trackX - 1, knobY, trackX + 3, knobY + knobHeight, COLOR_ACCENT);
         }
     }
 
@@ -345,6 +376,61 @@ public final class CodexLaptopScreen extends Screen {
         graphics.drawString(font, Component.translatable("rna.riftborne.meta_wear_stage."
                         + snapshot.diagnosticMetaWearStage().toLowerCase(Locale.ROOT)),
                 contentX, wearY + 30, diagnosticStageColor(), false);
+    }
+
+    private void renderFolderWindow(GuiGraphics graphics, int left, int top, int mouseX, int mouseY) {
+        if (openedFolder == null) {
+            view = View.DESKTOP;
+            return;
+        }
+
+        int windowX = left + 44;
+        int windowY = top + 31;
+        int windowWidth = PANEL_WIDTH - 88;
+        int windowHeight = PANEL_HEIGHT - STATUS_HEIGHT - 60;
+        graphics.fill(windowX, windowY, windowX + windowWidth, windowY + windowHeight, COLOR_WINDOW);
+        graphics.renderOutline(windowX, windowY, windowWidth, windowHeight, COLOR_BORDER);
+        graphics.fill(windowX + 1, windowY + 1, windowX + windowWidth - 1, windowY + 25, 0xFF12232D);
+        graphics.drawString(font, Component.translatable("screen.riftborne.codex.folder_title", openedFolder.title()),
+                windowX + 9, windowY + 8, COLOR_TEXT, false);
+
+        int renameX = windowX + windowWidth - 123;
+        boolean renameHovered = inside(mouseX, mouseY, renameX, windowY + 4, 96, 17);
+        graphics.fill(renameX, windowY + 4, renameX + 96, windowY + 21,
+                renameHovered || renamingFolder ? 0xFF1D3841 : 0xFF263943);
+        graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.folder_rename"),
+                renameX + 48, windowY + 8, renamingFolder ? COLOR_ACCENT : COLOR_TEXT);
+
+        int closeX = windowX + windowWidth - 21;
+        boolean closeHovered = inside(mouseX, mouseY, closeX, windowY + 4, 16, 16);
+        graphics.fill(closeX, windowY + 4, closeX + 16, windowY + 20,
+                closeHovered ? 0xFF9A3543 : 0xFF263943);
+        graphics.drawCenteredString(font, "Г—", closeX + 8, windowY + 8, COLOR_TEXT);
+
+        if (renamingFolder) {
+            int inputX = windowX + 11;
+            int inputY = windowY + 33;
+            graphics.fill(inputX, inputY, inputX + windowWidth - 22, inputY + 24, 0xFF050A0F);
+            graphics.renderOutline(inputX, inputY, windowWidth - 22, 24, COLOR_ACCENT);
+            graphics.drawString(font, folderRenameBuffer + ((Util.getMillis() / 350L) % 2 == 0 ? "_" : ""),
+                    inputX + 7, inputY + 8, COLOR_TEXT, false);
+            graphics.drawString(font, Component.translatable("screen.riftborne.codex.folder_rename_hint"),
+                    inputX + 7, inputY + 31, COLOR_MUTED, false);
+        }
+
+        int itemAreaY = renamingFolder ? windowY + 76 : windowY + 43;
+        if (openedFolder.children.isEmpty()) {
+            graphics.drawCenteredString(font, Component.translatable("screen.riftborne.codex.folder_empty"),
+                    windowX + windowWidth / 2, itemAreaY + 45, COLOR_MUTED);
+            return;
+        }
+
+        for (int index = 0; index < openedFolder.children.size(); index++) {
+            DesktopItem child = openedFolder.children.get(index);
+            int x = windowX + 24 + index % 6 * ICON_STEP_X;
+            int y = itemAreaY + index / 6 * 76;
+            drawDesktopItem(graphics, child, x, y, mouseX, mouseY, false);
+        }
     }
 
     private void drawDiagnosticBar(GuiGraphics graphics, int x, int y, String key, int value, int width) {
@@ -531,6 +617,30 @@ public final class CodexLaptopScreen extends Screen {
         graphics.drawString(font, battery, left + PANEL_WIDTH - timeWidth - batteryWidth - 25, y + 7,
                 batteryColor(), false);
 
+        renderTaskbarNotification(graphics, left, y, timeWidth, batteryWidth);
+    }
+
+    private void renderTaskbarNotification(GuiGraphics graphics, int left, int y, int timeWidth, int batteryWidth) {
+        List<String> notifications = CodexNetwork.split(snapshot.notifications());
+        List<String> recent = CodexNetwork.split(snapshot.recentData());
+        if (notifications.isEmpty() && recent.isEmpty()) {
+            return;
+        }
+
+        Component message = !notifications.isEmpty()
+                ? feedComponent(notifications.get(0))
+                : feedComponent(recent.get(0));
+        int notificationX = left + 238;
+        int notificationRight = left + PANEL_WIDTH - timeWidth - batteryWidth - 34;
+        int notificationWidth = Math.max(118, notificationRight - notificationX);
+        if (notificationWidth < 118) {
+            notificationX = left + 172;
+            notificationWidth = 170;
+        }
+        graphics.fill(notificationX, y + 3, notificationX + notificationWidth, y + 19, 0xCC091119);
+        graphics.renderOutline(notificationX, y + 3, notificationWidth, 16, 0x6638A9A4);
+        graphics.fill(notificationX + 4, y + 7, notificationX + 8, y + 15, COLOR_ACCENT);
+        drawTrimmed(graphics, message, notificationX + 13, y + 7, notificationWidth - 19, COLOR_TEXT);
     }
 
     @Override
@@ -554,24 +664,14 @@ public final class CodexLaptopScreen extends Screen {
         }
 
         if (view == View.DESKTOP) {
-            if (inside(mouseX, mouseY, left + 18, top + 30, 58, 72)) {
-                view = View.CODEX;
-                return true;
-            }
-            if (inside(mouseX, mouseY, left + 94, top + 30, 58, 72)) {
-                view = View.SYNC;
-                return true;
-            }
-            if (inside(mouseX, mouseY, left + 170, top + 30, 58, 72)) {
-                view = View.DECRYPTOR;
-                return true;
-            }
-            if (inside(mouseX, mouseY, left + 246, top + 30, 58, 72)) {
-                view = View.EXPLORER;
-                return true;
-            }
-            if (inside(mouseX, mouseY, left + 322, top + 30, 58, 72)) {
-                view = View.DIAGNOSTICS;
+            DesktopItem item = desktopItemAt(mouseX, mouseY, null);
+            if (item != null) {
+                draggingItem = item;
+                draggingStartX = (int) mouseX;
+                draggingStartY = (int) mouseY;
+                draggingOffsetX = (int) mouseX - item.x;
+                draggingOffsetY = (int) mouseY - item.y;
+                draggingMoved = false;
                 return true;
             }
             return true;
@@ -580,7 +680,37 @@ public final class CodexLaptopScreen extends Screen {
         int windowX = left + 16;
         int windowY = top + 14;
         int windowWidth = PANEL_WIDTH - 32;
+        if (view == View.FOLDER) {
+            if (openedFolder == null) {
+                view = View.DESKTOP;
+                return true;
+            }
+            int folderWindowX = left + 44;
+            int folderWindowY = top + 31;
+            int folderWindowWidth = PANEL_WIDTH - 88;
+            if (inside(mouseX, mouseY, folderWindowX + folderWindowWidth - 21, folderWindowY + 4, 16, 16)) {
+                renamingFolder = false;
+                openedFolder = null;
+                view = View.DESKTOP;
+                return true;
+            }
+            int renameX = folderWindowX + folderWindowWidth - 123;
+            if (inside(mouseX, mouseY, renameX, folderWindowY + 4, 96, 17)) {
+                renamingFolder = true;
+                folderRenameBuffer = openedFolder.title().getString();
+                return true;
+            }
+            DesktopItem child = folderChildAt(mouseX, mouseY, folderWindowX, folderWindowY);
+            if (child != null) {
+                openDesktopItem(child);
+                return true;
+            }
+            return true;
+        }
+
         if (inside(mouseX, mouseY, windowX + windowWidth - 21, windowY + 4, 16, 16)) {
+            renamingFolder = false;
+            openedFolder = null;
             view = View.DESKTOP;
             return true;
         }
@@ -607,16 +737,19 @@ public final class CodexLaptopScreen extends Screen {
             int drivesY = windowY + 31;
             if (inside(mouseX, mouseY, drivesX + 4, drivesY + 5, 144, 20)) {
                 selectedDrive = 0;
+                explorerScroll = 0;
                 return true;
             }
             if (snapshot.firstFlashInserted()
                     && inside(mouseX, mouseY, drivesX + 4, drivesY + 29, 144, 20)) {
                 selectedDrive = 1;
+                explorerScroll = 0;
                 return true;
             }
             if (snapshot.secondFlashInserted()
                     && inside(mouseX, mouseY, drivesX + 4, drivesY + 53, 144, 20)) {
                 selectedDrive = 2;
+                explorerScroll = 0;
                 return true;
             }
             if (selectedDrive > 0) {
@@ -624,10 +757,14 @@ public final class CodexLaptopScreen extends Screen {
                         selectedDrive == 1 ? snapshot.firstFlashEntries() : snapshot.secondFlashEntries()));
                 int contentX = windowX + 168;
                 int contentWidth = windowWidth - 176;
-                int rowY = drivesY + 44;
+                int rowY = drivesY + 44 - explorerScroll * 22;
+                int contentBottom = windowY + (PANEL_HEIGHT - STATUS_HEIGHT - 26) - 8;
                 for (CodexEntry entry : CodexEntries.all()) {
                     if (!entries.contains(entry.id())) {
                         continue;
+                    }
+                    if (rowY + 20 > contentBottom) {
+                        break;
                     }
                     if (inside(mouseX, mouseY, contentX + 6, rowY, contentWidth - 12, 20)) {
                         PacketDistributor.sendToServer(new CodexNetwork.TransferEntryPayload(
@@ -663,6 +800,367 @@ public final class CodexLaptopScreen extends Screen {
             rowY += 22;
         }
         return true;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button == 0 && draggingItem != null && view == View.DESKTOP) {
+            float scale = interfaceScale();
+            mouseX /= scale;
+            mouseY /= scale;
+            if (Math.abs(mouseX - draggingStartX) > 3 || Math.abs(mouseY - draggingStartY) > 3) {
+                draggingMoved = true;
+            }
+            if (draggingMoved) {
+                draggingItem.x = clampDesktopX((int) mouseX - draggingOffsetX);
+                draggingItem.y = clampDesktopY((int) mouseY - draggingOffsetY);
+            }
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && draggingItem != null) {
+            float scale = interfaceScale();
+            mouseX /= scale;
+            mouseY /= scale;
+            DesktopItem released = draggingItem;
+            draggingItem = null;
+            if (draggingMoved) {
+                handleDesktopDrop(released, mouseX, mouseY);
+            } else {
+                openDesktopItem(released);
+            }
+            draggingMoved = false;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (renamingFolder && openedFolder != null) {
+            if (keyCode == 257 || keyCode == 335) {
+                String trimmed = folderRenameBuffer.trim();
+                if (!trimmed.isEmpty()) {
+                    openedFolder.customTitle = trimmed;
+                    saveDesktopLayout();
+                }
+                renamingFolder = false;
+                return true;
+            }
+            if (keyCode == 256) {
+                renamingFolder = false;
+                return true;
+            }
+            if (keyCode == 259 && !folderRenameBuffer.isEmpty()) {
+                folderRenameBuffer = folderRenameBuffer.substring(0, folderRenameBuffer.length() - 1);
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (renamingFolder && openedFolder != null) {
+            if (!Character.isISOControl(codePoint) && folderRenameBuffer.length() < 22) {
+                folderRenameBuffer += codePoint;
+            }
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        float scale = interfaceScale();
+        mouseX /= scale;
+        mouseY /= scale;
+        if (view == View.EXPLORER) {
+            int left = panelLeft();
+            int top = panelTop();
+            int windowX = left + 16;
+            int windowY = top + 14;
+            int windowWidth = PANEL_WIDTH - 32;
+            int windowHeight = PANEL_HEIGHT - STATUS_HEIGHT - 26;
+            int drivesY = windowY + 31;
+            int contentX = windowX + 168;
+            int contentWidth = windowWidth - 176;
+            if (inside(mouseX, mouseY, contentX, drivesY, contentWidth, windowHeight - 39)) {
+                Set<String> entries = switch (selectedDrive) {
+                    case 1 -> new HashSet<>(CodexNetwork.split(snapshot.firstFlashEntries()));
+                    case 2 -> new HashSet<>(CodexNetwork.split(snapshot.secondFlashEntries()));
+                    default -> new HashSet<>(CodexNetwork.split(snapshot.unlockedEntries()));
+                };
+                int visibleRows = Math.max(1, (windowY + windowHeight - 8 - (drivesY + 44)) / 22);
+                explorerScroll = Math.clamp(
+                        explorerScroll - (int) Math.signum(scrollY),
+                        0,
+                        Math.max(0, explorerEntryCount(entries) - visibleRows)
+                );
+                return true;
+            }
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    private void setupDesktopItems(int left, int top) {
+        if (desktopItemsInitialized) {
+            return;
+        }
+        desktopItemsInitialized = true;
+        if (loadDesktopLayout(snapshot.desktopLayout(), left, top)) {
+            return;
+        }
+        addDefaultDesktopItems(left, top);
+    }
+
+    private void addDefaultDesktopItems(int left, int top) {
+        int iconY = top + 35;
+        int iconX = left + 24;
+        desktopItems.add(appForId("codex", iconX, iconY));
+        desktopItems.add(appForId("sync", iconX + ICON_STEP_X, iconY));
+        desktopItems.add(appForId("decryptor", iconX + ICON_STEP_X * 2, iconY));
+        desktopItems.add(appForId("explorer", iconX + ICON_STEP_X * 3, iconY));
+        desktopItems.add(appForId("diagnostics", iconX + ICON_STEP_X * 4, iconY));
+    }
+
+    private boolean loadDesktopLayout(String layout, int left, int top) {
+        if (layout == null || layout.isBlank()) {
+            return false;
+        }
+        List<DesktopItem> loaded = new ArrayList<>();
+        Set<String> usedApps = new HashSet<>();
+        try {
+            for (String line : layout.split("\n")) {
+                if (line.isBlank()) {
+                    continue;
+                }
+                String[] parts = line.split("\\|", -1);
+                if (parts.length < 4) {
+                    return false;
+                }
+                if ("A".equals(parts[0])) {
+                    DesktopItem app = appForId(parts[1], clampDesktopX(Integer.parseInt(parts[2])),
+                            clampDesktopY(Integer.parseInt(parts[3])));
+                    if (app != null && usedApps.add(parts[1])) {
+                        loaded.add(app);
+                    }
+                } else if ("F".equals(parts[0]) && parts.length >= 5) {
+                    DesktopItem folder = DesktopItem.folder(clampDesktopX(Integer.parseInt(parts[2])),
+                            clampDesktopY(Integer.parseInt(parts[3])));
+                    String name = decodeLayoutText(parts[1]);
+                    if (!name.isBlank()) {
+                        folder.customTitle = name;
+                    }
+                    for (String childId : parts[4].split(",")) {
+                        DesktopItem child = appForId(childId, 0, 0);
+                        if (child != null && usedApps.add(childId)) {
+                            folder.children.add(child);
+                        }
+                    }
+                    loaded.add(folder);
+                }
+            }
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
+        if (loaded.isEmpty()) {
+            return false;
+        }
+        appendMissingApps(loaded, usedApps, left, top);
+        desktopItems.clear();
+        desktopItems.addAll(loaded);
+        return true;
+    }
+
+    private void appendMissingApps(List<DesktopItem> loaded, Set<String> usedApps, int left, int top) {
+        String[] ids = {"codex", "sync", "decryptor", "explorer", "diagnostics"};
+        int index = 0;
+        for (String id : ids) {
+            if (usedApps.contains(id)) {
+                continue;
+            }
+            DesktopItem app = appForId(id, left + 24 + index * ICON_STEP_X, top + 116);
+            if (app != null) {
+                loaded.add(app);
+            }
+            index++;
+        }
+    }
+
+    private DesktopItem appForId(String id, int x, int y) {
+        return switch (id) {
+            case "codex" -> DesktopItem.app(View.CODEX, x, y, "DOC", "screen.riftborne.codex.infobase");
+            case "sync" -> DesktopItem.app(View.SYNC, x, y, "SYNC", "screen.riftborne.codex.sync");
+            case "decryptor" -> DesktopItem.app(View.DECRYPTOR, x, y, "DEC", "screen.riftborne.codex.decryptor");
+            case "explorer" -> DesktopItem.app(View.EXPLORER, x, y, "DRV", "screen.riftborne.codex.explorer_icon");
+            case "diagnostics" -> DesktopItem.app(View.DIAGNOSTICS, x, y, "RNA", "screen.riftborne.codex.synapsis");
+            default -> null;
+        };
+    }
+
+    private DesktopItem desktopItemAt(double mouseX, double mouseY, DesktopItem excluded) {
+        for (int index = desktopItems.size() - 1; index >= 0; index--) {
+            DesktopItem item = desktopItems.get(index);
+            if (item == excluded) {
+                continue;
+            }
+            if (inside(mouseX, mouseY, item.x - 6, item.y - 5, ICON_HIT_WIDTH, ICON_HIT_HEIGHT)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private DesktopItem folderChildAt(double mouseX, double mouseY, int windowX, int windowY) {
+        int itemAreaY = renamingFolder ? windowY + 76 : windowY + 43;
+        for (int index = 0; openedFolder != null && index < openedFolder.children.size(); index++) {
+            int x = windowX + 24 + index % 6 * ICON_STEP_X;
+            int y = itemAreaY + index / 6 * 76;
+            if (inside(mouseX, mouseY, x - 6, y - 5, ICON_HIT_WIDTH, ICON_HIT_HEIGHT)) {
+                return openedFolder.children.get(index);
+            }
+        }
+        return null;
+    }
+
+    private void openDesktopItem(DesktopItem item) {
+        if (item.isFolder()) {
+            openedFolder = item;
+            renamingFolder = false;
+            view = View.FOLDER;
+        } else {
+            view = item.view;
+        }
+    }
+
+    private void handleDesktopDrop(DesktopItem item, double mouseX, double mouseY) {
+        DesktopItem target = desktopItemAt(mouseX, mouseY, item);
+        if (target != null && target != item) {
+            if (target.isFolder() && !item.isFolder()) {
+                desktopItems.remove(item);
+                target.children.add(item);
+                saveDesktopLayout();
+                return;
+            }
+            if (!target.isFolder() && !item.isFolder()) {
+                createFolderFrom(target, item);
+                saveDesktopLayout();
+                return;
+            }
+        }
+        item.x = clampDesktopX(item.x);
+        item.y = clampDesktopY(item.y);
+        saveDesktopLayout();
+    }
+
+    private void createFolderFrom(DesktopItem target, DesktopItem dragged) {
+        int folderX = target.x;
+        int folderY = target.y;
+        desktopItems.remove(target);
+        desktopItems.remove(dragged);
+        DesktopItem folder = DesktopItem.folder(folderX, folderY);
+        folder.children.add(target);
+        folder.children.add(dragged);
+        desktopItems.add(folder);
+    }
+
+    private int clampDesktopX(int x) {
+        int left = panelLeft();
+        return Math.clamp(x, left + 12, left + PANEL_WIDTH - 58);
+    }
+
+    private int clampDesktopY(int y) {
+        int top = panelTop();
+        return Math.clamp(y, top + 24, top + PANEL_HEIGHT - STATUS_HEIGHT - 78);
+    }
+
+    private int itemBadge(DesktopItem item) {
+        if (item.isFolder()) {
+            return item.children.size();
+        }
+        return switch (item.view) {
+            case SYNC -> CodexNetwork.split(snapshot.queuedEntries()).size();
+            case DECRYPTOR -> CodexNetwork.split(snapshot.damagedEntries()).size();
+            case DIAGNOSTICS -> snapshot.diagnosticAvailable() ? 1 : 0;
+            default -> 0;
+        };
+    }
+
+    private void saveDesktopLayout() {
+        PacketDistributor.sendToServer(new CodexNetwork.UpdateDesktopLayoutPayload(
+                snapshot.laptopPos(),
+                encodeDesktopLayout()
+        ));
+    }
+
+    private String encodeDesktopLayout() {
+        StringBuilder builder = new StringBuilder();
+        for (DesktopItem item : desktopItems) {
+            if (!builder.isEmpty()) {
+                builder.append('\n');
+            }
+            if (item.isFolder()) {
+                builder.append("F|")
+                        .append(encodeLayoutText(item.customTitle == null ? "" : item.customTitle))
+                        .append('|')
+                        .append(item.x)
+                        .append('|')
+                        .append(item.y)
+                        .append('|');
+                for (int index = 0; index < item.children.size(); index++) {
+                    if (index > 0) {
+                        builder.append(',');
+                    }
+                    builder.append(viewId(item.children.get(index)));
+                }
+            } else {
+                builder.append("A|")
+                        .append(viewId(item))
+                        .append('|')
+                        .append(item.x)
+                        .append('|')
+                        .append(item.y);
+            }
+        }
+        return builder.toString();
+    }
+
+    private static String viewId(DesktopItem item) {
+        return switch (item.view) {
+            case CODEX -> "codex";
+            case SYNC -> "sync";
+            case DECRYPTOR -> "decryptor";
+            case EXPLORER -> "explorer";
+            case DIAGNOSTICS -> "diagnostics";
+            default -> "";
+        };
+    }
+
+    private static String encodeLayoutText(String value) {
+        return Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String decodeLayoutText(String value) {
+        if (value.isBlank()) {
+            return "";
+        }
+        return new String(Base64.getUrlDecoder().decode(value), StandardCharsets.UTF_8);
+    }
+
+    private static int explorerEntryCount(Set<String> entries) {
+        int count = 0;
+        for (CodexEntry entry : CodexEntries.all()) {
+            if (entries.contains(entry.id())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private void drawTrimmed(GuiGraphics graphics, Component text, int x, int y, int maxWidth, int color) {
@@ -772,6 +1270,43 @@ public final class CodexLaptopScreen extends Screen {
         SYNC,
         DECRYPTOR,
         EXPLORER,
-        DIAGNOSTICS
+        DIAGNOSTICS,
+        FOLDER
+    }
+
+    private static final class DesktopItem {
+        private final View view;
+        private final String glyph;
+        private final String titleKey;
+        private final List<DesktopItem> children = new ArrayList<>();
+        private String customTitle;
+        private int x;
+        private int y;
+
+        private DesktopItem(View view, int x, int y, String glyph, String titleKey) {
+            this.view = view;
+            this.x = x;
+            this.y = y;
+            this.glyph = glyph;
+            this.titleKey = titleKey;
+        }
+
+        private static DesktopItem app(View view, int x, int y, String glyph, String titleKey) {
+            return new DesktopItem(view, x, y, glyph, titleKey);
+        }
+
+        private static DesktopItem folder(int x, int y) {
+            return new DesktopItem(null, x, y, "DIR", "screen.riftborne.codex.folder_default");
+        }
+
+        private boolean isFolder() {
+            return view == null;
+        }
+
+        private Component title() {
+            return customTitle == null || customTitle.isBlank()
+                    ? Component.translatable(titleKey)
+                    : Component.literal(customTitle);
+        }
     }
 }

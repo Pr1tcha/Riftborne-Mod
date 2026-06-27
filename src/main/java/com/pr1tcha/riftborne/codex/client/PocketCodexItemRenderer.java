@@ -20,7 +20,7 @@ public final class PocketCodexItemRenderer extends GeoItemRenderer<PocketCodexIt
 
     public PocketCodexItemRenderer() {
         super(new PocketCodexItemModel());
-        withScale(0.68F);
+        withScale(0.78F);
         useAlternateGuiLighting();
     }
 
@@ -51,17 +51,17 @@ public final class PocketCodexItemRenderer extends GeoItemRenderer<PocketCodexIt
             int renderColor
     ) {
         if (renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-            poseStack.translate(-0.2F, 0.2F, -0.18F);
-            poseStack.scale(0.62F, 0.62F, 0.62F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(-8.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(-31.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(7.0F));
+            poseStack.translate(0.92F, 0.30F, -0.78F);
+            poseStack.scale(0.70F, 0.70F, 0.70F);
+            poseStack.mulPose(Axis.YP.rotationDegrees(-10.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(-68.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
         } else if (renderPerspective == ItemDisplayContext.FIRST_PERSON_LEFT_HAND) {
-            poseStack.translate(0.2F, 0.2F, -0.18F);
-            poseStack.scale(0.62F, 0.62F, 0.62F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(8.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(-31.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(-7.0F));
+            poseStack.translate(-0.92F, 0.30F, -0.78F);
+            poseStack.scale(0.70F, 0.70F, 0.70F);
+            poseStack.mulPose(Axis.YP.rotationDegrees(10.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(-68.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
         }
         super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick,
                 packedLight, packedOverlay, renderColor);

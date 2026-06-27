@@ -43,6 +43,8 @@ public final class CodexNetwork {
         registrar.playToServer(PocketActionPayload.TYPE, PocketActionPayload.STREAM_CODEC, CodexNetwork::handlePocketAction);
         registrar.playToServer(RestoreDamagedPayload.TYPE, RestoreDamagedPayload.STREAM_CODEC, CodexNetwork::handleRestoreDamaged);
         registrar.playToServer(TransferEntryPayload.TYPE, TransferEntryPayload.STREAM_CODEC, CodexNetwork::handleTransferEntry);
+        registrar.playToServer(UpdateDesktopLayoutPayload.TYPE, UpdateDesktopLayoutPayload.STREAM_CODEC,
+                CodexNetwork::handleUpdateDesktopLayout);
     }
 
     public static void open(ServerPlayer player) {
@@ -58,9 +60,11 @@ public final class CodexNetwork {
         RnaData rna = RnaApi.get(player);
         boolean firstFlashInserted = false;
         boolean secondFlashInserted = false;
+        String desktopLayout = "";
         if (player.level().getBlockEntity(laptopPos) instanceof CodexLaptopBlockEntity laptop) {
             firstFlashInserted = laptop.hasFlashDrive(0);
             secondFlashInserted = laptop.hasFlashDrive(1);
+            desktopLayout = laptop.desktopLayout();
         }
         CodexDiagnosticCapsuleBlockEntity diagnostic = findDiagnosticCapsule(player, laptopPos);
         return new SnapshotPayload(
@@ -95,7 +99,8 @@ public final class CodexNetwork {
                 diagnostic == null ? 0 : diagnostic.metaWear(),
                 diagnostic == null ? "STABLE" : diagnostic.metaWearStage(),
                 diagnostic == null ? "UNKNOWN" : diagnostic.formationPath(),
-                ""
+                "",
+                desktopLayout
         );
     }
 
@@ -248,7 +253,8 @@ public final class CodexNetwork {
             int diagnosticMetaWear,
             String diagnosticMetaWearStage,
             String diagnosticFormationPath,
-            String diagnosticNotice
+            String diagnosticNotice,
+            String desktopLayout
     ) implements CustomPacketPayload {
         public static final Type<SnapshotPayload> TYPE = new Type<>(
                 ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "codex_snapshot")
@@ -287,6 +293,7 @@ public final class CodexNetwork {
                     buffer.writeUtf(payload.diagnosticMetaWearStage);
                     buffer.writeUtf(payload.diagnosticFormationPath);
                     buffer.writeUtf(payload.diagnosticNotice);
+                    buffer.writeUtf(payload.desktopLayout);
                 },
                 buffer -> new SnapshotPayload(
                         buffer.readLong(),
@@ -320,6 +327,7 @@ public final class CodexNetwork {
                         buffer.readVarInt(),
                         buffer.readUtf(),
                         buffer.readUtf(),
+                        buffer.readUtf(),
                         buffer.readUtf()
                 )
         );
@@ -344,6 +352,34 @@ public final class CodexNetwork {
 
         @Override
         public Type<TogglePowerPayload> type() {
+            return TYPE;
+        }
+    }
+
+    private static void handleUpdateDesktopLayout(UpdateDesktopLayoutPayload payload, IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) {
+            return;
+        }
+        BlockPos pos = BlockPos.of(payload.laptopPos());
+        if (player.level().getBlockEntity(pos) instanceof CodexLaptopBlockEntity laptop) {
+            laptop.setDesktopLayout(payload.layout());
+        }
+    }
+
+    public record UpdateDesktopLayoutPayload(long laptopPos, String layout) implements CustomPacketPayload {
+        public static final Type<UpdateDesktopLayoutPayload> TYPE = new Type<>(
+                ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "codex_desktop_layout")
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, UpdateDesktopLayoutPayload> STREAM_CODEC = StreamCodec.of(
+                (buffer, payload) -> {
+                    buffer.writeLong(payload.laptopPos);
+                    buffer.writeUtf(payload.layout);
+                },
+                buffer -> new UpdateDesktopLayoutPayload(buffer.readLong(), buffer.readUtf())
+        );
+
+        @Override
+        public Type<UpdateDesktopLayoutPayload> type() {
             return TYPE;
         }
     }

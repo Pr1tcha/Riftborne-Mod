@@ -19,9 +19,10 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public final class PocketCodexItem extends Item implements GeoItem {
+public final class PocketCodexItem extends Item implements GeoItem, GeoRenderProvider {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.pocket_codex.idle");
     private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
+    private PocketCodexItemRenderer renderer;
 
     public PocketCodexItem(Properties properties) {
         super(properties);
@@ -39,17 +40,15 @@ public final class PocketCodexItem extends Item implements GeoItem {
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private PocketCodexItemRenderer renderer;
+        consumer.accept(this);
+    }
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
-                if (renderer == null) {
-                    renderer = new PocketCodexItemRenderer();
-                }
-                return renderer;
-            }
-        });
+    @Override
+    public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
+        if (renderer == null) {
+            renderer = new PocketCodexItemRenderer();
+        }
+        return renderer;
     }
 
     @Override

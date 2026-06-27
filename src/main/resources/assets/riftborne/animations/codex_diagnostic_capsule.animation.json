@@ -5,11 +5,45 @@
       "loop": true,
       "animation_length": 2.0,
       "bones": {
-        "root": {
-          "rotation": {
+        "left_door": {
+          "rotation": [0, -72, 0]
+        },
+        "right_door": {
+          "rotation": [0, 72, 0]
+        },
+        "status_glow": {
+          "scale": {
+            "0.0": [1, 1, 1],
+            "1.0": [1.08, 1.08, 1.08],
+            "2.0": [1, 1, 1]
+          }
+        }
+      }
+    },
+    "animation.codex_diagnostic_capsule.scanning": {
+      "loop": true,
+      "animation_length": 1.2,
+      "bones": {
+        "left_door": {
+          "rotation": [0, 0, 0]
+        },
+        "right_door": {
+          "rotation": [0, 0, 0]
+        },
+        "scanner": {
+          "position": {
             "0.0": [0, 0, 0],
-            "1.0": [0, 2, 0],
-            "2.0": [0, 0, 0]
+            "0.6": [0, 26, 0],
+            "1.2": [0, 0, 0]
+          }
+        },
+        "status_glow": {
+          "scale": {
+            "0.0": [1, 1, 1],
+            "0.3": [1.18, 1.18, 1.18],
+            "0.6": [1, 1, 1],
+            "0.9": [1.18, 1.18, 1.18],
+            "1.2": [1, 1, 1]
           }
         }
       }

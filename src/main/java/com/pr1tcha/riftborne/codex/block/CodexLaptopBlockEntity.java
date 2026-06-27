@@ -29,6 +29,7 @@ public final class CodexLaptopBlockEntity extends BlockEntity implements GeoBloc
 
     private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
     private final boolean[] flashDrives = new boolean[2];
+    private String desktopLayout = "";
 
     public CodexLaptopBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModContent.CODEX_LAPTOP_BE_TYPE.get(), pos, blockState);
@@ -86,6 +87,15 @@ public final class CodexLaptopBlockEntity extends BlockEntity implements GeoBloc
         return true;
     }
 
+    public String desktopLayout() {
+        return desktopLayout;
+    }
+
+    public void setDesktopLayout(String desktopLayout) {
+        this.desktopLayout = desktopLayout == null ? "" : desktopLayout;
+        sync();
+    }
+
     private boolean isOpen() {
         return getBlockState().getValue(CodexLaptopBlock.OPEN);
     }
@@ -102,6 +112,7 @@ public final class CodexLaptopBlockEntity extends BlockEntity implements GeoBloc
         super.saveAdditional(tag, registries);
         tag.putBoolean("FlashDrive0", flashDrives[0]);
         tag.putBoolean("FlashDrive1", flashDrives[1]);
+        tag.putString("DesktopLayout", desktopLayout);
     }
 
     @Override
@@ -109,6 +120,7 @@ public final class CodexLaptopBlockEntity extends BlockEntity implements GeoBloc
         super.loadAdditional(tag, registries);
         flashDrives[0] = tag.getBoolean("FlashDrive0");
         flashDrives[1] = tag.getBoolean("FlashDrive1");
+        desktopLayout = tag.getString("DesktopLayout");
     }
 
     @Override
