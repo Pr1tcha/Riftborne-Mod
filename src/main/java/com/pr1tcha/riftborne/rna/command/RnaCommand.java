@@ -14,6 +14,17 @@ import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityUseContext;
 import com.pr1tcha.riftborne.rna.combat.data.RnaAffinityTag;
 import com.pr1tcha.riftborne.rna.combat.data.RnaLoadBand;
 import com.pr1tcha.riftborne.rna.combat.registry.RnaAbilityRegistry;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaAspectResonance;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueDefinition;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueProgress;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueProgression;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueRegistry;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueStage;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueEvidence;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueReadiness;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaAcquisitionMethod;
+import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingManager;
+import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingSession;
 import com.pr1tcha.riftborne.rna.data.FormationPath;
 import com.pr1tcha.riftborne.rna.data.RnaData;
 import com.pr1tcha.riftborne.rna.data.RnaStat;
@@ -44,39 +55,7 @@ public final class RnaCommand {
                 .then(metaWearCommand())
                 .then(abilitiesCommand())
                 .then(loadCommand())
-                .then(skillCommand())
-                .then(cooldownCommand())
-                .then(affinityCommand())
-                .then(debugCommand())
-                // Compatibility aliases. They call the same implementation as the new tree.
-                .then(Commands.literal("init")
-                        .requires(RnaCommand::operator)
-                        .executes(context -> initialize(
-                                context.getSource(),
-                                FormationPath.TRAINING,
-                                context.getSource().getPlayerOrException())))
-                .then(Commands.literal("reset")
-                        .requires(RnaCommand::operator)
-                        .executes(context -> reset(
-                                context.getSource(),
-                                context.getSource().getPlayerOrException())))
-                .then(Commands.literal("set")
-                        .requires(RnaCommand::operator)
-                        .then(statArgument()
-                                .then(Commands.argument("value", IntegerArgumentType.integer(0, 100))
-                                        .executes(context -> setStat(
-                                                context.getSource(),
-                                                context.getSource().getPlayerOrException(),
-                                                stat(context),
-                                                IntegerArgumentType.getInteger(context, "value"))))))
-                .then(Commands.literal("path")
-                        .then(Commands.literal("set")
-                                .requires(RnaCommand::operator)
-                                .then(pathArgument()
-                                        .executes(context -> setPath(
-                                                context.getSource(),
-                                                context.getSource().getPlayerOrException(),
-                                                path(context))))));
+                .then(progressionCommand());
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> getCommand() {
@@ -327,6 +306,146 @@ public final class RnaCommand {
                         .then(Commands.argument("target", EntityArgument.player())
                                 .requires(RnaCommand::operator)
                                 .executes(context -> showAffinity(
+                                        context.getSource(),
+                                        EntityArgument.getPlayer(context, "target")))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> progressionCommand() {
+        return Commands.literal("progression")
+                .then(Commands.literal("get")
+                        .executes(context -> showProgression(
+                                context.getSource(),
+                                context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .requires(RnaCommand::operator)
+                                .executes(context -> showProgression(
+                                        context.getSource(),
+                                        EntityArgument.getPlayer(context, "target")))))
+                .then(Commands.literal("inspect")
+                        .requires(RnaCommand::operator)
+                        .then(techniqueArgument()
+                                .executes(context -> inspectTechnique(
+                                        context.getSource(),
+                                        context.getSource().getPlayerOrException(),
+                                        techniqueId(context)))
+                                .then(Commands.argument("target", EntityArgument.player())
+                                        .executes(context -> inspectTechnique(
+                                                context.getSource(),
+                                                EntityArgument.getPlayer(context, "target"),
+                                                techniqueId(context))))))
+                .then(Commands.literal("stage")
+                        .requires(RnaCommand::operator)
+                        .then(techniqueArgument()
+                                .then(techniqueStageArgument()
+                                        .executes(context -> setTechniqueStage(
+                                                context.getSource(),
+                                                context.getSource().getPlayerOrException(),
+                                                techniqueId(context),
+                                                techniqueStage(context)))
+                                        .then(Commands.argument("target", EntityArgument.player())
+                                                .executes(context -> setTechniqueStage(
+                                                        context.getSource(),
+                                                        EntityArgument.getPlayer(context, "target"),
+                                                        techniqueId(context),
+                                                        techniqueStage(context)))))))
+                .then(progressionEvidenceCommand())
+                .then(patternMethodCommand());
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> progressionEvidenceCommand() {
+        var amount = Commands.argument("amount", IntegerArgumentType.integer(1))
+                .executes(context -> addTechniqueEvidence(
+                        context.getSource(),
+                        context.getSource().getPlayerOrException(),
+                        techniqueEvidence(context),
+                        IntegerArgumentType.getInteger(context, "amount")))
+                .then(Commands.argument("target", EntityArgument.player())
+                        .executes(context -> addTechniqueEvidence(
+                                context.getSource(),
+                                EntityArgument.getPlayer(context, "target"),
+                                techniqueEvidence(context),
+                                IntegerArgumentType.getInteger(context, "amount"))));
+        return Commands.literal("evidence")
+                .then(Commands.literal("add")
+                        .requires(RnaCommand::operator)
+                        .then(techniqueEvidenceArgument().then(amount)));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> patternMethodCommand() {
+        var amount = Commands.argument("amount", IntegerArgumentType.integer(1))
+                .executes(context -> addPatternProgress(
+                        context.getSource(),
+                        context.getSource().getPlayerOrException(),
+                        techniqueId(context),
+                        acquisitionMethod(context),
+                        IntegerArgumentType.getInteger(context, "amount")))
+                .then(Commands.argument("target", EntityArgument.player())
+                        .executes(context -> addPatternProgress(
+                                context.getSource(),
+                                EntityArgument.getPlayer(context, "target"),
+                                techniqueId(context),
+                                acquisitionMethod(context),
+                                IntegerArgumentType.getInteger(context, "amount"))));
+        return Commands.literal("method")
+                .then(Commands.literal("add")
+                        .requires(RnaCommand::operator)
+                        .then(techniqueArgument()
+                                .then(acquisitionMethodArgument()
+                                        .then(amount))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> trainingCommand() {
+        return Commands.literal("training")
+                .then(Commands.literal("status")
+                        .executes(context -> showTraining(
+                                context.getSource(),
+                                context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .requires(RnaCommand::operator)
+                                .executes(context -> showTraining(
+                                        context.getSource(),
+                                        EntityArgument.getPlayer(context, "target")))))
+                .then(Commands.literal("start")
+                        .requires(RnaCommand::operator)
+                        .then(techniqueArgument()
+                                .executes(context -> startTraining(
+                                        context.getSource(),
+                                        context.getSource().getPlayerOrException(),
+                                        techniqueId(context)))
+                                .then(Commands.argument("target", EntityArgument.player())
+                                        .executes(context -> startTraining(
+                                                context.getSource(),
+                                                EntityArgument.getPlayer(context, "target"),
+                                                techniqueId(context))))))
+                .then(Commands.literal("result")
+                        .requires(RnaCommand::operator)
+                        .then(Commands.literal("success")
+                                .executes(context -> recordTrainingResult(
+                                        context.getSource(),
+                                        context.getSource().getPlayerOrException(),
+                                        true))
+                                .then(Commands.argument("target", EntityArgument.player())
+                                        .executes(context -> recordTrainingResult(
+                                                context.getSource(),
+                                                EntityArgument.getPlayer(context, "target"),
+                                                true))))
+                        .then(Commands.literal("failure")
+                                .executes(context -> recordTrainingResult(
+                                        context.getSource(),
+                                        context.getSource().getPlayerOrException(),
+                                        false))
+                                .then(Commands.argument("target", EntityArgument.player())
+                                        .executes(context -> recordTrainingResult(
+                                                context.getSource(),
+                                                EntityArgument.getPlayer(context, "target"),
+                                                false)))))
+                .then(Commands.literal("stop")
+                        .requires(RnaCommand::operator)
+                        .executes(context -> stopTraining(
+                                context.getSource(),
+                                context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .executes(context -> stopTraining(
                                         context.getSource(),
                                         EntityArgument.getPlayer(context, "target")))));
     }
@@ -608,6 +727,144 @@ public final class RnaCommand {
         return affinity.values().stream().mapToInt(Integer::intValue).sum();
     }
 
+    private static int showProgression(CommandSourceStack source, ServerPlayer target) {
+        RnaAbilityData data = RnaAbilityManager.getData(target);
+        source.sendSuccess(() -> Component.literal("RNA technique progression ["
+                + target.getGameProfile().getName() + "]").withStyle(ChatFormatting.AQUA), false);
+        int visible = 0;
+        for (RnaTechniqueDefinition technique : RnaTechniqueRegistry.all()) {
+            RnaTechniqueProgress progress = data.techniqueProgress(technique.id().toString());
+            RnaTechniqueStage stage = progress == null ? RnaTechniqueStage.SEALED : progress.stage();
+            RnaTechniqueReadiness readiness = RnaTechniqueProgression.evaluate(target, technique);
+            RnaTechniqueReadiness.Condition missing = readiness.firstMissing();
+            if (stage != RnaTechniqueStage.SEALED) {
+                visible++;
+            }
+            source.sendSuccess(() -> Component.literal(technique.id()
+                    + " stage=" + stage.id()
+                    + " conditions=" + readiness.satisfiedConditions() + "/" + readiness.totalConditions()
+                    + (progress == null ? "" : " discovery=#" + progress.discoveryOrder()
+                            + " stabilization=#" + progress.stabilizationOrder()
+                            + " pattern=" + progress.patternProgress() + "%"
+                            + " methods=" + progress.methodContributions()
+                            + " mastery=" + progress.successfulUses() + "/" + technique.masteryUses())
+                    + (missing == null ? "" : " missing=" + missing.id()
+                            + " (" + missing.current() + "/" + missing.required() + ")")), false);
+        }
+        source.sendSuccess(() -> Component.literal("Progression evidence:"), false);
+        for (RnaTechniqueEvidence evidence : RnaTechniqueEvidence.values()) {
+            source.sendSuccess(() -> Component.literal("  " + evidence.id()
+                    + "=" + data.progressionEvidence(evidence)), false);
+        }
+        source.sendSuccess(() -> Component.literal("Latent Aspect resonance:"), false);
+        for (RnaAspectResonance resonance : RnaAspectResonance.values()) {
+            source.sendSuccess(() -> Component.literal("  " + resonance.id()
+                    + "=" + data.aspectResonance(resonance)), false);
+        }
+        return visible;
+    }
+
+    private static int addTechniqueEvidence(
+            CommandSourceStack source,
+            ServerPlayer target,
+            RnaTechniqueEvidence evidence,
+            int amount
+    ) {
+        RnaAbilityManager.addProgressionEvidence(target, evidence, amount);
+        source.sendSuccess(() -> Component.literal("Technique evidence " + evidence.id()
+                + " +" + amount + " for " + target.getGameProfile().getName()), true);
+        return amount;
+    }
+
+    private static int addPatternProgress(
+            CommandSourceStack source,
+            ServerPlayer target,
+            ResourceLocation techniqueId,
+            RnaAcquisitionMethod method,
+            int amount
+    ) {
+        int accepted = RnaAbilityManager.addTechniquePatternProgress(target, techniqueId, method, amount);
+        source.sendSuccess(() -> Component.literal("Technique pattern " + techniqueId
+                + " +" + accepted + " via " + method.id()
+                + " for " + target.getGameProfile().getName()), true);
+        return accepted;
+    }
+
+    private static int showTraining(CommandSourceStack source, ServerPlayer target) {
+        RnaTrainingSession session = RnaAbilityManager.getData(target).trainingSession();
+        if (session == null) {
+            source.sendSuccess(() -> Component.literal("No active RNA training session"), false);
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("RNA training " + session.techniqueId()
+                + " phase=" + session.phase().id()
+                + " progress=" + session.phaseSuccesses() + "/" + session.phase().requiredSuccesses()
+                + " failures=" + session.totalFailures()), false);
+        return 1;
+    }
+
+    private static int startTraining(
+            CommandSourceStack source,
+            ServerPlayer target,
+            ResourceLocation techniqueId
+    ) {
+        RnaTrainingManager.StartResult result = RnaTrainingManager.start(target, techniqueId);
+        source.sendSuccess(() -> Component.literal("RNA training start " + techniqueId
+                + ": " + result.name().toLowerCase(Locale.ROOT)), true);
+        return result == RnaTrainingManager.StartResult.STARTED
+                || result == RnaTrainingManager.StartResult.STABILIZED ? 1 : 0;
+    }
+
+    private static int recordTrainingResult(
+            CommandSourceStack source,
+            ServerPlayer target,
+            boolean success
+    ) {
+        RnaTrainingManager.TrialResult result = success
+                ? RnaTrainingManager.recordSuccess(target)
+                : RnaTrainingManager.recordFailure(target);
+        source.sendSuccess(() -> Component.literal("RNA training result: "
+                + result.name().toLowerCase(Locale.ROOT)), true);
+        return result == RnaTrainingManager.TrialResult.NO_SESSION ? 0 : 1;
+    }
+
+    private static int stopTraining(CommandSourceStack source, ServerPlayer target) {
+        boolean stopped = RnaTrainingManager.stop(target);
+        source.sendSuccess(() -> Component.literal(stopped
+                ? "RNA training stopped"
+                : "No active RNA training session"), true);
+        return stopped ? 1 : 0;
+    }
+
+    private static int inspectTechnique(
+            CommandSourceStack source,
+            ServerPlayer target,
+            ResourceLocation techniqueId
+    ) {
+        RnaTechniqueProgression.CalibrationResult result =
+                RnaTechniqueProgression.inspectAndStabilize(target, techniqueId);
+        source.sendSuccess(() -> Component.literal("Technique inspection " + techniqueId
+                + ": " + result.name().toLowerCase(Locale.ROOT)), true);
+        showProgression(source, target);
+        return result == RnaTechniqueProgression.CalibrationResult.UNLOCKED
+                || result == RnaTechniqueProgression.CalibrationResult.ALREADY_UNLOCKED ? 1 : 0;
+    }
+
+    private static int setTechniqueStage(
+            CommandSourceStack source,
+            ServerPlayer target,
+            ResourceLocation techniqueId,
+            RnaTechniqueStage stage
+    ) {
+        if (!RnaAbilityManager.setTechniqueStage(target, techniqueId, stage)) {
+            source.sendFailure(Component.literal("Unknown RNA technique: " + techniqueId));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("Technique " + techniqueId
+                + " stage=" + stage.id() + " for " + target.getGameProfile().getName()), true);
+        return 1;
+    }
+
     private static int clearCombatDebug(CommandSourceStack source, ServerPlayer target) {
         RnaAbilityManager.clearCombatDebugState(target);
         source.sendSuccess(() -> Component.literal("RNA combat debug state cleared: "
@@ -761,6 +1018,40 @@ public final class RnaCommand {
                 ));
     }
 
+    private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> techniqueArgument() {
+        return Commands.argument("technique", StringArgumentType.string())
+                .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                        RnaTechniqueRegistry.ids(),
+                        builder
+                ));
+    }
+
+    private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> techniqueStageArgument() {
+        return Commands.argument("technique_stage", StringArgumentType.word())
+                .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                        Arrays.stream(RnaTechniqueStage.values()).map(RnaTechniqueStage::id),
+                        builder
+                ));
+    }
+
+    private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> techniqueEvidenceArgument() {
+        return Commands.argument("evidence", StringArgumentType.word())
+                .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                        Arrays.stream(RnaTechniqueEvidence.values()).map(RnaTechniqueEvidence::id),
+                        builder
+                ));
+    }
+
+    private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> acquisitionMethodArgument() {
+        return Commands.argument("method", StringArgumentType.word())
+                .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                        Arrays.stream(RnaAcquisitionMethod.values())
+                                .filter(RnaAcquisitionMethod::playerRoute)
+                                .map(RnaAcquisitionMethod::id),
+                        builder
+                ));
+    }
+
     private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> abilityOrAllArgument() {
         return Commands.argument("ability", StringArgumentType.string())
                 .suggests((context, builder) -> SharedSuggestionProvider.suggest(
@@ -803,6 +1094,50 @@ public final class RnaCommand {
     private static ResourceLocation parseAbility(String value) {
         ResourceLocation parsed = ResourceLocation.tryParse(value.toLowerCase(Locale.ROOT));
         return parsed == null ? null : parsed;
+    }
+
+    private static ResourceLocation techniqueId(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> context
+    ) throws CommandSyntaxException {
+        ResourceLocation id = ResourceLocation.tryParse(
+                StringArgumentType.getString(context, "technique").toLowerCase(Locale.ROOT));
+        if (id == null || RnaTechniqueRegistry.get(id) == null) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
+        }
+        return id;
+    }
+
+    private static RnaTechniqueStage techniqueStage(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> context
+    ) throws CommandSyntaxException {
+        String value = StringArgumentType.getString(context, "technique_stage");
+        RnaTechniqueStage stage = RnaTechniqueStage.fromId(value);
+        if (stage == RnaTechniqueStage.SEALED && !RnaTechniqueStage.SEALED.id().equalsIgnoreCase(value)) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
+        }
+        return stage;
+    }
+
+    private static RnaTechniqueEvidence techniqueEvidence(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> context
+    ) throws CommandSyntaxException {
+        RnaTechniqueEvidence evidence = RnaTechniqueEvidence.fromId(
+                StringArgumentType.getString(context, "evidence"));
+        if (evidence == null) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
+        }
+        return evidence;
+    }
+
+    private static RnaAcquisitionMethod acquisitionMethod(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> context
+    ) throws CommandSyntaxException {
+        RnaAcquisitionMethod method = RnaAcquisitionMethod.fromId(
+                StringArgumentType.getString(context, "method"));
+        if (method == null || !method.playerRoute()) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
+        }
+        return method;
     }
 
     private static boolean operator(CommandSourceStack source) {

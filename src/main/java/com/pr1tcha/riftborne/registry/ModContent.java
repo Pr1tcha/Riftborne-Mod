@@ -15,6 +15,10 @@ import com.pr1tcha.riftborne.codex.block.CodexDiagnosticCapsuleBlockEntity;
 import com.pr1tcha.riftborne.codex.item.CodexLaptopItem;
 import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.riftwalker.item.RiftwalkerArmorItem;
+import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlock;
+import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
+import com.pr1tcha.riftborne.physical.block.PhysicalTrainingStationBlock;
+import com.pr1tcha.riftborne.physical.pushup.block.PushupMatBlock;
 import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -81,6 +85,19 @@ public class ModContent {
                     .strength(2.8F, 6.0F)
                     .lightLevel(state -> 5)
                     .noOcclusion()));
+    public static final Supplier<Block> RNA_TRAINING_ANCHOR = BLOCKS.register("rna_training_anchor",
+            () -> new RnaTrainingAnchorBlock(BlockBehaviour.Properties.of()
+                    .strength(3.6F, 8.0F)
+                    .lightLevel(state -> 5)
+                    .noOcclusion()));
+    public static final Supplier<Block> ENDURANCE_STATION = physicalStation("endurance_station");
+    public static final Supplier<Block> STRENGTH_STATION = physicalStation("strength_station");
+    public static final Supplier<Block> MOTORICS_STATION = physicalStation("motorics_station");
+    public static final Supplier<Block> STABILITY_STATION = physicalStation("stability_station");
+    public static final Supplier<Block> PUSHUP_MAT = BLOCKS.register("pushup_mat",
+            () -> new PushupMatBlock(BlockBehaviour.Properties.of()
+                    .strength(0.8F, 1.2F)
+                    .noOcclusion()));
     public static final Supplier<Block> RIFT_PORTAL = BLOCKS.register("rift_portal",
             () -> new RiftPortalBlock(BlockBehaviour.Properties.of()
                     .noCollission()
@@ -143,6 +160,12 @@ public class ModContent {
     public static final Supplier<BlockEntityType<RiftPortalBlockEntity>> RIFT_PORTAL_BE_TYPE =
             BLOCK_ENTITIES.register("rift_portal",
                     () -> BlockEntityType.Builder.of(RiftPortalBlockEntity::new, RIFT_PORTAL.get()).build(null));
+    public static final Supplier<BlockEntityType<RnaTrainingAnchorBlockEntity>> RNA_TRAINING_ANCHOR_BE_TYPE =
+            BLOCK_ENTITIES.register("rna_training_anchor",
+                    () -> BlockEntityType.Builder.of(
+                            RnaTrainingAnchorBlockEntity::new,
+                            RNA_TRAINING_ANCHOR.get()
+                    ).build(null));
 
     public static final Supplier<Item> RIFT_SHARD = ITEMS.register("rift_shard",
             () -> new Item(new Item.Properties()));
@@ -171,6 +194,15 @@ public class ModContent {
             () -> new BlockItem(CODEX_DOCK.get(), new Item.Properties()));
     public static final Supplier<Item> CODEX_DIAGNOSTIC_CAPSULE_ITEM = ITEMS.register("codex_diagnostic_capsule",
             () -> new BlockItem(CODEX_DIAGNOSTIC_CAPSULE.get(), new Item.Properties()));
+    public static final Supplier<Item> RNA_TRAINING_ANCHOR_ITEM = ITEMS.register("rna_training_anchor",
+            () -> new BlockItem(RNA_TRAINING_ANCHOR.get(), new Item.Properties().stacksTo(16)));
+    public static final Supplier<Item> ENDURANCE_STATION_ITEM = blockItem("endurance_station", ENDURANCE_STATION);
+    public static final Supplier<Item> STRENGTH_STATION_ITEM = blockItem("strength_station", STRENGTH_STATION);
+    public static final Supplier<Item> MOTORICS_STATION_ITEM = blockItem("motorics_station", MOTORICS_STATION);
+    public static final Supplier<Item> STABILITY_STATION_ITEM = blockItem("stability_station", STABILITY_STATION);
+    public static final Supplier<Item> TRAINING_WEIGHT = ITEMS.register("training_weight",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final Supplier<Item> PUSHUP_MAT_ITEM = blockItem("pushup_mat", PUSHUP_MAT);
     public static final Supplier<Item> POCKET_CODEX = ITEMS.register("pocket_codex",
             () -> new PocketCodexItem(new Item.Properties().stacksTo(1)));
     public static final Supplier<Item> CODEX_FLASH_DRIVE = ITEMS.register("codex_flash_drive",
@@ -207,7 +239,7 @@ public class ModContent {
                     .build(ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "telekinetic_block").toString()));
 
     public static final Supplier<Item> RIFT_SPLINTER_SPAWN_EGG = ITEMS.register("rift_splinter_spawn_egg",
-            () -> new SpawnEggItem(RIFT_SPLINTER.get(), 0x1B1425, 0x8E35FF, new Item.Properties()));
+            () -> new SpawnEggItem(RIFT_SPLINTER.get(), 0x101823, 0x35BCEB, new Item.Properties()));
 
     public static final Supplier<CreativeModeTab> RIFTBORNE_BLOCKS_TAB = CREATIVE_MODE_TABS.register("blocks",
             () -> CreativeModeTab.builder()
@@ -248,6 +280,13 @@ public class ModContent {
                                 output.accept(CODEX_LAPTOP_ITEM.get());
                                 output.accept(CODEX_DOCK_ITEM.get());
                                 output.accept(CODEX_DIAGNOSTIC_CAPSULE_ITEM.get());
+                                output.accept(RNA_TRAINING_ANCHOR_ITEM.get());
+                                output.accept(ENDURANCE_STATION_ITEM.get());
+                                output.accept(STRENGTH_STATION_ITEM.get());
+                                output.accept(MOTORICS_STATION_ITEM.get());
+                                output.accept(STABILITY_STATION_ITEM.get());
+                                output.accept(TRAINING_WEIGHT.get());
+                                output.accept(PUSHUP_MAT_ITEM.get());
                                 output.accept(POCKET_CODEX.get());
                                 output.accept(CODEX_FLASH_DRIVE.get());
                             })
@@ -290,6 +329,12 @@ public class ModContent {
 
     private static Supplier<Item> blockItem(String name, Supplier<Block> block) {
         return ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+    }
+
+    private static Supplier<Block> physicalStation(String name) {
+        return BLOCKS.register(name, () -> new PhysicalTrainingStationBlock(
+                BlockBehaviour.Properties.of().strength(3.0F, 6.0F).noOcclusion()
+        ));
     }
 
     private static Fluid rnaCurrentSource() {

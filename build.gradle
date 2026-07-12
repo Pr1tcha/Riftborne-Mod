@@ -109,9 +109,13 @@ dependencies {
     compileOnly files('libs/veil-neoforge-1.21.1-4.0.2.jar')
     compileOnly files('libs/geckolib-neoforge-1.21.1-4.8.4.jar')
     compileOnly files("libs/curios-neoforge-${curios_version}-api.jar")
+    compileOnly files("libs/player-animation-lib-neoforge-${player_animation_lib_version}.jar")
+    compileOnly files("libs/bendable-cuboids-neoforge-${bendable_cuboids_version}.jar")
     modDevRuntimeDependencies files('libs/veil-neoforge-1.21.1-4.0.2.jar')
     modDevRuntimeDependencies files('libs/geckolib-neoforge-1.21.1-4.8.4.jar')
     modDevRuntimeDependencies files("libs/curios-neoforge-${curios_version}.jar")
+    modDevRuntimeDependencies files("libs/player-animation-lib-neoforge-${player_animation_lib_version}.jar")
+    modDevRuntimeDependencies files("libs/bendable-cuboids-neoforge-${bendable_cuboids_version}.jar")
 
     // Riftborne dependency placeholder with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
