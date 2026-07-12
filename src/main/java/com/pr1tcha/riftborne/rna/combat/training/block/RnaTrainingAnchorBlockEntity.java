@@ -38,12 +38,15 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
     private static final RawAnimation ACTIVE = RawAnimation.begin().thenLoop("animation.rna_training_anchor.active");
     private static final RawAnimation DEPLOY = RawAnimation.begin()
             .thenPlayAndHold("animation.rna_training_anchor.deploy");
+    private static final RawAnimation FOLD = RawAnimation.begin()
+            .thenPlayAndHold("animation.rna_training_anchor.fold");
     private static final double MAX_DISTANCE_SQR = 6.5D * 6.5D;
     private static final int CALIBRATION_TICKS = 40;
     private static final int RECOVERY_TICKS = 28;
     private static final int PAUSE_TICKS = 80;
     private static final int MIN_INPUT_LEAD = 4;
     private static final int DEPLOY_ANIM_TICKS = 20;
+    private static final int FOLD_ANIM_TICKS = 16;
 
     private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
     private UUID participantId;
@@ -55,6 +58,7 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
     private int inputLead = -1;
     private boolean inputFacing;
     private int deployAnimTicks;
+    private int foldAnimTicks;
 
     public RnaTrainingAnchorBlockEntity(BlockPos pos, BlockState state) {
         super(ModContent.RNA_TRAINING_ANCHOR_BE_TYPE.get(), pos, state);
@@ -73,6 +77,13 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
 
     public void onDeployed() {
         deployAnimTicks = DEPLOY_ANIM_TICKS;
+        foldAnimTicks = 0;
+        sync();
+    }
+
+    public void onCollapsed() {
+        foldAnimTicks = FOLD_ANIM_TICKS;
+        deployAnimTicks = 0;
         sync();
     }
 
@@ -188,6 +199,12 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
         if (deployAnimTicks > 0) {
             deployAnimTicks--;
             if (deployAnimTicks == 0) {
+                sync();
+            }
+        }
+        if (foldAnimTicks > 0) {
+            foldAnimTicks--;
+            if (foldAnimTicks == 0) {
                 sync();
             }
         }
@@ -450,6 +467,7 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
         tag.putDouble("PulseY", pulseSource.y);
         tag.putDouble("PulseZ", pulseSource.z);
         tag.putInt("DeployAnimTicks", deployAnimTicks);
+        tag.putInt("FoldAnimTicks", foldAnimTicks);
     }
 
     @Override
@@ -462,6 +480,7 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
         missStreak = Math.max(0, tag.getInt("MissStreak"));
         pulseSource = new Vec3(tag.getDouble("PulseX"), tag.getDouble("PulseY"), tag.getDouble("PulseZ"));
         deployAnimTicks = Math.max(0, tag.getInt("DeployAnimTicks"));
+        foldAnimTicks = Math.max(0, tag.getInt("FoldAnimTicks"));
     }
 
     @Override
@@ -481,6 +500,9 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
                 "training_state",
                 4,
                 state -> {
+                    if (foldAnimTicks > 0) {
+                        return state.setAndContinue(FOLD);
+                    }
                     if (deployAnimTicks > 0) {
                         return state.setAndContinue(DEPLOY);
                     }

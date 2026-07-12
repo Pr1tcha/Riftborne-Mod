@@ -153,6 +153,7 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
             tearingDown = false;
         }
         level.setBlock(pos, state.setValue(DEPLOYED, false).setValue(PART, 0), Block.UPDATE_ALL);
+        anchor.onCollapsed();
         level.playSound(null, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 0.7F, 1.1F);
         player.displayClientMessage(Component.translatable("message.riftborne.training.collapsed"), true);
     }

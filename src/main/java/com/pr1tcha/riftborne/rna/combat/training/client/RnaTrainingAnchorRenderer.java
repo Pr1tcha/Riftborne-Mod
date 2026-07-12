@@ -9,4 +9,11 @@ public final class RnaTrainingAnchorRenderer extends GeoBlockRenderer<RnaTrainin
         super(new RnaTrainingAnchorModel());
         addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
+
+    @Override
+    public boolean shouldRenderOffScreen(RnaTrainingAnchorBlockEntity animatable) {
+        // Deployed the model rises ~4 blocks above the base cell; keep it drawn even when
+        // the base BlockPos is outside the view frustum so the tall silhouette never vanishes.
+        return true;
+    }
 }
