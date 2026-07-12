@@ -107,7 +107,6 @@ On interaction the server sends a read-only snapshot to the client. Power toggle
     - `/riftborne rifts spawn <pos> <amount> <sec|t>`
     - `/riftborne rifts spawn <pos> <amount> <sec|t> <radius>`
     - `/riftborne contour spawn`
-    - `/riftborne rifts spawn_archived`
     - `/riftborne rifts info [searchRadius]`
     - `/riftborne contour escape`
     - `/riftborne rifts kill [radius]`
@@ -160,11 +159,10 @@ On interaction the server sends a read-only snapshot to the client. Power toggle
   - Riftwalker Interspace uses a brighter violet/lilac palette and more floating fragments.
 
 - `InterspaceCommand`
-  - Temporary development access:
+  - Temporary development access while no lore-facing entry mechanic exists:
     - `/riftborne interspace rna`
     - `/riftborne interspace riftwalker`
     - `/riftborne interspace return`
-  - These commands are test scaffolding, not the final lore-facing entry mechanic.
 
 - `DiscardContourRules`
   - Keeps player death respawns inside the Discard Contour.

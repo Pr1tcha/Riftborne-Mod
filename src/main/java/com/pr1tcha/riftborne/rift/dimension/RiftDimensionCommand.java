@@ -6,8 +6,6 @@ import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rift.RiftSpawnLocator;
 import com.pr1tcha.riftborne.rift.RiftSpawnProfile;
 import com.pr1tcha.riftborne.rift.portal.RiftPortalBlockEntity;
-import com.pr1tcha.riftborne.rift.run.RiftRunData;
-import com.pr1tcha.riftborne.rift.run.RiftRunSavedData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -24,12 +22,6 @@ public final class RiftDimensionCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> category() {
         return Commands.literal("rift")
                 .requires(source -> source.hasPermission(2))
-                .then(Commands.literal("enter")
-                        .then(Commands.argument("tier", IntegerArgumentType.integer(1, 5))
-                                .executes(context -> enter(
-                                        context.getSource(),
-                                        IntegerArgumentType.getInteger(context, "tier")
-                                ))))
                 .then(Commands.literal("open")
                         .then(Commands.argument("tier", IntegerArgumentType.integer(1, 5))
                                 .executes(context -> openPortal(
@@ -39,24 +31,7 @@ public final class RiftDimensionCommand {
                 .then(Commands.literal("exit")
                         .executes(context -> exit(context.getSource())))
                 .then(Commands.literal("info")
-                        .executes(context -> info(context.getSource())))
-                .then(Commands.literal("listRuns")
-                        .executes(context -> listRuns(context.getSource())));
-    }
-
-    private static int enter(CommandSourceStack source, int tierLevel)
-            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        ServerPlayer player = source.getPlayerOrException();
-        RiftTier tier = RiftTier.fromLevel(tierLevel).orElseThrow();
-        if (!RiftDimensions.enter(player, tier)) {
-            source.sendFailure(Component.translatable("command.riftborne.rift_dimension.not_loaded", tierLevel));
-            return 0;
-        }
-
-        source.sendSuccess(() -> Component.translatable("command.riftborne.rift_dimension.entered",
-                tier.level(), Component.translatable(tier.translationKey()))
-                .withStyle(ChatFormatting.LIGHT_PURPLE), false);
-        return 1;
+                        .executes(context -> info(context.getSource())));
     }
 
     private static int exit(CommandSourceStack source)
@@ -121,19 +96,4 @@ public final class RiftDimensionCommand {
         return 1;
     }
 
-    private static int listRuns(CommandSourceStack source) {
-        RiftRunSavedData storage = RiftRunSavedData.get(source.getServer());
-        if (storage.runs().isEmpty()) {
-            source.sendSuccess(() -> Component.literal("No saved rift runs."), false);
-            return 0;
-        }
-        for (RiftRunData run : storage.runs()) {
-            source.sendSuccess(() -> Component.literal(
-                    run.runId() + " | tier " + run.tier().level() + " | " + run.state()
-                            + " | " + run.anchorPos().toShortString()
-                            + " | players " + run.players().size()
-            ).withStyle(ChatFormatting.GRAY), false);
-        }
-        return storage.runs().size();
-    }
 }

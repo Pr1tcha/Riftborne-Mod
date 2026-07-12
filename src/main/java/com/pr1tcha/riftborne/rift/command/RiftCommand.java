@@ -60,9 +60,7 @@ public class RiftCommand {
                         )
                         .executes(context -> getRiftInfo(context.getSource(), 5))
                 )
-
-                .then(spawnCommand("spawn", RiftSpawnProfile.NORMAL, true))
-                .then(spawnCommand("spawn_archived", RiftSpawnProfile.NORMAL, false));
+                .then(spawnCommand("spawn", RiftSpawnProfile.NORMAL, true));
     }
 
     public static LiteralArgumentBuilder<CommandSourceStack> contourCategory() {

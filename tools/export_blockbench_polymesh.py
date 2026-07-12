@@ -8,6 +8,7 @@ contains Blockbench Mesh elements.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import math
 from pathlib import Path
@@ -34,12 +35,90 @@ def normalize(vector):
 
 def collect_element_bones(project):
     mapping = {}
+
+    groups_by_uuid = {
+        group["uuid"]: group
+        for group in project.get("groups", [])
+    }
+
+    def visit(nodes, parent_bone=None):
+        for node in nodes:
+            if isinstance(node, str):
+                if parent_bone is not None:
+                    mapping[node] = parent_bone
+                continue
+
+            group = groups_by_uuid.get(node.get("uuid"))
+            bone_name = group["name"] if group is not None else parent_bone
+            visit(node.get("children", []), bone_name)
+
+    # Current Blockbench versions keep the authoritative hierarchy in outliner.
+    # Older generated projects may still store element UUIDs directly on groups.
+    visit(project.get("outliner", []))
     for group in project.get("groups", []):
         bone_name = group["name"]
         for child in group.get("children", []):
             if isinstance(child, str):
-                mapping[child] = bone_name
+                mapping.setdefault(child, bone_name)
     return mapping
+
+
+def export_texture(project, texture_path: Path):
+    textures = project.get("textures", [])
+    if not textures:
+        raise ValueError("Blockbench project has no embedded texture")
+
+    source = textures[0].get("source", "")
+    marker = ";base64,"
+    if marker not in source:
+        raise ValueError("Blockbench texture is not embedded as base64 data")
+
+    texture_path.parent.mkdir(parents=True, exist_ok=True)
+    texture_path.write_bytes(base64.b64decode(source.split(marker, 1)[1]))
+    print(f"Exported embedded texture to {texture_path}")
+
+
+def export_display(project, item_model_path: Path, compensate_geckolib_half_turn: bool = False):
+    supported_contexts = {
+        "thirdperson_righthand",
+        "thirdperson_lefthand",
+        "firstperson_righthand",
+        "firstperson_lefthand",
+        "ground",
+        "gui",
+        "head",
+        "fixed",
+    }
+    display = {}
+    for context, source_transform in project.get("display", {}).items():
+        if context not in supported_contexts:
+            continue
+
+        transform = {
+            key: list(value) if isinstance(value, list) else value
+            for key, value in source_transform.items()
+        }
+        if compensate_geckolib_half_turn and context in {
+            "thirdperson_righthand",
+            "thirdperson_lefthand",
+            "firstperson_righthand",
+            "firstperson_lefthand",
+            "ground",
+        }:
+            rotation = transform.get("rotation")
+            if rotation and abs(rotation[0]) == 180:
+                rotation[0] = 0
+        display[context] = transform
+    item_model = {
+        "parent": "minecraft:builtin/entity",
+        "display": display,
+    }
+    item_model_path.parent.mkdir(parents=True, exist_ok=True)
+    item_model_path.write_text(
+        json.dumps(item_model, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Exported {len(display)} display context(s) to {item_model_path}")
 
 
 def triangulate(vertex_keys):
@@ -89,7 +168,13 @@ def build_poly_mesh(meshes):
     }
 
 
-def export(bbmodel_path: Path, geo_path: Path):
+def export(
+    bbmodel_path: Path,
+    geo_path: Path,
+    texture_path: Path | None = None,
+    item_model_path: Path | None = None,
+    compensate_geckolib_half_turn: bool = False,
+):
     project = json.loads(bbmodel_path.read_text(encoding="utf-8"))
     geo = json.loads(geo_path.read_text(encoding="utf-8"))
     element_bones = collect_element_bones(project)
@@ -118,13 +203,31 @@ def export(bbmodel_path: Path, geo_path: Path):
     geo_path.write_text(json.dumps(geo, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Exported {sum(map(len, meshes_by_bone.values()))} mesh element(s) into {len(meshes_by_bone)} bone(s)")
 
+    if texture_path is not None:
+        export_texture(project, texture_path)
+    if item_model_path is not None:
+        export_display(project, item_model_path, compensate_geckolib_half_turn)
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("bbmodel", type=Path)
     parser.add_argument("geo", type=Path)
+    parser.add_argument("--texture", type=Path)
+    parser.add_argument("--item-model", type=Path)
+    parser.add_argument(
+        "--compensate-geckolib-half-turn",
+        action="store_true",
+        help="Remove Blockbench's redundant X half-turn from held-item display contexts",
+    )
     arguments = parser.parse_args()
-    export(arguments.bbmodel, arguments.geo)
+    export(
+        arguments.bbmodel,
+        arguments.geo,
+        texture_path=arguments.texture,
+        item_model_path=arguments.item_model,
+        compensate_geckolib_half_turn=arguments.compensate_geckolib_half_turn,
+    )
 
 
 if __name__ == "__main__":

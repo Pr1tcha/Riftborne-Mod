@@ -30,6 +30,10 @@ See [docs/CODEX_BACKEND_ENTRIES.md](docs/CODEX_BACKEND_ENTRIES.md) for the copy-
 
 ## Commands
 
+The root tree is intentionally limited to active gameplay and operator tools.
+Legacy Codex data commands, RNA compatibility aliases, and the archived-rift
+spawner are no longer registered.
+
 - `/riftborne rifts spawn`
 - `/riftborne rifts spawn <pos>`
 - `/riftborne rifts spawn <pos> <amount> <sec|t>`
@@ -38,10 +42,6 @@ See [docs/CODEX_BACKEND_ENTRIES.md](docs/CODEX_BACKEND_ENTRIES.md) for the copy-
 - `/riftborne contour spawn <pos>`
 - `/riftborne contour spawn <pos> <amount> <sec|t>`
 - `/riftborne contour spawn <pos> <amount> <sec|t> <radius>`
-- `/riftborne rifts spawn_archived`
-- `/riftborne rifts spawn_archived <pos>`
-- `/riftborne rifts spawn_archived <pos> <amount> <sec|t>`
-- `/riftborne rifts spawn_archived <pos> <amount> <sec|t> <radius>`
 - `/riftborne rifts info`
 - `/riftborne rifts info <searchRadius>`
 - `/riftborne contour escape`
@@ -82,8 +82,6 @@ Successful grabs and throws use the shared combat backend for meta-wear and prot
 
 `/riftborne rifts spawn` now uses the current procedural visual and saves as `riftborne:rift`.
 `/riftborne contour spawn` creates a Discard Contour Rift that leads to `riftborne:discard_contour`.
-`/riftborne rifts spawn_archived` keeps the old classic visual available as `riftborne:rift_archived`.
-
 The Discard Contour is a trapping dimension: death respawns the player back inside the Contour, beds do not work, teleport commands are blocked for trapped players, the compass is unreliable because the dimension is non-natural, and no return rift is created at the arrival anchor.
 
 Operators can use `/riftborne contour escape` as an emergency test command to leave the Discard Contour.

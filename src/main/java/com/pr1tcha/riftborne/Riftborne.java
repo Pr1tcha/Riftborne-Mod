@@ -15,7 +15,11 @@ import com.pr1tcha.riftborne.aspects.telekinesis.TelekinesisNetwork;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
 import com.pr1tcha.riftborne.riftwalker.network.RiftwalkerNetwork;
 import com.pr1tcha.riftborne.rna.combat.RnaCombatNetwork;
+import com.pr1tcha.riftborne.rna.combat.client.VeilBarrierField;
+import com.pr1tcha.riftborne.rna.combat.training.client.RnaTrainingAnchorRenderer;
+import com.pr1tcha.riftborne.physical.pushup.PhysicalTrainingNetwork;
 import com.pr1tcha.riftborne.codex.data.entry.CodexEntryReloadListener;
+import com.pr1tcha.riftborne.codex.scan.CodexScanTargetReloadListener;
 import com.pr1tcha.riftborne.codex.client.CodexLaptopRenderer;
 import com.pr1tcha.riftborne.codex.client.CodexDockRenderer;
 import com.pr1tcha.riftborne.codex.client.CodexDiagnosticCapsuleRenderer;
@@ -54,6 +58,7 @@ public class Riftborne {
         modEventBus.addListener(CodexNetwork::register);
         modEventBus.addListener(RiftwalkerNetwork::register);
         modEventBus.addListener(RnaCombatNetwork::register);
+        modEventBus.addListener(PhysicalTrainingNetwork::register);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);
@@ -73,6 +78,7 @@ public class Riftborne {
     @SubscribeEvent
     public void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(CodexEntryReloadListener.INSTANCE);
+        event.addListener(CodexScanTargetReloadListener.INSTANCE);
     }
 
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -82,6 +88,7 @@ public class Riftborne {
             LOGGER.info("Riftborne client setup for {}", Minecraft.getInstance().getUser().getName());
             event.enqueueWork(() -> {
                 VeilRiftDistortion.registerIfPresent();
+                VeilBarrierField.registerIfPresent();
                 RnaFluidClient.registerRenderLayers();
             });
         }
@@ -100,6 +107,10 @@ public class Riftborne {
             event.registerBlockEntityRenderer(
                     ModContent.CODEX_DIAGNOSTIC_CAPSULE_BE_TYPE.get(),
                     context -> new CodexDiagnosticCapsuleRenderer()
+            );
+            event.registerBlockEntityRenderer(
+                    ModContent.RNA_TRAINING_ANCHOR_BE_TYPE.get(),
+                    context -> new RnaTrainingAnchorRenderer()
             );
             event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
             event.registerEntityRenderer(ModContent.TELEKINETIC_BLOCK.get(), TelekineticBlockRenderer::new);
