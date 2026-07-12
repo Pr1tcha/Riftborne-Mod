@@ -2,6 +2,7 @@ package com.pr1tcha.riftborne.rna.combat.training.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pr1tcha.riftborne.registry.ModContent;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -10,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -23,8 +25,11 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,20 +37,22 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
     public static final MapCodec<RnaTrainingAnchorBlock> CODEC = simpleCodec(RnaTrainingAnchorBlock::new);
     public static final BooleanProperty DEPLOYED = BooleanProperty.create("deployed");
 
-    // Compact (undeployed) unit sits low; deployed unit fills the base cell. The 4-block
-    // silhouette above is rendered by the GeckoLib model, not occupied by collision yet.
-    private static final VoxelShape COMPACT_SHAPE = Block.box(4.0D, 0.0D, 4.0D, 12.0D, 7.0D, 12.0D);
-    private static final VoxelShape DEPLOYED_SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
+    // Deployed the node is a vertical multiblock: PART 0 is the interactive base
+    // (owns the block entity + animated render); PART 1..SEGMENTS are invisible
+    // collision-only fillers stacked above so the hitbox is a real 4-block column.
+    private static final int SEGMENTS = 3;
+    public static final IntegerProperty PART = IntegerProperty.create("part", 0, SEGMENTS);
 
     // Deploy arena: an 11x11 footprint (radius 5, "~10x10") that must be clear at the two
-    // training-height layers, plus a 4-block vertical column above the anchor for the structure.
+    // training-height layers, plus SEGMENTS blocks of headroom above the anchor.
     private static final int ARENA_RADIUS = 5;
     private static final int ARENA_HEIGHT = 2;
-    private static final int STRUCTURE_HEIGHT = 4;
+
+    private static boolean tearingDown = false;
 
     public RnaTrainingAnchorBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(DEPLOYED, false));
+        registerDefaultState(defaultBlockState().setValue(DEPLOYED, false).setValue(PART, 0));
     }
 
     @Override
@@ -55,17 +62,17 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(DEPLOYED);
+        builder.add(DEPLOYED, PART);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(DEPLOYED, false);
+        return defaultBlockState().setValue(DEPLOYED, false).setValue(PART, 0);
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new RnaTrainingAnchorBlockEntity(pos, state);
+        return state.getValue(PART) == 0 ? new RnaTrainingAnchorBlockEntity(pos, state) : null;
     }
 
     @Override
@@ -79,19 +86,22 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
         if (level.isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
-        if (!(level.getBlockEntity(pos) instanceof RnaTrainingAnchorBlockEntity anchor)) {
+        int part = state.getValue(PART);
+        BlockPos basePos = part == 0 ? pos : pos.below(part);
+        BlockState baseState = part == 0 ? state : level.getBlockState(basePos);
+        if (!baseState.is(this) || !(level.getBlockEntity(basePos) instanceof RnaTrainingAnchorBlockEntity anchor)) {
             return InteractionResult.PASS;
         }
 
-        if (!state.getValue(DEPLOYED)) {
+        if (!baseState.getValue(DEPLOYED)) {
             if (player.isSecondaryUseActive()) {
                 return InteractionResult.PASS;
             }
-            return tryDeploy(state, (ServerLevel) level, pos, serverPlayer, anchor);
+            return tryDeploy(baseState, (ServerLevel) level, basePos, serverPlayer, anchor);
         }
 
         if (player.isSecondaryUseActive()) {
-            collapse(state, (ServerLevel) level, pos, serverPlayer, anchor);
+            collapse(baseState, (ServerLevel) level, basePos, serverPlayer, anchor);
         } else {
             anchor.startTraining(serverPlayer);
         }
@@ -110,7 +120,12 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
             level.playSound(null, pos, SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.BLOCKS, 0.6F, 1.2F);
             return InteractionResult.CONSUME;
         }
-        level.setBlock(pos, state.setValue(DEPLOYED, true), Block.UPDATE_ALL);
+        level.setBlock(pos, state.setValue(DEPLOYED, true).setValue(PART, 0), Block.UPDATE_ALL);
+        for (int i = 1; i <= SEGMENTS; i++) {
+            level.setBlock(pos.above(i),
+                    defaultBlockState().setValue(DEPLOYED, true).setValue(PART, i),
+                    Block.UPDATE_ALL);
+        }
         anchor.onDeployed();
         level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 0.8F, 0.9F);
         player.displayClientMessage(Component.translatable("message.riftborne.training.deployed"), true);
@@ -125,13 +140,25 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
             RnaTrainingAnchorBlockEntity anchor
     ) {
         anchor.stopTraining(player, false);
-        level.setBlock(pos, state.setValue(DEPLOYED, false), Block.UPDATE_ALL);
+        tearingDown = true;
+        try {
+            for (int i = 1; i <= SEGMENTS; i++) {
+                BlockPos segment = pos.above(i);
+                BlockState segState = level.getBlockState(segment);
+                if (segState.is(this) && segState.getValue(PART) == i) {
+                    level.removeBlock(segment, false);
+                }
+            }
+        } finally {
+            tearingDown = false;
+        }
+        level.setBlock(pos, state.setValue(DEPLOYED, false).setValue(PART, 0), Block.UPDATE_ALL);
         level.playSound(null, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 0.7F, 1.1F);
         player.displayClientMessage(Component.translatable("message.riftborne.training.collapsed"), true);
     }
 
     private boolean hasDeploySpace(Level level, BlockPos pos) {
-        for (int y = 1; y <= STRUCTURE_HEIGHT; y++) {
+        for (int y = 1; y <= SEGMENTS; y++) {
             if (!isClear(level, pos.above(y))) {
                 return false;
             }
@@ -158,12 +185,17 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return state.getValue(PART) == 0 ? RenderShape.ENTITYBLOCK_ANIMATED : RenderShape.INVISIBLE;
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return state.getValue(DEPLOYED) ? DEPLOYED_SHAPE : COMPACT_SHAPE;
+        return Shapes.block();
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return List.of(new ItemStack(ModContent.RNA_TRAINING_ANCHOR_ITEM.get()));
     }
 
     @Nullable
@@ -173,7 +205,7 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
             BlockState state,
             BlockEntityType<T> type
     ) {
-        return level.isClientSide
+        return level.isClientSide || state.getValue(PART) != 0
                 ? null
                 : createTickerHelper(
                         type,
@@ -184,10 +216,27 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
 
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock())
-                && !level.isClientSide
-                && level.getBlockEntity(pos) instanceof RnaTrainingAnchorBlockEntity anchor) {
-            anchor.stopTraining(null, false);
+        if (!state.is(newState.getBlock()) && !level.isClientSide && !tearingDown) {
+            tearingDown = true;
+            try {
+                int part = state.getValue(PART);
+                BlockPos basePos = pos.below(part);
+                if (level.getBlockEntity(basePos) instanceof RnaTrainingAnchorBlockEntity anchor) {
+                    anchor.stopTraining(null, false);
+                }
+                for (int i = 0; i <= SEGMENTS; i++) {
+                    BlockPos p = basePos.above(i);
+                    if (p.equals(pos)) {
+                        continue;
+                    }
+                    BlockState s = level.getBlockState(p);
+                    if (s.is(this) && s.getValue(PART) == i) {
+                        level.removeBlock(p, false);
+                    }
+                }
+            } finally {
+                tearingDown = false;
+            }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }

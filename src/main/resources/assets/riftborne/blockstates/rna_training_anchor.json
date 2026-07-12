@@ -1,10 +1,12 @@
 {
   "variants": {
-    "deployed=false": {
-      "model": "riftborne:block/rna_training_anchor"
-    },
-    "deployed=true": {
-      "model": "riftborne:block/rna_training_anchor"
-    }
+    "deployed=false,part=0": { "model": "riftborne:block/rna_training_anchor" },
+    "deployed=true,part=0": { "model": "riftborne:block/rna_training_anchor" },
+    "deployed=true,part=1": { "model": "riftborne:block/rna_training_anchor" },
+    "deployed=true,part=2": { "model": "riftborne:block/rna_training_anchor" },
+    "deployed=true,part=3": { "model": "riftborne:block/rna_training_anchor" },
+    "deployed=false,part=1": { "model": "riftborne:block/rna_training_anchor" },
+    "deployed=false,part=2": { "model": "riftborne:block/rna_training_anchor" },
+    "deployed=false,part=3": { "model": "riftborne:block/rna_training_anchor" }
   }
 }

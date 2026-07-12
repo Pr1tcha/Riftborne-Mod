@@ -33,6 +33,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements GeoBlockEntity {
+    private static final RawAnimation FOLDED = RawAnimation.begin().thenLoop("animation.rna_training_anchor.folded");
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.rna_training_anchor.idle");
     private static final RawAnimation ACTIVE = RawAnimation.begin().thenLoop("animation.rna_training_anchor.active");
     private static final RawAnimation DEPLOY = RawAnimation.begin()
@@ -482,6 +483,9 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
                 state -> {
                     if (deployAnimTicks > 0) {
                         return state.setAndContinue(DEPLOY);
+                    }
+                    if (!getBlockState().getValue(RnaTrainingAnchorBlock.DEPLOYED)) {
+                        return state.setAndContinue(FOLDED);
                     }
                     return state.setAndContinue(isActive() ? ACTIVE : IDLE);
                 }
