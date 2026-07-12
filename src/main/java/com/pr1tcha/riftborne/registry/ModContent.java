@@ -17,7 +17,6 @@ import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.riftwalker.item.RiftwalkerArmorItem;
 import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlock;
 import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
-import com.pr1tcha.riftborne.physical.block.PhysicalTrainingStationBlock;
 import com.pr1tcha.riftborne.physical.pushup.block.PushupMatBlock;
 import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.function.Supplier;
@@ -90,10 +89,6 @@ public class ModContent {
                     .strength(3.6F, 8.0F)
                     .lightLevel(state -> 5)
                     .noOcclusion()));
-    public static final Supplier<Block> ENDURANCE_STATION = physicalStation("endurance_station");
-    public static final Supplier<Block> STRENGTH_STATION = physicalStation("strength_station");
-    public static final Supplier<Block> MOTORICS_STATION = physicalStation("motorics_station");
-    public static final Supplier<Block> STABILITY_STATION = physicalStation("stability_station");
     public static final Supplier<Block> PUSHUP_MAT = BLOCKS.register("pushup_mat",
             () -> new PushupMatBlock(BlockBehaviour.Properties.of()
                     .strength(0.8F, 1.2F)
@@ -196,10 +191,6 @@ public class ModContent {
             () -> new BlockItem(CODEX_DIAGNOSTIC_CAPSULE.get(), new Item.Properties()));
     public static final Supplier<Item> RNA_TRAINING_ANCHOR_ITEM = ITEMS.register("rna_training_anchor",
             () -> new BlockItem(RNA_TRAINING_ANCHOR.get(), new Item.Properties().stacksTo(16)));
-    public static final Supplier<Item> ENDURANCE_STATION_ITEM = blockItem("endurance_station", ENDURANCE_STATION);
-    public static final Supplier<Item> STRENGTH_STATION_ITEM = blockItem("strength_station", STRENGTH_STATION);
-    public static final Supplier<Item> MOTORICS_STATION_ITEM = blockItem("motorics_station", MOTORICS_STATION);
-    public static final Supplier<Item> STABILITY_STATION_ITEM = blockItem("stability_station", STABILITY_STATION);
     public static final Supplier<Item> TRAINING_WEIGHT = ITEMS.register("training_weight",
             () -> new Item(new Item.Properties().stacksTo(1)));
     public static final Supplier<Item> PUSHUP_MAT_ITEM = blockItem("pushup_mat", PUSHUP_MAT);
@@ -281,10 +272,6 @@ public class ModContent {
                                 output.accept(CODEX_DOCK_ITEM.get());
                                 output.accept(CODEX_DIAGNOSTIC_CAPSULE_ITEM.get());
                                 output.accept(RNA_TRAINING_ANCHOR_ITEM.get());
-                                output.accept(ENDURANCE_STATION_ITEM.get());
-                                output.accept(STRENGTH_STATION_ITEM.get());
-                                output.accept(MOTORICS_STATION_ITEM.get());
-                                output.accept(STABILITY_STATION_ITEM.get());
                                 output.accept(TRAINING_WEIGHT.get());
                                 output.accept(PUSHUP_MAT_ITEM.get());
                                 output.accept(POCKET_CODEX.get());
@@ -329,12 +316,6 @@ public class ModContent {
 
     private static Supplier<Item> blockItem(String name, Supplier<Block> block) {
         return ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
-    }
-
-    private static Supplier<Block> physicalStation(String name) {
-        return BLOCKS.register(name, () -> new PhysicalTrainingStationBlock(
-                BlockBehaviour.Properties.of().strength(3.0F, 6.0F).noOcclusion()
-        ));
     }
 
     private static Fluid rnaCurrentSource() {
