@@ -17,9 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import com.pr1tcha.riftborne.physical.pushup.PushupTrainingManager;
 
 public final class PhysicalTrainingManager {
-    // Ambient actions are intentionally disabled while the dedicated training loop is tuned.
-    // Keep the rates below so passive progression can be restored later without rebuilding it.
-    private static final float AMBIENT_PROGRESS_MULTIPLIER = 0.0F;
+    private static final float AMBIENT_PROGRESS_MULTIPLIER = 1.0F;
     private static final float ENDURANCE_SPRINT_PER_BLOCK = 100.0F / 500.0F;
     private static final float ENDURANCE_SWIM_PER_BLOCK = 100.0F / 300.0F;
     private static final float STRENGTH_CARRY_PER_BLOCK = 100.0F / 250.0F;

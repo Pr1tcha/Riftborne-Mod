@@ -6,12 +6,12 @@ Physical condition is a world-level player system. It is deliberately stored out
 
 | Stat | Natural activity | Focused equipment | Daily norm |
 | --- | --- | --- | --- |
-| Endurance | Disabled during equipment-loop tuning | 45 seconds on the endurance station | 100% |
-| Strength | Disabled during equipment-loop tuning | 15 push-ups on the two-block Push-up Mat, or 15 strength-station repetitions | 100% |
+| Endurance | Sprinting (500 blocks = 100%) or swimming (300 blocks = 100%) | 45 seconds on the endurance station | 100% |
+| Strength | Carrying the Training Weight (250 blocks = 100%) | 15 push-ups on the two-block Push-up Mat, or 15 strength-station repetitions | 100% |
 | Motorics | Disabled outside an active station session | 12 meaningful moving jumps on the Motorics platform | 100% |
 | Stability | — | 40 seconds crouched and aligned with the stability core | 100% |
 
-Ordinary sprinting, swimming, carrying the training weight, and world traversal jumps currently do not award daily progress. Dedicated equipment owns the daily training loop while its pacing is tuned. Meaningful Motorics jumps are measured by the server only during an active platform session; jumping in place and repeated landings on the same point do not count. Push-up input is accepted only while the player is fully lowered; raising, holding, and returning are server-controlled.
+Ordinary sprinting, swimming, and carrying the training weight award daily progress at full rate alongside dedicated equipment, so a player can reach the daily norm through either path. World traversal jumps still do not count toward Motorics; meaningful jumps are measured by the server only during an active platform session, and jumping in place or repeated landings on the same point do not count. Push-up input is accepted only while the player is fully lowered; raising, holding, and returning are server-controlled.
 
 ## Daily cycle
 
