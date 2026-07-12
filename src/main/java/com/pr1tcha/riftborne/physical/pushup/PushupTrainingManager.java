@@ -48,8 +48,6 @@ public final class PushupTrainingManager {
             return;
         }
 
-        PhysicalTrainingManager.cancelStationSession(player, false);
-
         StationKey key = new StationKey(player.level().dimension().location().toString(), matPos.immutable());
         UUID occupant = OCCUPIED_MATS.get(key);
         if (occupant != null && !occupant.equals(player.getUUID())) {

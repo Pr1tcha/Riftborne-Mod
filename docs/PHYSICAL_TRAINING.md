@@ -6,12 +6,12 @@ Physical condition is a world-level player system. It is deliberately stored out
 
 | Stat | Natural activity | Focused equipment | Daily norm |
 | --- | --- | --- | --- |
-| Endurance | Sprinting (500 blocks = 100%) or swimming (300 blocks = 100%) | 45 seconds on the endurance station | 100% |
-| Strength | Carrying the Training Weight (250 blocks = 100%) | 15 push-ups on the two-block Push-up Mat, or 15 strength-station repetitions | 100% |
-| Motorics | Disabled outside an active station session | 12 meaningful moving jumps on the Motorics platform | 100% |
-| Stability | — | 40 seconds crouched and aligned with the stability core | 100% |
+| Endurance | Sprinting (500 blocks = 100%) or swimming (300 blocks = 100%) | none yet | 100% |
+| Strength | Carrying the Training Weight (250 blocks = 100%) | 15 push-ups on the two-block Push-up Mat | 100% |
+| Motorics | none yet | none yet | 100% |
+| Stability | none yet | none yet | 100% |
 
-Ordinary sprinting, swimming, and carrying the training weight award daily progress at full rate alongside dedicated equipment, so a player can reach the daily norm through either path. World traversal jumps still do not count toward Motorics; meaningful jumps are measured by the server only during an active platform session, and jumping in place or repeated landings on the same point do not count. Push-up input is accepted only while the player is fully lowered; raising, holding, and returning are server-controlled.
+The four generic training stations (endurance, strength, motorics, stability) shipped in an earlier pass were removed: they were a placeholder batch, below the quality bar for a shipped block, and duplicated ground the Push-up Mat already covers well. Endurance and Strength currently progress only through ordinary sprinting/swimming/carrying the Training Weight and, for Strength, the Push-up Mat. Motorics and Stability have no active training path right now; their long-term condition sits at its initial value and only decays are possible until each gets its own dedicated, purpose-built exercise in a later pass. Push-up input is accepted only while the player is fully lowered; raising, holding, and returning are server-controlled.
 
 ## Daily cycle
 
