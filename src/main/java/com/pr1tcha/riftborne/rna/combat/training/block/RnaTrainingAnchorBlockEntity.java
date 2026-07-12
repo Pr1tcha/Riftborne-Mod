@@ -35,11 +35,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements GeoBlockEntity {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.rna_training_anchor.idle");
     private static final RawAnimation ACTIVE = RawAnimation.begin().thenLoop("animation.rna_training_anchor.active");
+    private static final RawAnimation DEPLOY = RawAnimation.begin()
+            .thenPlayAndHold("animation.rna_training_anchor.deploy");
     private static final double MAX_DISTANCE_SQR = 6.5D * 6.5D;
     private static final int CALIBRATION_TICKS = 40;
     private static final int RECOVERY_TICKS = 28;
     private static final int PAUSE_TICKS = 80;
     private static final int MIN_INPUT_LEAD = 4;
+    private static final int DEPLOY_ANIM_TICKS = 20;
 
     private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
     private UUID participantId;
@@ -50,6 +53,7 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
     private Vec3 pulseSource = Vec3.ZERO;
     private int inputLead = -1;
     private boolean inputFacing;
+    private int deployAnimTicks;
 
     public RnaTrainingAnchorBlockEntity(BlockPos pos, BlockState state) {
         super(ModContent.RNA_TRAINING_ANCHOR_BE_TYPE.get(), pos, state);
@@ -66,8 +70,17 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
         }
     }
 
+    public void onDeployed() {
+        deployAnimTicks = DEPLOY_ANIM_TICKS;
+        sync();
+    }
+
     public void startTraining(ServerPlayer player) {
         if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!getBlockState().getValue(RnaTrainingAnchorBlock.DEPLOYED)) {
+            player.displayClientMessage(Component.translatable("message.riftborne.training.not_deployed"), true);
             return;
         }
         if (participantId != null) {
@@ -171,6 +184,12 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
     }
 
     private void tickServer(ServerLevel serverLevel) {
+        if (deployAnimTicks > 0) {
+            deployAnimTicks--;
+            if (deployAnimTicks == 0) {
+                sync();
+            }
+        }
         if (participantId == null) {
             return;
         }
@@ -429,6 +448,7 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
         tag.putDouble("PulseX", pulseSource.x);
         tag.putDouble("PulseY", pulseSource.y);
         tag.putDouble("PulseZ", pulseSource.z);
+        tag.putInt("DeployAnimTicks", deployAnimTicks);
     }
 
     @Override
@@ -440,6 +460,7 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
         trialIndex = Math.max(0, tag.getInt("TrialIndex"));
         missStreak = Math.max(0, tag.getInt("MissStreak"));
         pulseSource = new Vec3(tag.getDouble("PulseX"), tag.getDouble("PulseY"), tag.getDouble("PulseZ"));
+        deployAnimTicks = Math.max(0, tag.getInt("DeployAnimTicks"));
     }
 
     @Override
@@ -458,7 +479,12 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
                 this,
                 "training_state",
                 4,
-                state -> state.setAndContinue(isActive() ? ACTIVE : IDLE)
+                state -> {
+                    if (deployAnimTicks > 0) {
+                        return state.setAndContinue(DEPLOY);
+                    }
+                    return state.setAndContinue(isActive() ? ACTIVE : IDLE);
+                }
         ));
     }
 
