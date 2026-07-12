@@ -17,9 +17,10 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public final class RiftwalkerArmorItem extends ArmorItem implements GeoItem {
+public final class RiftwalkerArmorItem extends ArmorItem implements GeoItem, GeoRenderProvider {
     private static final String LIGHTS_KEY = "RiftwalkerMaskLights";
     private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
+    private RiftwalkerArmorRenderer renderer;
 
     public RiftwalkerArmorItem(Type type, Properties properties) {
         super(ArmorMaterials.NETHERITE, type, properties);
@@ -28,22 +29,20 @@ public final class RiftwalkerArmorItem extends ArmorItem implements GeoItem {
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private RiftwalkerArmorRenderer renderer;
+        consumer.accept(this);
+    }
 
-            @Override
-            public <T extends LivingEntity> HumanoidModel<?> getGeoArmorRenderer(
-                    T livingEntity,
-                    ItemStack itemStack,
-                    EquipmentSlot equipmentSlot,
-                    HumanoidModel<T> original
-            ) {
-                if (renderer == null) {
-                    renderer = new RiftwalkerArmorRenderer();
-                }
-                return renderer;
-            }
-        });
+    @Override
+    public <T extends LivingEntity> HumanoidModel<?> getGeoArmorRenderer(
+            T livingEntity,
+            ItemStack itemStack,
+            EquipmentSlot equipmentSlot,
+            HumanoidModel<T> original
+    ) {
+        if (renderer == null) {
+            renderer = new RiftwalkerArmorRenderer();
+        }
+        return renderer;
     }
 
     @Override
@@ -71,5 +70,16 @@ public final class RiftwalkerArmorItem extends ArmorItem implements GeoItem {
         tag.putBoolean(LIGHTS_KEY, enabled);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         return enabled;
+    }
+
+    public static boolean isFullSuit(LivingEntity entity) {
+        return entity.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof RiftwalkerArmorItem head
+                && head.getType() == Type.HELMET
+                && entity.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof RiftwalkerArmorItem chest
+                && chest.getType() == Type.CHESTPLATE
+                && entity.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof RiftwalkerArmorItem legs
+                && legs.getType() == Type.LEGGINGS
+                && entity.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof RiftwalkerArmorItem feet
+                && feet.getType() == Type.BOOTS;
     }
 }
