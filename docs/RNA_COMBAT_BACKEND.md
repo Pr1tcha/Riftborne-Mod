@@ -1,5 +1,7 @@
 # RNA Combat Backend
 
+> Базовые доаспектные техники теперь развиваются отдельно от Аспектов. Первый вертикальный срез описан в `docs/BASIC_TECHNIQUE_BARRIER.md`.
+
 Серверный слой боевых РНА-способностей реализован поверх существующего `RnaApi`.
 GUI Кодекса, сканер, модели, текстуры и визуальная логика не изменялись.
 
@@ -103,8 +105,9 @@ heavy: false
 /riftborne rna abilities debug <ability_id> [target]
 ```
 
-Старые `/riftborne rna init`, `/riftborne rna reset`, `/riftborne rna set` и
-`/riftborne rna path set` оставлены как короткие aliases и вызывают ту же реализацию.
+Старые короткие aliases `/riftborne rna init`, `/riftborne rna reset`,
+`/riftborne rna set` и `/riftborne rna path set` больше не регистрируются.
+Для управления профилем и характеристиками используются только ветки `profile` и `stats`.
 
 Отдельные корни `/riftborne metawear` и `/riftborne aspects` не регистрируются.
 

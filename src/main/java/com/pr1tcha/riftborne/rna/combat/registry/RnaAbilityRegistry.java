@@ -20,7 +20,9 @@ public final class RnaAbilityRegistry {
             ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "telekinesis");
     public static final ResourceLocation RNA_FOCUS_ID =
             ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_focus");
-    public static final ResourceLocation RNA_GUARD_ID =
+    public static final ResourceLocation BARRIER_ID =
+            ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "barrier");
+    public static final ResourceLocation LEGACY_RNA_GUARD_ID =
             ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_guard");
     public static final ResourceLocation RNA_STRIKE_ID =
             ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_strike");
@@ -66,13 +68,13 @@ public final class RnaAbilityRegistry {
                 Set.of(RnaAffinityTag.STABILITY, RnaAffinityTag.CONTROL)
         );
         registerBasic(
-                RNA_GUARD_ID,
-                "rna_ability.riftborne.rna_guard",
+                BARRIER_ID,
+                "rna_ability.riftborne.barrier",
                 RnaAbilityType.DEFENSE,
-                RnaAbilityInputType.HOLD,
-                40,
-                8.0F,
-                40,
+                RnaAbilityInputType.PRESS,
+                80,
+                7.0F,
+                60,
                 Set.of(RnaAffinityTag.STABILITY, RnaAffinityTag.STRUCTURE, RnaAffinityTag.CONTROL)
         );
         registerBasic(
