@@ -1,0 +1,10 @@
+{
+  "entry": "riftborne:rna_interspace",
+  "type": "BLOCK",
+  "targets": [
+    "riftborne:rna_interspace_stone",
+    "riftborne:rna_interspace_surface",
+    "riftborne:rna_interspace_vein"
+  ],
+  "priority": 60
+}

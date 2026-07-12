@@ -1,3 +1,4 @@
+import argparse
 import base64
 import io
 import json
@@ -19,7 +20,9 @@ RUBBER = (24, 8, 30, 14)
 METAL = (40, 8, 46, 14)
 DARK = (56, 8, 62, 14)
 CYAN = (72, 8, 78, 14)
-SCREEN = (4, 68, 60, 124)
+# The Pocket Codex uses a wide field-tablet display. Keep this area isolated
+# from the material swatches because the runtime renderer updates it in-place.
+SCREEN = (4, 52, 100, 124)
 
 
 def stable_uuid(scope, name):
@@ -89,12 +92,10 @@ def cube(origin, size, uv):
     return {"origin": origin, "size": size, "uv": list(uv[:2])}
 
 
-def make_texture(name, device):
+def make_texture(name):
     texture_path = ASSETS / f"textures/block/{name}.png"
     glow_path = ASSETS / f"textures/block/{name}_glowmask.png"
-    icon_path = ASSETS / f"textures/item/{name}.png"
     texture_path.parent.mkdir(parents=True, exist_ok=True)
-    icon_path.parent.mkdir(parents=True, exist_ok=True)
 
     image = Image.new("RGBA", (WIDTH, HEIGHT), (29, 36, 34, 255))
     draw = ImageDraw.Draw(image)
@@ -117,25 +118,13 @@ def make_texture(name, device):
     glow_draw.rectangle(CYAN, fill=(80, 255, 225, 255))
     glow.save(glow_path)
 
-    icon = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
-    icon_draw = ImageDraw.Draw(icon)
-    if device:
-        icon_draw.rounded_rectangle((8, 2, 24, 30), radius=3, fill=(34, 44, 41, 255), outline=(93, 113, 105, 255), width=2)
-        icon_draw.rectangle((10, 6, 22, 20), fill=(3, 23, 25, 255), outline=(72, 222, 201, 255))
-        icon_draw.rectangle((11, 7, 21, 9), fill=(44, 164, 153, 255))
-        for x in (11, 15, 19):
-            icon_draw.rectangle((x, 23, x + 2, 25), fill=(75, 213, 194, 255))
-        icon_draw.rectangle((13, 27, 19, 28), fill=(99, 113, 105, 255))
-    else:
-        icon_draw.rounded_rectangle((3, 15, 29, 27), radius=3, fill=(34, 44, 41, 255), outline=(93, 113, 105, 255), width=2)
-        icon_draw.polygon(((7, 15), (10, 6), (22, 6), (25, 15)), fill=(25, 33, 31, 255), outline=(80, 99, 92, 255))
-        icon_draw.rectangle((12, 9, 20, 14), fill=(3, 23, 25, 255), outline=(72, 222, 201, 255))
-        icon_draw.rectangle((6, 21, 26, 23), fill=(10, 17, 17, 255))
-    icon.save(icon_path)
-    return texture_path, glow_path, icon_path, image
+    # Inventory icons are owned by generate_codex_item_icons.py. Keeping icon
+    # generation out of this script prevents a model rebuild from overwriting
+    # the approved shared Codex icon set.
+    return texture_path, glow_path, image
 
 
-def write_bbmodel(name, model_type, bones, texture_path, texture_image):
+def write_bbmodel(name, model_type, bones, texture_path, texture_image, display=None):
     elements = []
     groups_by_name = {}
     for bone in bones:
@@ -143,6 +132,7 @@ def write_bbmodel(name, model_type, bones, texture_path, texture_image):
         groups_by_name[bone["name"]] = {
             "name": bone["name"],
             "origin": bone.get("pivot", [0, 0, 0]),
+            "rotation": bone.get("rotation", [0, 0, 0]),
             "uuid": group_uuid,
             "children": [],
             "parent": bone.get("parent"),
@@ -216,6 +206,7 @@ def write_bbmodel(name, model_type, bones, texture_path, texture_image):
         return {
             "name": group["name"],
             "origin": group["origin"],
+            "rotation": group["rotation"],
             "uuid": group["uuid"],
             "children": children,
         }
@@ -224,6 +215,7 @@ def write_bbmodel(name, model_type, bones, texture_path, texture_image):
         {
             "name": group["name"],
             "origin": group["origin"],
+            "rotation": group["rotation"],
             "uuid": group["uuid"],
             "children": list(group["children"]),
         }
@@ -259,6 +251,8 @@ def write_bbmodel(name, model_type, bones, texture_path, texture_image):
         "animations": [],
         "geckolib_model_type": model_type,
     }
+    if display:
+        payload["display"] = display
     path = ROOT / f"bbmodels/{name}.bbmodel"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
@@ -266,11 +260,13 @@ def write_bbmodel(name, model_type, bones, texture_path, texture_image):
 
 def build_pocket():
     shell = Mesh()
-    shell.chamfered_box(-4.2, 4.2, 0.0, 0.9, -6.4, 6.4, 0.65, CASE)
-    shell.chamfered_box(-4.55, -3.8, 0.25, 1.25, -5.1, 5.0, 0.2, RUBBER)
-    shell.chamfered_box(3.8, 4.55, 0.25, 1.25, -5.1, 5.0, 0.2, RUBBER)
-    shell.chamfered_box(-3.7, 3.7, 0.82, 1.22, -5.65, -4.9, 0.18, METAL)
-    shell.chamfered_box(-3.45, 3.45, 0.88, 1.12, -4.75, 2.65, 0.32, DARK)
+    # Compact rugged field tablet: wider than the original phone-like slab,
+    # with raised rails that give the first-person hand a believable grip.
+    shell.chamfered_box(-6.0, 6.0, 0.0, 1.05, -7.2, 7.2, 0.85, CASE)
+    shell.chamfered_box(-6.45, -5.45, 0.22, 1.48, -5.9, 5.9, 0.28, RUBBER)
+    shell.chamfered_box(5.45, 6.45, 0.22, 1.48, -5.9, 5.9, 0.28, RUBBER)
+    shell.chamfered_box(-5.2, 5.2, 0.88, 1.30, -6.35, 3.05, 0.45, DARK)
+    shell.chamfered_box(-4.9, 4.9, 0.18, 0.55, 5.55, 6.55, 0.25, METAL)
 
     screen = Mesh()
     # Keep the display artwork on one planar quad. Mapping the full screen
@@ -278,34 +274,43 @@ def build_pocket():
     # and torn-looking edges around the display.
     screen.quad(
         [
-            (-3.12, 1.14, -4.46),
-            (-3.12, 1.14, 2.34),
-            (3.12, 1.14, 2.34),
-            (3.12, 1.14, -4.46),
+            (-4.82, 1.34, -5.92),
+            (-4.82, 1.34, 2.62),
+            (4.82, 1.34, 2.62),
+            (4.82, 1.34, -5.92),
         ],
         SCREEN,
     )
 
     bones = [
         {"name": "root", "pivot": [0, 0, 0]},
-        {"name": "shell", "pivot": [0, 0, 0], "parent": "root", "poly_mesh": shell.payload()},
+        {"name": "device", "pivot": [0, 0, 0], "rotation": [-90, 0, 0], "parent": "root"},
+        {"name": "shell", "pivot": [0, 0, 0], "parent": "device", "poly_mesh": shell.payload()},
         {
             "name": "controls",
-            "pivot": [0, 0, 0],
-            "parent": "root",
+            "pivot": [0, 1.2, 4.65],
+            "parent": "device",
             "cubes": [
-                cube([-2.9, 0.92, 3.2], [1.4, 0.35, 1.0], DARK),
-                cube([-0.7, 0.92, 3.2], [1.4, 0.35, 1.0], CYAN),
-                cube([1.5, 0.92, 3.2], [1.4, 0.35, 1.0], DARK),
-                cube([-0.45, 0.92, 4.75], [0.9, 0.35, 0.9], METAL),
-                cube([3.25, 0.8, 4.4], [0.28, 2.5, 0.28], RUBBER),
+                cube([-4.7, 1.03, 3.55], [2.0, 0.42, 1.15], DARK),
+                cube([2.7, 1.03, 3.55], [2.0, 0.42, 1.15], DARK),
+                cube([-1.5, 1.03, 4.9], [3.0, 0.38, 0.7], METAL),
+                cube([-0.35, 1.04, -6.55], [0.7, 0.35, 0.42], METAL),
             ],
         },
-        {"name": "screen_glow", "pivot": [0, 0, 0], "parent": "root", "poly_mesh": screen.payload()},
+        {
+            "name": "indicator_glow",
+            "pivot": [0, 1.2, 4.4],
+            "parent": "device",
+            "cubes": [
+                cube([-1.1, 1.04, 3.65], [2.2, 0.44, 0.55], CYAN),
+                cube([4.55, 1.06, -5.1], [0.22, 0.36, 2.1], CYAN),
+            ],
+        },
+        {"name": "screen_glow", "pivot": [0, 1.34, -1.65], "parent": "device", "poly_mesh": screen.payload()},
     ]
-    texture, _, _, image = make_texture("pocket_codex", True)
-    write_geo("pocket_codex", bones, 1.3, 1.3)
-    write_animation("pocket_codex", "screen_glow")
+    texture, _, image = make_texture("pocket_codex")
+    write_geo("pocket_codex", bones, 1.65, 1.65, [0, 0, 0])
+    write_pocket_animation()
     write_bbmodel("Pocket_Codex", "Item", bones, texture, image)
 
 
@@ -339,13 +344,13 @@ def build_dock():
         {"name": "inserted_device", "pivot": [0, 0, 0], "parent": "root", "poly_mesh": device.payload()},
         {"name": "screen_glow", "pivot": [0, 0, 0], "parent": "root", "poly_mesh": status.payload()},
     ]
-    texture, _, _, image = make_texture("codex_dock", False)
+    texture, _, image = make_texture("codex_dock")
     write_geo("codex_dock", bones, 1.2, 0.8)
     write_animation("codex_dock", "screen_glow")
     write_bbmodel("Codex_Dock", "Block", bones, texture, image)
 
 
-def write_geo(name, bones, bounds_width, bounds_height):
+def write_geo(name, bones, bounds_width, bounds_height, bounds_offset=None):
     path = ASSETS / f"geo/{name}.geo.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -357,7 +362,7 @@ def write_geo(name, bones, bounds_width, bounds_height):
                 "texture_height": HEIGHT,
                 "visible_bounds_width": bounds_width,
                 "visible_bounds_height": bounds_height,
-                "visible_bounds_offset": [0, bounds_height / 2, 0],
+                "visible_bounds_offset": bounds_offset or [0, bounds_height / 2, 0],
             },
             "bones": bones,
         }],
@@ -389,7 +394,63 @@ def write_animation(name, glow_bone):
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def write_pocket_animation():
+    path = ASSETS / "animations/pocket_codex.animation.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "format_version": "1.8.0",
+        "animations": {
+            "animation.pocket_codex.idle": {
+                "loop": True,
+                "animation_length": 3.2,
+                "bones": {
+                    "root": {
+                        "rotation": {
+                            "0.0": [0.0, 0.0, -0.25],
+                            "1.6": [0.15, 0.0, 0.25],
+                            "3.2": [0.0, 0.0, -0.25],
+                        }
+                    },
+                    "indicator_glow": {
+                        "scale": {
+                            "0.0": [1.0, 1.0, 1.0],
+                            "1.6": [1.0, 1.015, 1.0],
+                            "3.2": [1.0, 1.0, 1.0],
+                        }
+                    },
+                },
+            },
+            "animation.pocket_codex.scan": {
+                "loop": False,
+                "animation_length": 0.45,
+                "bones": {
+                    "root": {
+                        "rotation": {
+                            "0.0": [0.0, 0.0, 0.0],
+                            "0.12": [-2.0, 0.0, 0.0],
+                            "0.45": [0.0, 0.0, 0.0],
+                        }
+                    },
+                    "indicator_glow": {
+                        "scale": {
+                            "0.0": [1.0, 1.0, 1.0],
+                            "0.12": [1.08, 1.08, 1.08],
+                            "0.45": [1.0, 1.0, 1.0],
+                        }
+                    },
+                },
+            },
+        },
+    }
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 if __name__ == "__main__":
-    build_pocket()
-    build_dock()
-    print("Generated Pocket Codex and Codex Dock mesh assets.")
+    parser = argparse.ArgumentParser(description="Generate Pocket Codex and Codex Dock assets.")
+    parser.add_argument("--target", choices=("all", "pocket", "dock"), default="all")
+    args = parser.parse_args()
+    if args.target in ("all", "pocket"):
+        build_pocket()
+    if args.target in ("all", "dock"):
+        build_dock()
+    print(f"Generated {args.target} Codex mesh assets.")

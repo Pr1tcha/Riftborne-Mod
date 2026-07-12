@@ -1,0 +1,14 @@
+{
+  "entry": "riftborne:discard_contour",
+  "type": "BLOCK",
+  "targets": [
+    "riftborne:contour_stone",
+    "riftborne:contour_surface",
+    "riftborne:contour_trace",
+    "riftborne:contour_stone_vein",
+    "riftborne:contour_weeping_stone",
+    "riftborne:contour_vein"
+  ],
+  "damaged": true,
+  "priority": 80
+}

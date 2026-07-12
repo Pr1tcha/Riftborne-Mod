@@ -1,0 +1,10 @@
+{
+  "entry": "riftborne:riftwalker_interspace",
+  "type": "BLOCK",
+  "targets": [
+    "riftborne:riftwalker_interspace_stone",
+    "riftborne:riftwalker_interspace_surface",
+    "riftborne:riftwalker_interspace_vein"
+  ],
+  "priority": 60
+}

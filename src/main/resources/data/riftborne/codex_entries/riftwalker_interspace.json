@@ -1,0 +1,16 @@
+{
+  "id": "riftborne:riftwalker_interspace",
+  "title": "Межпространство Рифтволкера",
+  "category": "DIMENSIONS",
+  "state": "LOCKED",
+  "summary": "Недостаточно изученная область со следами устойчивого пространственного искажения.",
+  "fullContent": "Наблюдения фрагментарны. До получения подтверждённых данных любые выводы о назначении области считаются предварительными.",
+  "sourceType": "SCAN",
+  "flags": ["field_data", "interspace"],
+  "metadata": {"classification": "interspace"},
+  "requirements": ["scan:riftwalker_interspace"],
+  "threat": 3,
+  "order": 30,
+  "tags": ["межпространство", "искажение", "измерение"],
+  "related": ["riftborne:rift_basic"]
+}

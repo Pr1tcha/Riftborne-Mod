@@ -1,0 +1,6 @@
+{
+  "entry": "riftborne:rift_basic",
+  "type": "BLOCK",
+  "targets": ["riftborne:rift"],
+  "priority": 100
+}

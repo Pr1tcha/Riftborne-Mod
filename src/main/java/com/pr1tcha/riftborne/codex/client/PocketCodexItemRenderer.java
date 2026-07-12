@@ -2,17 +2,18 @@ package com.pr1tcha.riftborne.codex.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import com.pr1tcha.riftborne.Riftborne;
 import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
+import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public final class PocketCodexItemRenderer extends GeoItemRenderer<PocketCodexItem> {
     private static final ResourceLocation INVENTORY_ICON =
@@ -20,8 +21,8 @@ public final class PocketCodexItemRenderer extends GeoItemRenderer<PocketCodexIt
 
     public PocketCodexItemRenderer() {
         super(new PocketCodexItemModel());
-        withScale(0.78F);
         useAlternateGuiLighting();
+        addRenderLayer(new PocketCodexEmissiveLayer(this));
     }
 
     @Override
@@ -35,36 +36,6 @@ public final class PocketCodexItemRenderer extends GeoItemRenderer<PocketCodexIt
     ) {
         PocketCodexDynamicDisplay.update(stack);
         super.renderByItem(stack, displayContext, poseStack, bufferSource, packedLight, packedOverlay);
-    }
-
-    @Override
-    public void preRender(
-            PoseStack poseStack,
-            PocketCodexItem animatable,
-            BakedGeoModel model,
-            MultiBufferSource bufferSource,
-            VertexConsumer buffer,
-            boolean isReRender,
-            float partialTick,
-            int packedLight,
-            int packedOverlay,
-            int renderColor
-    ) {
-        if (renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-            poseStack.translate(0.92F, 0.30F, -0.78F);
-            poseStack.scale(0.70F, 0.70F, 0.70F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(-10.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(-68.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
-        } else if (renderPerspective == ItemDisplayContext.FIRST_PERSON_LEFT_HAND) {
-            poseStack.translate(-0.92F, 0.30F, -0.78F);
-            poseStack.scale(0.70F, 0.70F, 0.70F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(10.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(-68.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
-        }
-        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick,
-                packedLight, packedOverlay, renderColor);
     }
 
     @Override
@@ -104,5 +75,39 @@ public final class PocketCodexItemRenderer extends GeoItemRenderer<PocketCodexIt
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(packedLight)
                 .setNormal(pose, 0.0F, 0.0F, 1.0F);
+    }
+
+    private static final class PocketCodexEmissiveLayer extends GeoRenderLayer<PocketCodexItem> {
+        private PocketCodexEmissiveLayer(PocketCodexItemRenderer renderer) {
+            super(renderer);
+        }
+
+        @Override
+        public void renderForBone(
+                PoseStack poseStack,
+                PocketCodexItem animatable,
+                GeoBone bone,
+                RenderType renderType,
+                MultiBufferSource bufferSource,
+                VertexConsumer buffer,
+                float partialTick,
+                int packedLight,
+                int packedOverlay
+        ) {
+            if (!bone.getName().equals("screen_glow")
+                    && !bone.getName().equals("indicator_glow")
+                    && !bone.getName().equals("scan_bar_glow")) {
+                return;
+            }
+            RenderType emissive = RenderType.eyes(PocketCodexDynamicDisplay.texture());
+            getRenderer().renderCubesOfBone(
+                    poseStack,
+                    bone,
+                    bufferSource.getBuffer(emissive),
+                    LightTexture.FULL_BRIGHT,
+                    packedOverlay,
+                    0xFFFFFFFF
+            );
+        }
     }
 }

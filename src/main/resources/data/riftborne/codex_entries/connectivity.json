@@ -1,0 +1,16 @@
+{
+  "id": "riftborne:connectivity",
+  "title": "Связность РНА",
+  "category": "RNA",
+  "state": "PARTIAL",
+  "summary": "Описывает качество соединений между узлами и чистоту передачи импульса.",
+  "fullContent": "Недостаточная связность приводит к потерям, задержкам и нестабильному распределению нагрузки между участками архитектуры.",
+  "sourceType": "SYSTEM",
+  "flags": ["subject_data", "diagnostic"],
+  "metadata": {"type": "architecture_parameter"},
+  "requirements": [],
+  "threat": 1,
+  "order": 30,
+  "tags": ["рна", "связность", "передача"],
+  "related": ["riftborne:rna_overview", "riftborne:node_density", "riftborne:throughput"]
+}

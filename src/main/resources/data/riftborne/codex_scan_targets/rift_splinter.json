@@ -1,0 +1,6 @@
+{
+  "entry": "riftborne:rift_splinter",
+  "type": "ENTITY",
+  "targets": ["riftborne:rift_splinter"],
+  "priority": 100
+}

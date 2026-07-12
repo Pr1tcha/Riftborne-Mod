@@ -23,6 +23,8 @@ net/
 # Local design sources and concept documents
 *.pdf
 *.bbmodel
+!bbmodels/Pocket_Codex.bbmodel
+!bbmodels/Pocket_Codex_Field_Recorder.bbmodel
 docs/concepts/
 
 # OS/editor noise

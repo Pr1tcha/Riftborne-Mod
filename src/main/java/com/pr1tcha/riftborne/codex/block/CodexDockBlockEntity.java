@@ -2,6 +2,9 @@ package com.pr1tcha.riftborne.codex.block;
 
 import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.codex.data.PocketCodexData;
+import com.pr1tcha.riftborne.codex.data.entry.CodexEntryRegistry;
+import com.pr1tcha.riftborne.codex.data.state.CodexEntryState;
+import com.pr1tcha.riftborne.codex.storage.CodexStorage;
 import com.pr1tcha.riftborne.player.RiftbornePlayerData;
 import com.pr1tcha.riftborne.registry.ModContent;
 import java.util.List;
@@ -74,8 +77,26 @@ public final class CodexDockBlockEntity extends BlockEntity implements GeoBlockE
         List<String> queued = PocketCodexData.queuedEntries(pocket);
         List<String> damaged = PocketCodexData.damagedEntries(pocket);
         CodexData laptopData = RiftbornePlayerData.getCodex(player);
-        int synchronizedCount = laptopData.synchronize(queued);
-        damaged.forEach(laptopData::damage);
+        int synchronizedCount = 0;
+        for (String entryId : queued) {
+            String qualified = qualifyEntryId(entryId);
+            boolean accepted = false;
+            if (CodexEntryRegistry.get(qualified) != null) {
+                accepted = CodexStorage.unlock(player, qualified);
+            }
+            String legacyId = entryPath(entryId);
+            accepted |= laptopData.synchronize(List.of(legacyId)) > 0;
+            if (accepted) {
+                synchronizedCount++;
+            }
+        }
+        for (String entryId : damaged) {
+            String qualified = qualifyEntryId(entryId);
+            if (CodexEntryRegistry.get(qualified) != null) {
+                CodexStorage.setState(player, qualified, CodexEntryState.DAMAGED);
+            }
+            laptopData.damage(entryPath(entryId));
+        }
         if (synchronizedCount > 0 || !damaged.isEmpty()) {
             laptopData.addTranslatedNotification(
                     "codex.riftborne.feed.synchronized",
@@ -87,6 +108,14 @@ public final class CodexDockBlockEntity extends BlockEntity implements GeoBlockE
             sync();
         }
         return synchronizedCount == 0 && damaged.isEmpty() ? SyncResult.NOTHING_TO_SYNC : SyncResult.SUCCESS;
+    }
+
+    private static String qualifyEntryId(String id) {
+        return id.contains(":") ? id : "riftborne:" + id;
+    }
+
+    private static String entryPath(String id) {
+        return id.contains(":") ? id.substring(id.indexOf(':') + 1) : id;
     }
 
     private void sync() {

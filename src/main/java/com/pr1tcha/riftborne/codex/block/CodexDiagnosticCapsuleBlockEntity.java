@@ -48,6 +48,7 @@ public final class CodexDiagnosticCapsuleBlockEntity extends BlockEntity impleme
     private int metaWear;
     private String metaWearStage = "STABLE";
     private String formationPath = "UNKNOWN";
+    private String techniqueNotice = "";
 
     public CodexDiagnosticCapsuleBlockEntity(BlockPos pos, BlockState state) {
         super(ModContent.CODEX_DIAGNOSTIC_CAPSULE_BE_TYPE.get(), pos, state);
@@ -116,6 +117,7 @@ public final class CodexDiagnosticCapsuleBlockEntity extends BlockEntity impleme
 
     private void finishScan(ServerPlayer player) {
         capture(player);
+        techniqueNotice = "";
         CodexData codex = RiftbornePlayerData.getCodex(player);
         codex.addTranslatedRecentData("codex.riftborne.feed.diagnostic_snapshot", subjectName);
         RiftbornePlayerData.saveCodex(player, codex);
@@ -243,6 +245,10 @@ public final class CodexDiagnosticCapsuleBlockEntity extends BlockEntity impleme
         return formationPath;
     }
 
+    public String techniqueNotice() {
+        return techniqueNotice;
+    }
+
     private void sync() {
         setChanged();
         if (level != null && !level.isClientSide) {
@@ -262,6 +268,7 @@ public final class CodexDiagnosticCapsuleBlockEntity extends BlockEntity impleme
         tag.putInt("MetaWear", metaWear);
         tag.putString("MetaWearStage", metaWearStage);
         tag.putString("FormationPath", formationPath);
+        tag.putString("TechniqueNotice", techniqueNotice);
         tag.putInt("ScanTicks", isScanning() ? scanTicks : 0);
     }
 
@@ -277,6 +284,7 @@ public final class CodexDiagnosticCapsuleBlockEntity extends BlockEntity impleme
         metaWear = tag.getInt("MetaWear");
         metaWearStage = tag.getString("MetaWearStage").isBlank() ? "STABLE" : tag.getString("MetaWearStage");
         formationPath = tag.getString("FormationPath").isBlank() ? "UNKNOWN" : tag.getString("FormationPath");
+        techniqueNotice = tag.getString("TechniqueNotice");
         scanTicks = tag.getInt("ScanTicks");
         if (scanTicks <= 0) {
             occupantId = null;

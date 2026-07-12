@@ -6,11 +6,23 @@ import com.pr1tcha.riftborne.codex.block.CodexLaptopBlockEntity;
 import com.pr1tcha.riftborne.codex.client.CodexClient;
 import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.codex.data.PocketCodexData;
+import com.pr1tcha.riftborne.codex.data.PocketCodexMode;
+import com.pr1tcha.riftborne.codex.data.entry.CodexInfobaseSnapshot;
+import com.pr1tcha.riftborne.codex.data.entry.CodexEntryDefinition;
+import com.pr1tcha.riftborne.codex.data.entry.CodexEntryRegistry;
+import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.codex.PocketCodexScanner;
 import com.pr1tcha.riftborne.player.RiftbornePlayerData;
+import com.pr1tcha.riftborne.physical.PhysicalStat;
+import com.pr1tcha.riftborne.physical.PhysicalTrainingData;
+import com.pr1tcha.riftborne.physical.PhysicalTrainingManager;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rna.RnaApi;
+import com.pr1tcha.riftborne.rna.combat.RnaAbilityManager;
+import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityData;
+import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueProgression;
 import com.pr1tcha.riftborne.rna.data.RnaData;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,10 +38,12 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import software.bernie.geckolib.animatable.GeoItem;
 
 public final class CodexNetwork {
-    private static final String NETWORK_VERSION = "1";
+    private static final String NETWORK_VERSION = "6";
     private static final String SEPARATOR = "\u001F";
+    private static final String FIELD_SEPARATOR = "\u001D";
 
     private CodexNetwork() {
     }
@@ -58,6 +72,8 @@ public final class CodexNetwork {
     private static SnapshotPayload createSnapshot(ServerPlayer player, BlockPos laptopPos) {
         CodexData codex = RiftbornePlayerData.getCodex(player);
         RnaData rna = RnaApi.get(player);
+        RnaAbilityData combat = RnaAbilityManager.getData(player);
+        PhysicalTrainingData physical = PhysicalTrainingManager.getData(player);
         boolean firstFlashInserted = false;
         boolean secondFlashInserted = false;
         String desktopLayout = "";
@@ -99,9 +115,29 @@ public final class CodexNetwork {
                 diagnostic == null ? 0 : diagnostic.metaWear(),
                 diagnostic == null ? "STABLE" : diagnostic.metaWearStage(),
                 diagnostic == null ? "UNKNOWN" : diagnostic.formationPath(),
-                "",
-                desktopLayout
+                diagnostic == null ? "" : diagnostic.techniqueNotice(),
+                join(RnaTechniqueProgression.encodeTechniqueProgress(combat)),
+                join(RnaTechniqueProgression.encodeTechniqueReadiness(rna, combat)),
+                join(RnaTechniqueProgression.encodeAspectResonance(combat)),
+                physical.overallForm(),
+                PhysicalTrainingManager.overloadCapacity(physical),
+                encodePhysicalProfile(physical),
+                desktopLayout,
+                CodexInfobaseSnapshot.encode(player)
         );
+    }
+
+    private static String encodePhysicalProfile(PhysicalTrainingData data) {
+        List<String> values = new ArrayList<>();
+        for (PhysicalStat stat : PhysicalStat.values()) {
+            values.add(String.join(",",
+                    stat.id(),
+                    Float.toString(data.form(stat)),
+                    Float.toString(data.dailyProgress(stat)),
+                    Integer.toString(data.missedDays(stat))
+            ));
+        }
+        return join(values);
     }
 
     private static CodexDiagnosticCapsuleBlockEntity findDiagnosticCapsule(ServerPlayer player, BlockPos laptopPos) {
@@ -153,13 +189,58 @@ public final class CodexNetwork {
             String noticeKey
     ) {
         PacketDistributor.sendToPlayer(player, new PocketSnapshotPayload(
-                PocketCodexData.selectedScreen(stack),
+                PocketCodexData.mode(stack).ordinal(),
                 join(PocketCodexData.shortEntries(stack)),
                 join(PocketCodexData.queuedEntries(stack)),
                 join(PocketCodexData.damagedEntries(stack)),
+                encodePocketBuffer(stack),
                 noticeKey,
+                PocketCodexData.lastTarget(stack),
+                entryTitle(PocketCodexData.lastTarget(stack)),
+                PocketCodexData.lastResult(stack),
+                PocketCodexData.observationCount(stack, PocketCodexData.lastTarget(stack)),
+                PocketCodexData.MAX_OBSERVATIONS,
+                entryThreat(PocketCodexData.lastTarget(stack)),
+                PocketCodexData.lastPulseCount(stack),
+                entryTitle(PocketCodexData.lastPulseNearest(stack)),
+                PocketCodexData.lastPulseDistance(stack),
+                PocketCodexData.BUFFER_CAPACITY,
                 openScreen
         ));
+    }
+
+    private static String encodePocketBuffer(net.minecraft.world.item.ItemStack stack) {
+        List<String> queued = PocketCodexData.queuedEntries(stack);
+        List<String> damaged = PocketCodexData.damagedEntries(stack);
+        List<String> rows = new ArrayList<>();
+        for (String entryId : PocketCodexData.shortEntries(stack)) {
+            String state = damaged.contains(entryId) ? "DAMAGED" : queued.contains(entryId) ? "QUEUED" : "STORED";
+            rows.add(String.join(FIELD_SEPARATOR,
+                    entryId,
+                    entryTitle(entryId),
+                    Integer.toString(PocketCodexData.observationCount(stack, entryId)),
+                    state
+            ));
+        }
+        return join(rows);
+    }
+
+    private static String entryTitle(String entryId) {
+        if (entryId == null || entryId.isBlank()) {
+            return "";
+        }
+        String qualified = entryId.contains(":") ? entryId : Riftborne.MODID + ":" + entryId;
+        CodexEntryDefinition entry = CodexEntryRegistry.get(qualified);
+        return entry == null ? entryId : entry.title();
+    }
+
+    private static int entryThreat(String entryId) {
+        if (entryId == null || entryId.isBlank()) {
+            return 0;
+        }
+        String qualified = entryId.contains(":") ? entryId : Riftborne.MODID + ":" + entryId;
+        CodexEntryDefinition entry = CodexEntryRegistry.get(qualified);
+        return entry == null ? 0 : entry.threatLevel();
     }
 
     private static void handlePocketSnapshot(PocketSnapshotPayload payload, IPayloadContext context) {
@@ -176,8 +257,8 @@ public final class CodexNetwork {
         if (codex.isEmpty()) {
             return;
         }
-        PocketCodexData.cycleScreen(codex, payload.direction());
-        sendPocketSnapshot(player, codex, false, "codex.riftborne.pocket.notice.screen");
+        PocketCodexData.cycleMode(codex, payload.direction());
+        sendPocketSnapshot(player, codex, false, "codex.riftborne.pocket.notice.mode");
     }
 
     private static void handlePocketAction(PocketActionPayload payload, IPayloadContext context) {
@@ -189,17 +270,52 @@ public final class CodexNetwork {
             return;
         }
 
-        String notice;
-        if (PocketCodexData.selectedScreen(codex) != 1) {
-            notice = "codex.riftborne.pocket.notice.select_scanner";
-        } else {
-            notice = switch (PocketCodexScanner.scan(player, codex)) {
-                case DISCOVERED -> "codex.riftborne.pocket.notice.discovered";
-                case KNOWN -> "codex.riftborne.pocket.notice.known";
-                case NO_TARGET -> "codex.riftborne.pocket.notice.no_target";
-            };
-        }
+        PocketCodexMode mode = PocketCodexData.mode(codex);
+        String notice = switch (mode) {
+            case SCANNER -> handlePocketScan(player, codex);
+            case PULSE -> handlePocketPulse(player, codex);
+            case BUFFER -> PocketCodexData.bufferSize(codex) == 0
+                    ? "codex.riftborne.pocket.notice.buffer_empty"
+                    : "codex.riftborne.pocket.notice.buffer_ready";
+        };
         sendPocketSnapshot(player, codex, false, notice);
+    }
+
+    private static String handlePocketScan(ServerPlayer player, net.minecraft.world.item.ItemStack codex) {
+        PocketCodexScanner.ScanReport report = PocketCodexScanner.scan(player, codex);
+        triggerPocketAnimation(player, codex,
+                report.result() == PocketCodexScanner.Result.NO_TARGET
+                        || report.result() == PocketCodexScanner.Result.BUFFER_FULL
+                        || report.result() == PocketCodexScanner.Result.INVALID_TARGET
+                        ? "warning"
+                        : "scan");
+        return switch (report.result()) {
+            case DISCOVERED -> "codex.riftborne.pocket.notice.discovered";
+            case UPDATED -> "codex.riftborne.pocket.notice.updated";
+            case DAMAGED -> "codex.riftborne.pocket.notice.damaged";
+            case BUFFER_FULL -> "codex.riftborne.pocket.notice.buffer_full";
+            case INVALID_TARGET -> "codex.riftborne.pocket.notice.invalid_target";
+            case NO_TARGET -> "codex.riftborne.pocket.notice.no_target";
+        };
+    }
+
+    private static String handlePocketPulse(ServerPlayer player, net.minecraft.world.item.ItemStack codex) {
+        PocketCodexScanner.PulseReport report = PocketCodexScanner.pulse(player, codex);
+        triggerPocketAnimation(player, codex, "pulse");
+        return report.signalCount() > 0
+                ? "codex.riftborne.pocket.notice.signals_found"
+                : "codex.riftborne.pocket.notice.area_clear";
+    }
+
+    private static void triggerPocketAnimation(
+            ServerPlayer player,
+            net.minecraft.world.item.ItemStack codex,
+            String animation
+    ) {
+        if (codex.getItem() instanceof PocketCodexItem pocketCodexItem) {
+            long animationId = GeoItem.getOrAssignId(codex, player.serverLevel());
+            pocketCodexItem.triggerAnim(player, animationId, "action", animation);
+        }
     }
 
     private static net.minecraft.world.item.ItemStack heldPocketCodex(ServerPlayer player) {
@@ -254,7 +370,14 @@ public final class CodexNetwork {
             String diagnosticMetaWearStage,
             String diagnosticFormationPath,
             String diagnosticNotice,
-            String desktopLayout
+            String techniqueProgress,
+            String techniqueReadiness,
+            String aspectResonance,
+            float physicalOverallForm,
+            float physicalOverloadCapacity,
+            String physicalProfile,
+            String desktopLayout,
+            String infobaseData
     ) implements CustomPacketPayload {
         public static final Type<SnapshotPayload> TYPE = new Type<>(
                 ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "codex_snapshot")
@@ -293,7 +416,14 @@ public final class CodexNetwork {
                     buffer.writeUtf(payload.diagnosticMetaWearStage);
                     buffer.writeUtf(payload.diagnosticFormationPath);
                     buffer.writeUtf(payload.diagnosticNotice);
+                    buffer.writeUtf(payload.techniqueProgress);
+                    buffer.writeUtf(payload.techniqueReadiness);
+                    buffer.writeUtf(payload.aspectResonance);
+                    buffer.writeFloat(payload.physicalOverallForm);
+                    buffer.writeFloat(payload.physicalOverloadCapacity);
+                    buffer.writeUtf(payload.physicalProfile);
                     buffer.writeUtf(payload.desktopLayout);
+                    buffer.writeUtf(payload.infobaseData, 1_000_000);
                 },
                 buffer -> new SnapshotPayload(
                         buffer.readLong(),
@@ -328,7 +458,14 @@ public final class CodexNetwork {
                         buffer.readUtf(),
                         buffer.readUtf(),
                         buffer.readUtf(),
-                        buffer.readUtf()
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readFloat(),
+                        buffer.readFloat(),
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readUtf(1_000_000)
                 )
         );
 
@@ -397,11 +534,22 @@ public final class CodexNetwork {
     }
 
     public record PocketSnapshotPayload(
-            int selectedScreen,
+            int mode,
             String shortEntries,
             String queuedEntries,
             String damagedEntries,
+            String bufferRows,
             String noticeKey,
+            String lastTargetId,
+            String lastTargetTitle,
+            String lastResult,
+            int observations,
+            int maximumObservations,
+            int threat,
+            int pulseSignals,
+            String pulseNearestTitle,
+            int pulseNearestDistance,
+            int bufferCapacity,
             boolean openScreen
     ) implements CustomPacketPayload {
         public static final Type<PocketSnapshotPayload> TYPE = new Type<>(
@@ -409,11 +557,22 @@ public final class CodexNetwork {
         );
         public static final StreamCodec<RegistryFriendlyByteBuf, PocketSnapshotPayload> STREAM_CODEC = StreamCodec.of(
                 (buffer, payload) -> {
-                    buffer.writeVarInt(payload.selectedScreen);
+                    buffer.writeVarInt(payload.mode);
                     buffer.writeUtf(payload.shortEntries);
                     buffer.writeUtf(payload.queuedEntries);
                     buffer.writeUtf(payload.damagedEntries);
+                    buffer.writeUtf(payload.bufferRows);
                     buffer.writeUtf(payload.noticeKey);
+                    buffer.writeUtf(payload.lastTargetId);
+                    buffer.writeUtf(payload.lastTargetTitle);
+                    buffer.writeUtf(payload.lastResult);
+                    buffer.writeVarInt(payload.observations);
+                    buffer.writeVarInt(payload.maximumObservations);
+                    buffer.writeVarInt(payload.threat);
+                    buffer.writeVarInt(payload.pulseSignals);
+                    buffer.writeUtf(payload.pulseNearestTitle);
+                    buffer.writeVarInt(payload.pulseNearestDistance);
+                    buffer.writeVarInt(payload.bufferCapacity);
                     buffer.writeBoolean(payload.openScreen);
                 },
                 buffer -> new PocketSnapshotPayload(
@@ -422,6 +581,17 @@ public final class CodexNetwork {
                         buffer.readUtf(),
                         buffer.readUtf(),
                         buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readUtf(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readUtf(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
                         buffer.readBoolean()
                 )
         );

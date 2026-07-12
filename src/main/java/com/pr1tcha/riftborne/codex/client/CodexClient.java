@@ -22,6 +22,7 @@ public final class CodexClient {
         pocketSnapshot = snapshot;
         Minecraft minecraft = Minecraft.getInstance();
         if (!snapshot.noticeKey().isBlank() && minecraft.player != null) {
+            PocketCodexDynamicDisplay.showNotice(snapshot.noticeKey());
             minecraft.player.displayClientMessage(net.minecraft.network.chat.Component.translatable(snapshot.noticeKey()), true);
         }
         if (snapshot.openScreen()) {

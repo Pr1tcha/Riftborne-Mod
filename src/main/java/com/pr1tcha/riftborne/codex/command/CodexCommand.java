@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.pr1tcha.riftborne.codex.data.entry.CodexEntryDefinition;
 import com.pr1tcha.riftborne.codex.data.entry.CodexEntryRegistry;
 import com.pr1tcha.riftborne.codex.data.state.CodexEntryState;
+import com.pr1tcha.riftborne.codex.network.CodexNetwork;
 import com.pr1tcha.riftborne.codex.storage.CodexEntryProgress;
 import com.pr1tcha.riftborne.codex.storage.CodexPlayerProgress;
 import com.pr1tcha.riftborne.codex.storage.CodexStorage;
@@ -23,6 +24,9 @@ public final class CodexCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> category() {
         return Commands.literal("codex")
+                .then(Commands.literal("open_ui")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(context -> openUi(context.getSource())))
                 .then(Commands.literal("list")
                         .executes(context -> list(context.getSource())))
                 .then(Commands.literal("status")
@@ -88,6 +92,12 @@ public final class CodexCommand {
     private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> entryArgument() {
         return Commands.argument("entry", StringArgumentType.string())
                 .suggests((context, builder) -> SharedSuggestionProvider.suggest(CodexEntryRegistry.ids(), builder));
+    }
+
+    private static int openUi(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        CodexNetwork.open(source.getPlayerOrException());
+        return 1;
     }
 
     private static int list(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

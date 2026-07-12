@@ -1,0 +1,16 @@
+{
+  "id": "riftborne:node_density",
+  "title": "Плотность узлов РНА",
+  "category": "RNA",
+  "state": "PARTIAL",
+  "summary": "Показывает насыщенность узловой структуры и её базовую вместимость.",
+  "fullContent": "Высокая плотность увеличивает число доступных точек распределения импульса, но сама по себе не гарантирует качественной передачи.",
+  "sourceType": "SYSTEM",
+  "flags": ["subject_data", "diagnostic"],
+  "metadata": {"type": "architecture_parameter"},
+  "requirements": [],
+  "threat": 1,
+  "order": 20,
+  "tags": ["рна", "узлы", "плотность"],
+  "related": ["riftborne:rna_overview", "riftborne:connectivity"]
+}

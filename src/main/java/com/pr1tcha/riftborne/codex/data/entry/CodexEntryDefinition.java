@@ -18,7 +18,12 @@ public record CodexEntryDefinition(
         Set<String> flags,
         Map<String, String> metadata,
         List<String> requirements,
-        DecryptData decryptData
+        DecryptData decryptData,
+        int threatLevel,
+        int sortOrder,
+        List<String> tags,
+        List<String> relatedEntries,
+        List<CodexArticleSection> sections
 ) {
     public CodexEntryDefinition {
         if (id == null || id.isBlank()) {
@@ -34,5 +39,9 @@ public record CodexEntryDefinition(
         metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
         requirements = requirements == null ? List.of() : List.copyOf(requirements);
         decryptData = decryptData == null ? DecryptData.NONE : decryptData;
+        threatLevel = Math.max(0, Math.min(5, threatLevel));
+        tags = tags == null ? List.of() : List.copyOf(tags);
+        relatedEntries = relatedEntries == null ? List.of() : List.copyOf(relatedEntries);
+        sections = sections == null ? List.of() : List.copyOf(sections);
     }
 }

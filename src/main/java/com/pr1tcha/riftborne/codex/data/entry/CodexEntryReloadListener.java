@@ -65,6 +65,11 @@ public final class CodexEntryReloadListener extends SimpleJsonResourceReloadList
         Map<String, String> metadata = stringMap(json.getAsJsonObject("metadata"));
         List<String> requirements = strings(json.getAsJsonArray("requirements"));
         DecryptData decryptData = parseDecryptData(json.getAsJsonObject("decryptData"));
+        int threatLevel = integer(json, "threat", integer(metadata.get("threat"), 0));
+        int sortOrder = integer(json, "order", 1000);
+        List<String> tags = strings(json.getAsJsonArray("tags"));
+        List<String> relatedEntries = strings(json.getAsJsonArray("related"));
+        List<CodexArticleSection> sections = parseSections(json.getAsJsonArray("sections"));
         return new CodexEntryDefinition(
                 id,
                 title,
@@ -76,8 +81,31 @@ public final class CodexEntryReloadListener extends SimpleJsonResourceReloadList
                 flags,
                 metadata,
                 requirements,
-                decryptData
+                decryptData,
+                threatLevel,
+                sortOrder,
+                tags,
+                relatedEntries,
+                sections
         );
+    }
+
+    private static List<CodexArticleSection> parseSections(JsonArray array) {
+        if (array == null) {
+            return List.of();
+        }
+        List<CodexArticleSection> sections = new ArrayList<>();
+        for (JsonElement element : array) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            JsonObject section = element.getAsJsonObject();
+            sections.add(new CodexArticleSection(
+                    string(section, "heading", ""),
+                    string(section, "body", "")
+            ));
+        }
+        return sections;
     }
 
     private static DecryptData parseDecryptData(JsonObject json) {
@@ -104,6 +132,17 @@ public final class CodexEntryReloadListener extends SimpleJsonResourceReloadList
 
     private static int integer(JsonObject json, String key, int fallback) {
         return json.has(key) && json.get(key).isJsonPrimitive() ? json.get(key).getAsInt() : fallback;
+    }
+
+    private static int integer(String value, int fallback) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ignored) {
+            return fallback;
+        }
     }
 
     private static List<String> strings(JsonArray array) {

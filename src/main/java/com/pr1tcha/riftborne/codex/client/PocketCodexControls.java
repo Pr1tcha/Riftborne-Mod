@@ -15,8 +15,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 public final class PocketCodexControls {
-    private static final KeyMapping PREVIOUS = mapping("previous", GLFW.GLFW_KEY_LEFT_BRACKET);
-    private static final KeyMapping NEXT = mapping("next", GLFW.GLFW_KEY_RIGHT_BRACKET);
+    private static final KeyMapping MODE = mapping("mode", GLFW.GLFW_KEY_V);
     private static final KeyMapping ACTION = mapping("action", GLFW.GLFW_KEY_G);
 
     private PocketCodexControls() {
@@ -35,8 +34,7 @@ public final class PocketCodexControls {
     public static final class ModEvents {
         @SubscribeEvent
         public static void registerKeys(RegisterKeyMappingsEvent event) {
-            event.register(PREVIOUS);
-            event.register(NEXT);
+            event.register(MODE);
             event.register(ACTION);
         }
     }
@@ -53,10 +51,7 @@ public final class PocketCodexControls {
                     && !minecraft.player.getOffhandItem().is(ModContent.POCKET_CODEX.get())) {
                 return;
             }
-            while (PREVIOUS.consumeClick()) {
-                PacketDistributor.sendToServer(new CodexNetwork.PocketCyclePayload(-1));
-            }
-            while (NEXT.consumeClick()) {
+            while (MODE.consumeClick()) {
                 PacketDistributor.sendToServer(new CodexNetwork.PocketCyclePayload(1));
             }
             while (ACTION.consumeClick()) {

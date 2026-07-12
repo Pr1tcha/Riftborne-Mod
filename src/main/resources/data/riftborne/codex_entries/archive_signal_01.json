@@ -12,6 +12,16 @@
     "origin": "unknown"
   },
   "requirements": ["signal:archive_01"],
+  "threat": 2,
+  "order": 10,
+  "tags": ["сигнал", "архив", "шифрование"],
+  "related": [],
+  "sections": [
+    {
+      "heading": "Состояние",
+      "body": "Заголовок передачи повреждён. Для полного чтения необходимо собрать и восстановить все фрагменты."
+    }
+  ],
   "decryptData": {
     "type": "ENCRYPTED",
     "requiredFragments": 3,

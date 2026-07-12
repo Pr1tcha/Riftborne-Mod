@@ -21,6 +21,9 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public final class PocketCodexItem extends Item implements GeoItem, GeoRenderProvider {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.pocket_codex.idle");
+    private static final RawAnimation SCAN = RawAnimation.begin().thenPlay("animation.pocket_codex.scan");
+    private static final RawAnimation PULSE = RawAnimation.begin().thenPlay("animation.pocket_codex.pulse");
+    private static final RawAnimation WARNING = RawAnimation.begin().thenPlay("animation.pocket_codex.warning");
     private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
     private PocketCodexItemRenderer renderer;
 
@@ -53,7 +56,10 @@ public final class PocketCodexItem extends Item implements GeoItem, GeoRenderPro
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "screen", 0, state -> state.setAndContinue(IDLE)));
+        controllers.add(new AnimationController<>(this, "action", 0, state -> state.setAndContinue(IDLE))
+                .triggerableAnim("scan", SCAN)
+                .triggerableAnim("pulse", PULSE)
+                .triggerableAnim("warning", WARNING));
     }
 
     @Override

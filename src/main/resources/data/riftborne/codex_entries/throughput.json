@@ -1,0 +1,16 @@
+{
+  "id": "riftborne:throughput",
+  "title": "Пропускная способность РНА",
+  "category": "RNA",
+  "state": "LOCKED",
+  "summary": "Предельный объём нагрузки, который архитектура способна провести за короткое время.",
+  "fullContent": "Превышение текущей пропускной способности создаёт перегрузку даже при исправной структуре остальных узлов.",
+  "sourceType": "SYSTEM",
+  "flags": ["subject_data", "diagnostic"],
+  "metadata": {"type": "architecture_parameter"},
+  "requirements": ["diagnostic:throughput"],
+  "threat": 2,
+  "order": 40,
+  "tags": ["рна", "нагрузка", "пропускная способность"],
+  "related": ["riftborne:rna_overview", "riftborne:overload_resistance"]
+}

@@ -7,8 +7,12 @@ public enum CodexCategory {
     MOBS,
     DIMENSIONS,
     RNA,
+    ASPECTS,
+    TECHNIQUES,
     ITEMS,
+    DEVICES,
     SIGNALS,
+    FIELD_ARCHIVE,
     ARCHIVE,
     SYSTEM;
 
