@@ -1,6 +1,40 @@
 {
   "format_version": "1.8.0",
   "animations": {
+    "animation.rna_training_anchor.deploy": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 1.0,
+      "bones": {
+        "core": {
+          "position": {
+            "0.0": [0, -6, 0],
+            "0.7": [0, 1, 0],
+            "1.0": [0, 0, 0]
+          }
+        },
+        "ring": {
+          "scale": {
+            "0.0": [0.1, 0.1, 0.1],
+            "0.6": [1.12, 1.12, 1.12],
+            "1.0": [1, 1, 1]
+          }
+        },
+        "stabilizers": {
+          "scale": {
+            "0.0": [0.1, 0.1, 0.1],
+            "0.8": [1.1, 1.1, 1.1],
+            "1.0": [1, 1, 1]
+          }
+        },
+        "glow": {
+          "scale": {
+            "0.0": [0, 0, 0],
+            "0.5": [1.25, 1.25, 1.25],
+            "1.0": [1, 1, 1]
+          }
+        }
+      }
+    },
     "animation.rna_training_anchor.idle": {
       "loop": true,
       "animation_length": 8.0,
