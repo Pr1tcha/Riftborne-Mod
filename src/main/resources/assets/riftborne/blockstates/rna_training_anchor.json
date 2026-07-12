@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "deployed=false": {
+      "model": "riftborne:block/rna_training_anchor"
+    },
+    "deployed=true": {
       "model": "riftborne:block/rna_training_anchor"
     }
   }
