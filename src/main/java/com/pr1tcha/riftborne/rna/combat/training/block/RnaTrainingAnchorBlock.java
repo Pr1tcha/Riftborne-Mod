@@ -103,7 +103,7 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
         if (player.isSecondaryUseActive()) {
             collapse(baseState, (ServerLevel) level, basePos, serverPlayer, anchor);
         } else {
-            anchor.startTraining(serverPlayer);
+            anchor.openMenu(serverPlayer);
         }
         return InteractionResult.CONSUME;
     }

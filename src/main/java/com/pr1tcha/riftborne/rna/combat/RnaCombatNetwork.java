@@ -14,8 +14,11 @@ import com.pr1tcha.riftborne.rna.combat.registry.RnaAbilityRegistry;
 import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingManager;
 import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingPhase;
 import com.pr1tcha.riftborne.rna.combat.training.TrainingPulseState;
+import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
+import com.pr1tcha.riftborne.rna.combat.training.client.RnaTrainingAnchorClient;
 import com.pr1tcha.riftborne.physical.PhysicalTrainingManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -31,7 +34,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import java.util.UUID;
 
 public final class RnaCombatNetwork {
-    private static final String NETWORK_VERSION = "5";
+    private static final String NETWORK_VERSION = "6";
 
     private RnaCombatNetwork() {
     }
@@ -42,6 +45,12 @@ public final class RnaCombatNetwork {
         registrar.playToClient(CombatSyncPayload.TYPE, CombatSyncPayload.STREAM_CODEC, RnaCombatNetwork::handleCombatSync);
         registrar.playToClient(BarrierStatePayload.TYPE, BarrierStatePayload.STREAM_CODEC, RnaCombatNetwork::handleBarrierState);
         registrar.playToClient(TrainingStatePayload.TYPE, TrainingStatePayload.STREAM_CODEC, RnaCombatNetwork::handleTrainingState);
+        registrar.playToClient(AnchorMenuPayload.TYPE, AnchorMenuPayload.STREAM_CODEC, RnaCombatNetwork::handleAnchorMenu);
+        registrar.playToServer(AnchorMenuSelectPayload.TYPE, AnchorMenuSelectPayload.STREAM_CODEC, RnaCombatNetwork::handleAnchorMenuSelect);
+    }
+
+    public static void sendAnchorMenu(ServerPlayer player, BlockPos anchorPos, boolean hasActiveRna) {
+        PacketDistributor.sendToPlayer(player, new AnchorMenuPayload(anchorPos.asLong(), hasActiveRna));
     }
 
     public static void sendSync(ServerPlayer player, ResourceLocation abilityId, RnaAbilityResult result) {
@@ -198,6 +207,29 @@ public final class RnaCombatNetwork {
         }
     }
 
+    private static void handleAnchorMenu(AnchorMenuPayload payload, IPayloadContext context) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            RnaTrainingAnchorClient.openMenu(payload);
+        }
+    }
+
+    private static void handleAnchorMenuSelect(AnchorMenuSelectPayload payload, IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) {
+            return;
+        }
+        BlockPos pos = BlockPos.of(payload.anchorPos());
+        if (!(player.level().getBlockEntity(pos) instanceof RnaTrainingAnchorBlockEntity anchor)) {
+            return;
+        }
+        switch (payload.option()) {
+            case AnchorMenuSelectPayload.OPTION_BARRIER_TRAINING -> anchor.startTraining(player);
+            case AnchorMenuSelectPayload.OPTION_FORMATION ->
+                    player.displayClientMessage(Component.translatable("message.riftborne.training.formation_soon"), true);
+            default -> {
+            }
+        }
+    }
+
     public record ActivateSkillPayload(String abilityId) implements CustomPacketPayload {
         public static final Type<ActivateSkillPayload> TYPE = new Type<>(
                 ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_combat_activate")
@@ -323,6 +355,45 @@ public final class RnaCombatNetwork {
 
         @Override
         public Type<TrainingStatePayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record AnchorMenuPayload(long anchorPos, boolean hasActiveRna) implements CustomPacketPayload {
+        public static final Type<AnchorMenuPayload> TYPE = new Type<>(
+                ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_training_anchor_menu")
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, AnchorMenuPayload> STREAM_CODEC = StreamCodec.of(
+                (buffer, payload) -> {
+                    buffer.writeLong(payload.anchorPos());
+                    buffer.writeBoolean(payload.hasActiveRna());
+                },
+                buffer -> new AnchorMenuPayload(buffer.readLong(), buffer.readBoolean())
+        );
+
+        @Override
+        public Type<AnchorMenuPayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record AnchorMenuSelectPayload(long anchorPos, String option) implements CustomPacketPayload {
+        public static final String OPTION_FORMATION = "formation";
+        public static final String OPTION_BARRIER_TRAINING = "barrier_training";
+
+        public static final Type<AnchorMenuSelectPayload> TYPE = new Type<>(
+                ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_training_anchor_menu_select")
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, AnchorMenuSelectPayload> STREAM_CODEC = StreamCodec.of(
+                (buffer, payload) -> {
+                    buffer.writeLong(payload.anchorPos());
+                    buffer.writeUtf(payload.option());
+                },
+                buffer -> new AnchorMenuSelectPayload(buffer.readLong(), buffer.readUtf())
+        );
+
+        @Override
+        public Type<AnchorMenuSelectPayload> type() {
             return TYPE;
         }
     }

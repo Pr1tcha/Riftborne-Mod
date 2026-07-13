@@ -87,6 +87,14 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
         sync();
     }
 
+    public void openMenu(ServerPlayer player) {
+        if (!getBlockState().getValue(RnaTrainingAnchorBlock.DEPLOYED)) {
+            player.displayClientMessage(Component.translatable("message.riftborne.training.not_deployed"), true);
+            return;
+        }
+        RnaCombatNetwork.sendAnchorMenu(player, worldPosition, RnaApi.hasActiveRna(player));
+    }
+
     public void startTraining(ServerPlayer player) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
