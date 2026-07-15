@@ -19,5 +19,7 @@
   "item.riftborne.rift_splinter_spawn_egg": "Rift Splinter Spawn Egg",
   "key.categories.riftborne": "Riftborne",
   "key.riftborne.telekinesis": "Telekinesis",
+  "message.riftborne.flight_disabled": "Rift flight offline",
+  "message.riftborne.flight_enabled": "Rift flight online",
   "subtitles.riftborne.rift_opening": "Rift opens"
 }

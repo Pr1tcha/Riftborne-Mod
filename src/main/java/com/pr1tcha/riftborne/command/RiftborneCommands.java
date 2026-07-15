@@ -1,6 +1,7 @@
 package com.pr1tcha.riftborne.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.pr1tcha.riftborne.flight.FlightCommand;
 import com.pr1tcha.riftborne.rift.command.RiftCommand;
 import com.pr1tcha.riftborne.interspace.InterspaceCommand;
 import com.pr1tcha.riftborne.telekinesis.TelekinesisCommand;
@@ -17,6 +18,7 @@ public final class RiftborneCommands {
                 .then(RiftCommand.riftsCategory())
                 .then(RiftCommand.contourCategory())
                 .then(InterspaceCommand.category())
+                .then(FlightCommand.category())
                 .then(TelekinesisCommand.category())
         );
     }
