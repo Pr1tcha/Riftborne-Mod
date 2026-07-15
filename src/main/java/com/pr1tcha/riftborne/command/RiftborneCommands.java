@@ -1,6 +1,7 @@
 package com.pr1tcha.riftborne.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.pr1tcha.riftborne.flight.FlightCommand;
 import com.pr1tcha.riftborne.interspace.InterspaceCommand;
 import com.pr1tcha.riftborne.rna.command.RnaCommand;
 import com.pr1tcha.riftborne.rna.power.command.PowerCommand;
@@ -23,6 +24,7 @@ public final class RiftborneCommands {
                 .then(PowerCommand.category())
                 .then(InterspaceCommand.category())
                 .then(RiftwalkerCommand.category())
+                .then(FlightCommand.category())
         );
     }
 }

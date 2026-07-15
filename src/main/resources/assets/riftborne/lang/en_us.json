@@ -491,5 +491,7 @@
   "hud.riftborne.pushup.raise": "PUSHING UP · %s",
   "hud.riftborne.pushup.rest": "LOWERING · %s",
   "hud.riftborne.pushup.paused": "RECOVERY · %s",
-  "message.riftborne.training.training_soon": "Technique training is not yet available at this node."
+  "message.riftborne.training.training_soon": "Technique training is not yet available at this node.",
+  "message.riftborne.flight_disabled": "Rift flight offline",
+  "message.riftborne.flight_enabled": "Rift flight online"
 }

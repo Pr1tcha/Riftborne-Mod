@@ -3,6 +3,7 @@ package com.pr1tcha.riftborne;
 import com.mojang.logging.LogUtils;
 import com.pr1tcha.riftborne.command.RiftborneCommands;
 import com.pr1tcha.riftborne.config.Config;
+import com.pr1tcha.riftborne.flight.FlightNetwork;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rift.client.RiftBlockEntityRenderer;
 import com.pr1tcha.riftborne.rift.client.RiftPortalRenderer;
@@ -57,6 +58,7 @@ public class Riftborne {
         modEventBus.addListener(CodexNetwork::register);
         modEventBus.addListener(RiftwalkerNetwork::register);
         modEventBus.addListener(RnaCombatNetwork::register);
+        modEventBus.addListener(FlightNetwork::register);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);
