@@ -62,6 +62,7 @@ public class Riftborne {
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);
+        com.pr1tcha.riftborne.rna.power.data.ModPowerAttachments.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
