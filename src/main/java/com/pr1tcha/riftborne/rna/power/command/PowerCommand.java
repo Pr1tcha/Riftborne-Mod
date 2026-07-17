@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.pr1tcha.riftborne.rna.power.Primitive;
 import com.pr1tcha.riftborne.rna.power.PowerApi;
 import com.pr1tcha.riftborne.rna.power.PowerCast;
+import com.pr1tcha.riftborne.rna.power.PowerGates;
 import com.pr1tcha.riftborne.rna.power.PowerRules;
 import com.pr1tcha.riftborne.rna.power.data.RNAProfile;
 import net.minecraft.ChatFormatting;
@@ -68,6 +69,11 @@ public final class PowerCommand {
                 p.active() ? "active" : "dormant", p.formationPath(), p.connectivity(),
                 p.throughput(), p.nodeDensity(), p.overloadRes(), p.metaWear(),
                 PowerRules.admissibilityWindow(p))).withStyle(ChatFormatting.AQUA), false);
+        source.sendSuccess(() -> Component.literal(String.format(
+                "gates: phys=%.0f mental=%d psych=%d genetic=%.2f | caps: nd/or≤%d C≤%d",
+                PowerGates.phys(player), PowerGates.mental(player), PowerGates.psych(player),
+                PowerGates.genetic(player), PowerGates.physicalStatCap(player),
+                PowerGates.connectivityCap(player))).withStyle(ChatFormatting.DARK_AQUA), false);
         return 1;
     }
 
