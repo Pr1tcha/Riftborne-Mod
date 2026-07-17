@@ -3,7 +3,6 @@
   "itemGroup.riftborne.blocks": "Riftborne: Blocks",
   "itemGroup.riftborne.mobs": "Riftborne: Mobs",
   "itemGroup.riftborne.technical_blocks": "Riftborne: Technical Blocks",
-
   "block.riftborne.rift": "Rift Anchor",
   "block.riftborne.contour_stone": "Contour Stone",
   "block.riftborne.contour_surface": "Discard Contour Surface",
@@ -18,12 +17,10 @@
   "block.riftborne.riftwalker_interspace_stone": "Riftwalker Interspace Stone",
   "block.riftborne.riftwalker_interspace_surface": "Riftwalker Interspace Surface",
   "block.riftborne.riftwalker_interspace_vein": "Riftwalker Interspace Vein",
-
   "item.riftborne.rift_shard": "Rift Shard",
   "item.riftborne.rift_splinter_spawn_egg": "Rift Splinter Spawn Egg",
   "entity.riftborne.rift_splinter": "Rift Splinter",
   "entity.riftborne.telekinetic_block": "Telekinetic Block",
-
   "dimension.riftborne.rna_interspace": "RNA Interspace",
   "dimension.riftborne.riftwalker_interspace": "Riftwalker Interspace",
   "dimension.riftborne.discard_contour": "Discard Contour",
@@ -37,14 +34,12 @@
   "dimension.riftborne.rift_tier.node_rift": "Node Rift",
   "dimension.riftborne.rift_tier.deep_rift": "Deep Rift",
   "dimension.riftborne.rift_tier.limit_slice": "Limit Slice",
-
   "key.categories.riftborne": "Riftborne",
   "key.riftborne.telekinesis": "Telekinesis",
   "key.riftborne.barrier": "Barrier",
   "rna_ability.riftborne.barrier": "Barrier",
   "hud.riftborne.barrier_integrity": "BARRIER %s",
   "subtitles.riftborne.rift_opening": "Rift opens",
-
   "screen.riftborne.codex_laptop": "Field Laptop \"Codex\"",
   "screen.riftborne.codex.icon": "Codex",
   "screen.riftborne.codex.icon_line_1": "Codex",
@@ -110,7 +105,6 @@
   "screen.riftborne.codex.stage.distortion": "DIST",
   "screen.riftborne.codex.stage.rejection": "REJT",
   "screen.riftborne.codex.stage.architecture_break": "BREAK",
-
   "codex.riftborne.category.rna": "RNA",
   "codex.riftborne.category.meta_wear": "Meta-wear",
   "codex.riftborne.entry.rna_overview.title": "Resonant Neural Architecture",
@@ -134,7 +128,6 @@
   "codex.riftborne.feed.meta_wear": "Meta-wear: %s%% [%s]",
   "codex.riftborne.feed.diagnostic_snapshot": "RNA diagnostic snapshot: %s",
   "codex.riftborne.feed.barrier_calibrated": "Basic technique stabilized: Barrier",
-
   "message.riftborne.rna.stage.stable": "RNA is stable.",
   "message.riftborne.rna.stage.strain": "RNA entered a state of strain.",
   "message.riftborne.rna.stage.distortion": "RNA distortion detected.",
@@ -143,7 +136,6 @@
   "message.riftborne.rna.collapsed": "RNA destroyed. Synchronous access lost.",
   "message.riftborne.contour.holds": "The Discard Contour does not let go.",
   "message.riftborne.contour.not_loaded": "The Discard Contour dimension is not loaded.",
-
   "command.riftborne.interspace.not_loaded": "%s is not loaded.",
   "command.riftborne.interspace.entered": "Entered %s.",
   "command.riftborne.interspace.not_inside": "You are not inside an interspace.",
@@ -158,7 +150,6 @@
   "command.riftborne.rift_dimension.current_not_standard": "The current dimension is not a standard rift dimension.",
   "command.riftborne.rift_dimension.info_tier": "Rift tier: %s — %s",
   "command.riftborne.rift_dimension.info_dimension": "Dimension: %s",
-
   "command.riftborne.rna.header": "RNA [%s]",
   "command.riftborne.rna.state": "Active: %s, formation path: %s, collapsed: %s",
   "command.riftborne.rna.stats": "Node density: %s, connectivity: %s, throughput: %s, overload resistance: %s",
@@ -171,7 +162,6 @@
   "command.riftborne.rna.path_set": "RNA formation path: %s",
   "command.riftborne.rna.meta_wear": "Meta-wear: %s%% [%s]",
   "command.riftborne.rna.no_active_rna": "Player has no active RNA.",
-
   "rna.riftborne.stat.node_density": "Node density",
   "rna.riftborne.stat.connectivity": "Connectivity",
   "rna.riftborne.stat.throughput": "Throughput",
@@ -195,7 +185,6 @@
   "rna_source.ability_debug": "ability debug",
   "rna_source.command": "command",
   "rna_ability.riftborne.telekinesis": "Telekinesis",
-
   "command.riftborne.rifts.stage": "Riftborne rift stage: %s",
   "command.riftborne.rifts.stage_unavailable": "The Riftborne rift stage gamerule is not registered yet.",
   "command.riftborne.rifts.stage_set": "Riftborne rift stage set to %s.",
@@ -215,7 +204,6 @@
   "command.riftborne.rifts.info.blocks": "%s blocks",
   "command.riftborne.rifts.info.lifetime": "Lifetime: %s / %s t (left: %s sec)",
   "command.riftborne.rifts.info.source": "Rift source: ",
-
   "rift.riftborne.type.normal": "Rift",
   "rift.riftborne.type.contour": "Discard Contour rift",
   "rift.riftborne.type.archived": "Archived rift",
@@ -415,7 +403,6 @@
   "codex.riftborne.entry.riftwalker_interspace.short": "A bright fragmented layer with unstable geometry.",
   "codex.riftborne.entry.riftwalker_interspace.text": "Floating formations and energetic veins indicate persistent spatial displacement.",
   "codex.riftborne.entry.riftwalker_interspace.recommendation": "Mark the return point before moving away.",
-
   "itemGroup.riftborne.equipment": "Riftborne: Equipment",
   "item.riftborne.riftwalker_hood": "Riftwalker Hood",
   "item.riftborne.riftwalker_coat": "Riftwalker Coat",
@@ -503,5 +490,6 @@
   "hud.riftborne.pushup.hold": "TOP POSITION · %s",
   "hud.riftborne.pushup.raise": "PUSHING UP · %s",
   "hud.riftborne.pushup.rest": "LOWERING · %s",
-  "hud.riftborne.pushup.paused": "RECOVERY · %s"
+  "hud.riftborne.pushup.paused": "RECOVERY · %s",
+  "message.riftborne.training.training_soon": "Technique training is not yet available at this node."
 }

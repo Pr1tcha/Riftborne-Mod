@@ -23,8 +23,6 @@ import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueStage;
 import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueEvidence;
 import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueReadiness;
 import com.pr1tcha.riftborne.rna.combat.progression.RnaAcquisitionMethod;
-import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingManager;
-import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingSession;
 import com.pr1tcha.riftborne.rna.data.FormationPath;
 import com.pr1tcha.riftborne.rna.data.RnaData;
 import com.pr1tcha.riftborne.rna.data.RnaStat;
@@ -394,62 +392,6 @@ public final class RnaCommand {
                                         .then(amount))));
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> trainingCommand() {
-        return Commands.literal("training")
-                .then(Commands.literal("status")
-                        .executes(context -> showTraining(
-                                context.getSource(),
-                                context.getSource().getPlayerOrException()))
-                        .then(Commands.argument("target", EntityArgument.player())
-                                .requires(RnaCommand::operator)
-                                .executes(context -> showTraining(
-                                        context.getSource(),
-                                        EntityArgument.getPlayer(context, "target")))))
-                .then(Commands.literal("start")
-                        .requires(RnaCommand::operator)
-                        .then(techniqueArgument()
-                                .executes(context -> startTraining(
-                                        context.getSource(),
-                                        context.getSource().getPlayerOrException(),
-                                        techniqueId(context)))
-                                .then(Commands.argument("target", EntityArgument.player())
-                                        .executes(context -> startTraining(
-                                                context.getSource(),
-                                                EntityArgument.getPlayer(context, "target"),
-                                                techniqueId(context))))))
-                .then(Commands.literal("result")
-                        .requires(RnaCommand::operator)
-                        .then(Commands.literal("success")
-                                .executes(context -> recordTrainingResult(
-                                        context.getSource(),
-                                        context.getSource().getPlayerOrException(),
-                                        true))
-                                .then(Commands.argument("target", EntityArgument.player())
-                                        .executes(context -> recordTrainingResult(
-                                                context.getSource(),
-                                                EntityArgument.getPlayer(context, "target"),
-                                                true))))
-                        .then(Commands.literal("failure")
-                                .executes(context -> recordTrainingResult(
-                                        context.getSource(),
-                                        context.getSource().getPlayerOrException(),
-                                        false))
-                                .then(Commands.argument("target", EntityArgument.player())
-                                        .executes(context -> recordTrainingResult(
-                                                context.getSource(),
-                                                EntityArgument.getPlayer(context, "target"),
-                                                false)))))
-                .then(Commands.literal("stop")
-                        .requires(RnaCommand::operator)
-                        .executes(context -> stopTraining(
-                                context.getSource(),
-                                context.getSource().getPlayerOrException()))
-                        .then(Commands.argument("target", EntityArgument.player())
-                                .executes(context -> stopTraining(
-                                        context.getSource(),
-                                        EntityArgument.getPlayer(context, "target")))));
-    }
-
     private static LiteralArgumentBuilder<CommandSourceStack> debugCommand() {
         return Commands.literal("debug")
                 .then(Commands.literal("clear")
@@ -788,52 +730,6 @@ public final class RnaCommand {
                 + " +" + accepted + " via " + method.id()
                 + " for " + target.getGameProfile().getName()), true);
         return accepted;
-    }
-
-    private static int showTraining(CommandSourceStack source, ServerPlayer target) {
-        RnaTrainingSession session = RnaAbilityManager.getData(target).trainingSession();
-        if (session == null) {
-            source.sendSuccess(() -> Component.literal("No active RNA training session"), false);
-            return 0;
-        }
-        source.sendSuccess(() -> Component.literal("RNA training " + session.techniqueId()
-                + " phase=" + session.phase().id()
-                + " progress=" + session.phaseSuccesses() + "/" + session.phase().requiredSuccesses()
-                + " failures=" + session.totalFailures()), false);
-        return 1;
-    }
-
-    private static int startTraining(
-            CommandSourceStack source,
-            ServerPlayer target,
-            ResourceLocation techniqueId
-    ) {
-        RnaTrainingManager.StartResult result = RnaTrainingManager.start(target, techniqueId);
-        source.sendSuccess(() -> Component.literal("RNA training start " + techniqueId
-                + ": " + result.name().toLowerCase(Locale.ROOT)), true);
-        return result == RnaTrainingManager.StartResult.STARTED
-                || result == RnaTrainingManager.StartResult.STABILIZED ? 1 : 0;
-    }
-
-    private static int recordTrainingResult(
-            CommandSourceStack source,
-            ServerPlayer target,
-            boolean success
-    ) {
-        RnaTrainingManager.TrialResult result = success
-                ? RnaTrainingManager.recordSuccess(target)
-                : RnaTrainingManager.recordFailure(target);
-        source.sendSuccess(() -> Component.literal("RNA training result: "
-                + result.name().toLowerCase(Locale.ROOT)), true);
-        return result == RnaTrainingManager.TrialResult.NO_SESSION ? 0 : 1;
-    }
-
-    private static int stopTraining(CommandSourceStack source, ServerPlayer target) {
-        boolean stopped = RnaTrainingManager.stop(target);
-        source.sendSuccess(() -> Component.literal(stopped
-                ? "RNA training stopped"
-                : "No active RNA training session"), true);
-        return stopped ? 1 : 0;
     }
 
     private static int inspectTechnique(

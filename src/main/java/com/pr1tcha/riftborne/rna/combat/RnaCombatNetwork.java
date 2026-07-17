@@ -11,9 +11,6 @@ import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityResult;
 import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityUseContext;
 import com.pr1tcha.riftborne.rna.combat.data.RnaLoadBand;
 import com.pr1tcha.riftborne.rna.combat.registry.RnaAbilityRegistry;
-import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingManager;
-import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingPhase;
-import com.pr1tcha.riftborne.rna.combat.training.TrainingPulseState;
 import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
 import com.pr1tcha.riftborne.rna.combat.training.client.RnaTrainingAnchorClient;
 import net.minecraft.core.BlockPos;
@@ -43,7 +40,6 @@ public final class RnaCombatNetwork {
         registrar.playToServer(ActivateSkillPayload.TYPE, ActivateSkillPayload.STREAM_CODEC, RnaCombatNetwork::handleActivateSkill);
         registrar.playToClient(CombatSyncPayload.TYPE, CombatSyncPayload.STREAM_CODEC, RnaCombatNetwork::handleCombatSync);
         registrar.playToClient(BarrierStatePayload.TYPE, BarrierStatePayload.STREAM_CODEC, RnaCombatNetwork::handleBarrierState);
-        registrar.playToClient(TrainingStatePayload.TYPE, TrainingStatePayload.STREAM_CODEC, RnaCombatNetwork::handleTrainingState);
         registrar.playToClient(AnchorMenuPayload.TYPE, AnchorMenuPayload.STREAM_CODEC, RnaCombatNetwork::handleAnchorMenu);
         registrar.playToServer(AnchorMenuSelectPayload.TYPE, AnchorMenuSelectPayload.STREAM_CODEC, RnaCombatNetwork::handleAnchorMenuSelect);
     }
@@ -102,43 +98,6 @@ public final class RnaCombatNetwork {
         );
     }
 
-    public static void broadcastTrainingBarrier(ServerPlayer owner, boolean visible) {
-        broadcastBarrierState(
-                owner,
-                visible ? 6.0F : 0.0F,
-                visible ? BarrierPhase.ACTIVE : BarrierPhase.INACTIVE,
-                RnaAbilityManager.barrierGestureMode(owner),
-                0
-        );
-    }
-
-    public static void sendTrainingState(
-            ServerPlayer player,
-            BlockPos anchorPos,
-            RnaTrainingPhase phase,
-            int phaseSuccesses,
-            int totalFailures,
-            TrainingPulseState pulseState,
-            int stateTicks
-    ) {
-        PacketDistributor.sendToPlayer(player, new TrainingStatePayload(
-                true,
-                anchorPos.asLong(),
-                phase.ordinal(),
-                Math.max(0, phaseSuccesses),
-                phase.requiredSuccesses(),
-                Math.max(0, totalFailures),
-                pulseState.ordinal(),
-                Math.max(0, stateTicks)
-        ));
-    }
-
-    public static void sendTrainingStateInactive(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, new TrainingStatePayload(
-                false, 0L, 0, 0, 0, 0, TrainingPulseState.IDLE.ordinal(), 0
-        ));
-    }
-
     private static void broadcastBarrierState(
             ServerPlayer owner,
             float integrity,
@@ -163,9 +122,6 @@ public final class RnaCombatNetwork {
         if (abilityId == null || RnaAbilityRegistry.get(abilityId) == null) {
             result = RnaAbilityResult.FAIL_UNKNOWN_ABILITY;
             abilityId = null;
-        } else if (RnaAbilityRegistry.BARRIER_ID.equals(abilityId)
-                && RnaTrainingManager.handleBarrierInput(player)) {
-            return;
         } else {
             result = RnaAbilityManager.activateBasicSkill(
                     player,
@@ -200,12 +156,6 @@ public final class RnaCombatNetwork {
         }
     }
 
-    private static void handleTrainingState(TrainingStatePayload payload, IPayloadContext context) {
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            RnaCombatClient.handleTrainingSync(payload);
-        }
-    }
-
     private static void handleAnchorMenu(AnchorMenuPayload payload, IPayloadContext context) {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             RnaTrainingAnchorClient.openMenu(payload);
@@ -221,7 +171,8 @@ public final class RnaCombatNetwork {
             return;
         }
         switch (payload.option()) {
-            case AnchorMenuSelectPayload.OPTION_BARRIER_TRAINING -> anchor.startTraining(player);
+            case AnchorMenuSelectPayload.OPTION_BARRIER_TRAINING ->
+                    player.displayClientMessage(Component.translatable("message.riftborne.training.training_soon"), true);
             case AnchorMenuSelectPayload.OPTION_FORMATION ->
                     player.displayClientMessage(Component.translatable("message.riftborne.training.formation_soon"), true);
             default -> {
@@ -312,48 +263,6 @@ public final class RnaCombatNetwork {
 
         @Override
         public Type<BarrierStatePayload> type() {
-            return TYPE;
-        }
-    }
-
-    public record TrainingStatePayload(
-            boolean active,
-            long anchorPos,
-            int phaseOrdinal,
-            int phaseSuccesses,
-            int phaseRequired,
-            int totalFailures,
-            int pulseStateOrdinal,
-            int stateTicks
-    ) implements CustomPacketPayload {
-        public static final Type<TrainingStatePayload> TYPE = new Type<>(
-                ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_training_state")
-        );
-        public static final StreamCodec<RegistryFriendlyByteBuf, TrainingStatePayload> STREAM_CODEC = StreamCodec.of(
-                (buffer, payload) -> {
-                    buffer.writeBoolean(payload.active());
-                    buffer.writeLong(payload.anchorPos());
-                    buffer.writeVarInt(payload.phaseOrdinal());
-                    buffer.writeVarInt(payload.phaseSuccesses());
-                    buffer.writeVarInt(payload.phaseRequired());
-                    buffer.writeVarInt(payload.totalFailures());
-                    buffer.writeVarInt(payload.pulseStateOrdinal());
-                    buffer.writeVarInt(payload.stateTicks());
-                },
-                buffer -> new TrainingStatePayload(
-                        buffer.readBoolean(),
-                        buffer.readLong(),
-                        buffer.readVarInt(),
-                        buffer.readVarInt(),
-                        buffer.readVarInt(),
-                        buffer.readVarInt(),
-                        buffer.readVarInt(),
-                        buffer.readVarInt()
-                )
-        );
-
-        @Override
-        public Type<TrainingStatePayload> type() {
             return TYPE;
         }
     }

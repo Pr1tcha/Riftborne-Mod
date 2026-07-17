@@ -6,7 +6,6 @@ import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueProgress;
 import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueStage;
 import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueEvidence;
 import com.pr1tcha.riftborne.rna.combat.progression.RnaAcquisitionMethod;
-import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingSession;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -33,7 +32,6 @@ public final class RnaAbilityData {
     private final Map<RnaTechniqueEvidence, Integer> progressionEvidence = new LinkedHashMap<>();
     private int nextDiscoveryOrder = 1;
     private int nextStabilizationOrder = 1;
-    private RnaTrainingSession trainingSession;
     private float currentLoad;
     private long lastLoadTick;
     private long instabilityUntilTick;
@@ -56,9 +54,6 @@ public final class RnaAbilityData {
         data.nextDiscoveryOrder = Math.max(1, tag.getInt("NextDiscoveryOrder"));
         data.nextStabilizationOrder = Math.max(1, tag.getInt("NextStabilizationOrder"));
         data.recalculateTechniqueOrderCounters();
-        data.trainingSession = tag.contains("TrainingSession")
-                ? RnaTrainingSession.load(tag.getCompound("TrainingSession"))
-                : null;
         data.currentLoad = tag.contains("CurrentLoad") ? Mth.clamp(tag.getFloat("CurrentLoad"), 0.0F, 100.0F) : 0.0F;
         data.lastLoadTick = tag.contains("LastLoadTick") ? tag.getLong("LastLoadTick") : 0L;
         data.instabilityUntilTick = tag.contains("InstabilityUntilTick") ? tag.getLong("InstabilityUntilTick") : 0L;
@@ -82,9 +77,6 @@ public final class RnaAbilityData {
         tag.put("ProgressionEvidence", writeProgressionEvidence(progressionEvidence));
         tag.putInt("NextDiscoveryOrder", nextDiscoveryOrder);
         tag.putInt("NextStabilizationOrder", nextStabilizationOrder);
-        if (trainingSession != null) {
-            tag.put("TrainingSession", trainingSession.save());
-        }
         tag.putFloat("CurrentLoad", currentLoad);
         tag.putLong("LastLoadTick", lastLoadTick);
         tag.putLong("InstabilityUntilTick", instabilityUntilTick);
@@ -154,18 +146,6 @@ public final class RnaAbilityData {
     public boolean hasProvisionalTechnique(String id) {
         RnaTechniqueProgress progress = techniqueProgress.get(id);
         return progress != null && progress.hasProvisionalAccess();
-    }
-
-    public RnaTrainingSession trainingSession() {
-        return trainingSession;
-    }
-
-    public void setTrainingSession(RnaTrainingSession trainingSession) {
-        this.trainingSession = trainingSession;
-    }
-
-    public void clearTrainingSession() {
-        trainingSession = null;
     }
 
     public void setTechniqueStage(String id, RnaTechniqueStage stage, long gameTime) {

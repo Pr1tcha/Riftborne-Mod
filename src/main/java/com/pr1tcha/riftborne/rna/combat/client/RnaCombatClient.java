@@ -5,8 +5,6 @@ import com.pr1tcha.riftborne.Riftborne;
 import com.pr1tcha.riftborne.rna.combat.RnaCombatNetwork;
 import com.pr1tcha.riftborne.rna.combat.ability.RnaAbility;
 import com.pr1tcha.riftborne.rna.combat.registry.RnaAbilityRegistry;
-import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingPhase;
-import com.pr1tcha.riftborne.rna.combat.training.TrainingPulseState;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -37,13 +35,6 @@ public final class RnaCombatClient {
     private static String lastAbility = "";
     private static String lastResult = "";
     private static int feedbackTicks;
-    private static boolean trainingActive;
-    private static int trainingPhase;
-    private static int trainingSuccesses;
-    private static int trainingRequired;
-    private static int trainingFailures;
-    private static int trainingPulseState;
-    private static int trainingStateTicks;
 
     static {
         addKey(RnaAbilityRegistry.BARRIER_ID, GLFW.GLFW_KEY_X);
@@ -63,16 +54,6 @@ public final class RnaCombatClient {
         if (!lastResult.isBlank()) {
             feedbackTicks = 40;
         }
-    }
-
-    public static void handleTrainingSync(RnaCombatNetwork.TrainingStatePayload payload) {
-        trainingActive = payload.active();
-        trainingPhase = payload.phaseOrdinal();
-        trainingSuccesses = payload.phaseSuccesses();
-        trainingRequired = payload.phaseRequired();
-        trainingFailures = payload.totalFailures();
-        trainingPulseState = payload.pulseStateOrdinal();
-        trainingStateTicks = payload.stateTicks();
     }
 
     private static void addKey(ResourceLocation abilityId, int defaultKey) {
@@ -110,9 +91,6 @@ public final class RnaCombatClient {
             }
             if (feedbackTicks > 0) {
                 feedbackTicks--;
-            }
-            if (trainingActive && trainingStateTicks > 0) {
-                trainingStateTicks--;
             }
             if (minecraft.screen != null) {
                 return;
@@ -208,58 +186,7 @@ public final class RnaCombatClient {
                         false
                 );
             }
-
-            if (trainingActive) {
-                renderTrainingHud(graphics, minecraft);
-            }
         }
-    }
-
-    private static void renderTrainingHud(GuiGraphics graphics, Minecraft minecraft) {
-        RnaTrainingPhase[] phases = RnaTrainingPhase.values();
-        RnaTrainingPhase phase = trainingPhase >= 0 && trainingPhase < phases.length
-                ? phases[trainingPhase]
-                : RnaTrainingPhase.FORMATION;
-        TrainingPulseState pulse = TrainingPulseState.fromOrdinal(trainingPulseState);
-        int width = 154;
-        int x = (graphics.guiWidth() - width) / 2;
-        int y = 14;
-
-        graphics.fill(x, y, x + width, y + 32, 0xB0040A0D);
-        graphics.drawCenteredString(
-                minecraft.font,
-                Component.translatable(phase.translationKey()),
-                graphics.guiWidth() / 2,
-                y + 4,
-                0xFFBCEFF7
-        );
-
-        int gap = 4;
-        int segmentWidth = trainingRequired <= 0
-                ? 0
-                : Math.max(8, (width - 16 - Math.max(0, trainingRequired - 1) * gap) / trainingRequired);
-        int totalWidth = trainingRequired * segmentWidth + Math.max(0, trainingRequired - 1) * gap;
-        int segmentX = (graphics.guiWidth() - totalWidth) / 2;
-        for (int i = 0; i < trainingRequired; i++) {
-            int color = i < trainingSuccesses ? 0xFF62E6C8 : 0xFF1B3438;
-            graphics.fill(segmentX, y + 17, segmentX + segmentWidth, y + 22, color);
-            segmentX += segmentWidth + gap;
-        }
-
-        Component stateText = switch (pulse) {
-            case CALIBRATING -> Component.translatable("hud.riftborne.training.calibrating");
-            case TELEGRAPH -> Component.translatable("hud.riftborne.training.telegraph", trainingStateTicks);
-            case RECOVERY -> Component.translatable("hud.riftborne.training.recovery");
-            case PAUSED -> Component.translatable("hud.riftborne.training.paused");
-            case IDLE -> Component.empty();
-        };
-        graphics.drawCenteredString(
-                minecraft.font,
-                stateText,
-                graphics.guiWidth() / 2,
-                y + 24,
-                pulse == TrainingPulseState.TELEGRAPH ? 0xFFFFD77A : 0xFF7FAEB6
-        );
     }
 
     private static String shortAbilityName(String abilityId) {

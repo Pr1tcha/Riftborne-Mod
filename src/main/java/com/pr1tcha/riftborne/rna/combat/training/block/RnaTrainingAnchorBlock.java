@@ -139,7 +139,6 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
             ServerPlayer player,
             RnaTrainingAnchorBlockEntity anchor
     ) {
-        anchor.stopTraining(player, false);
         tearingDown = true;
         try {
             for (int i = 1; i <= SEGMENTS; i++) {
@@ -222,9 +221,6 @@ public final class RnaTrainingAnchorBlock extends BaseEntityBlock {
             try {
                 int part = state.getValue(PART);
                 BlockPos basePos = pos.below(part);
-                if (level.getBlockEntity(basePos) instanceof RnaTrainingAnchorBlockEntity anchor) {
-                    anchor.stopTraining(null, false);
-                }
                 for (int i = 0; i <= SEGMENTS; i++) {
                     BlockPos p = basePos.above(i);
                     if (p.equals(pos)) {

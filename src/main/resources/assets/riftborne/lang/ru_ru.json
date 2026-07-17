@@ -3,7 +3,6 @@
   "itemGroup.riftborne.blocks": "Riftborne: Блоки",
   "itemGroup.riftborne.mobs": "Riftborne: Мобы",
   "itemGroup.riftborne.technical_blocks": "Riftborne: Технические блоки",
-
   "block.riftborne.rift": "Якорь разлома",
   "block.riftborne.contour_stone": "Камень Контура",
   "block.riftborne.contour_surface": "Поверхность Контура Отброса",
@@ -18,12 +17,10 @@
   "block.riftborne.riftwalker_interspace_stone": "Камень межпространства Рифтволкера",
   "block.riftborne.riftwalker_interspace_surface": "Поверхность межпространства Рифтволкера",
   "block.riftborne.riftwalker_interspace_vein": "Жила межпространства Рифтволкера",
-
   "item.riftborne.rift_shard": "Осколок разлома",
   "item.riftborne.rift_splinter_spawn_egg": "Яйцо призыва Разломного Осколочника",
   "entity.riftborne.rift_splinter": "Разломный Осколочник",
   "entity.riftborne.telekinetic_block": "Телекинетический блок",
-
   "dimension.riftborne.rna_interspace": "Межпространство РНА",
   "dimension.riftborne.riftwalker_interspace": "Межпространство Рифтволкера",
   "dimension.riftborne.discard_contour": "Контур Отброса",
@@ -37,14 +34,12 @@
   "dimension.riftborne.rift_tier.node_rift": "Узловой разлом",
   "dimension.riftborne.rift_tier.deep_rift": "Глубинный разлом",
   "dimension.riftborne.rift_tier.limit_slice": "Предельный срез",
-
   "key.categories.riftborne": "Riftborne",
   "key.riftborne.telekinesis": "Телекинез",
   "key.riftborne.barrier": "Барьер",
   "rna_ability.riftborne.barrier": "Барьер",
   "hud.riftborne.barrier_integrity": "БАРЬЕР %s",
   "subtitles.riftborne.rift_opening": "Открывается разлом",
-
   "screen.riftborne.codex_laptop": "Полевой ноутбук «Кодекс»",
   "screen.riftborne.codex.icon": "Кодекс",
   "screen.riftborne.codex.icon_line_1": "Кодекс",
@@ -110,7 +105,6 @@
   "screen.riftborne.codex.stage.distortion": "ИСКАЖ",
   "screen.riftborne.codex.stage.rejection": "ОТТОРЖ",
   "screen.riftborne.codex.stage.architecture_break": "СРЫВ",
-
   "codex.riftborne.category.rna": "РНА",
   "codex.riftborne.category.meta_wear": "Мета-износ",
   "codex.riftborne.entry.rna_overview.title": "Резонансная нейроархитектура",
@@ -134,7 +128,6 @@
   "codex.riftborne.feed.meta_wear": "Мета-износ: %s%% [%s]",
   "codex.riftborne.feed.diagnostic_snapshot": "Диагностический снимок РНА: %s",
   "codex.riftborne.feed.barrier_calibrated": "Базовая техника стабилизирована: Барьер",
-
   "message.riftborne.rna.stage.stable": "РНА стабильна.",
   "message.riftborne.rna.stage.strain": "РНА перешла в состояние напряжения.",
   "message.riftborne.rna.stage.distortion": "Обнаружено искажение РНА.",
@@ -143,7 +136,6 @@
   "message.riftborne.rna.collapsed": "РНА разрушена. Синхронный доступ утрачен.",
   "message.riftborne.contour.holds": "Контур Отброса не отпускает.",
   "message.riftborne.contour.not_loaded": "Измерение Контура Отброса не загружено.",
-
   "command.riftborne.interspace.not_loaded": "%s не загружено.",
   "command.riftborne.interspace.entered": "Выполнен вход в %s.",
   "command.riftborne.interspace.not_inside": "Вы не находитесь в межпространстве.",
@@ -158,7 +150,6 @@
   "command.riftborne.rift_dimension.current_not_standard": "Текущее измерение не является стандартным измерением разлома.",
   "command.riftborne.rift_dimension.info_tier": "Уровень разлома: %s — %s",
   "command.riftborne.rift_dimension.info_dimension": "Измерение: %s",
-
   "command.riftborne.rna.header": "РНА [%s]",
   "command.riftborne.rna.state": "Активна: %s, путь формирования: %s, разрушена: %s",
   "command.riftborne.rna.stats": "Плотность узлов: %s, связность: %s, пропускная способность: %s, устойчивость к перегрузке: %s",
@@ -171,7 +162,6 @@
   "command.riftborne.rna.path_set": "Путь формирования РНА: %s",
   "command.riftborne.rna.meta_wear": "Мета-износ: %s%% [%s]",
   "command.riftborne.rna.no_active_rna": "У игрока нет активной РНА.",
-
   "rna.riftborne.stat.node_density": "Плотность узлов",
   "rna.riftborne.stat.connectivity": "Связность",
   "rna.riftborne.stat.throughput": "Пропускная способность",
@@ -195,7 +185,6 @@
   "rna_source.ability_debug": "проверка способности",
   "rna_source.command": "команда",
   "rna_ability.riftborne.telekinesis": "Телекинез",
-
   "command.riftborne.rifts.stage": "Стадия разломов Riftborne: %s",
   "command.riftborne.rifts.stage_unavailable": "Игровое правило стадии разломов Riftborne ещё не зарегистрировано.",
   "command.riftborne.rifts.stage_set": "Стадия разломов Riftborne установлена: %s.",
@@ -215,7 +204,6 @@
   "command.riftborne.rifts.info.blocks": "%s блоков",
   "command.riftborne.rifts.info.lifetime": "Время жизни: %s / %s тиков (осталось: %s сек.)",
   "command.riftborne.rifts.info.source": "Источник разлома: ",
-
   "rift.riftborne.type.normal": "Разлом",
   "rift.riftborne.type.contour": "Разлом Контура Отброса",
   "rift.riftborne.type.archived": "Архивный разлом",
@@ -415,7 +403,6 @@
   "codex.riftborne.entry.riftwalker_interspace.short": "Яркий фрагментированный слой с нестабильной геометрией.",
   "codex.riftborne.entry.riftwalker_interspace.text": "Плавающие формации и энергетические жилы указывают на постоянное смещение.",
   "codex.riftborne.entry.riftwalker_interspace.recommendation": "Отметьте точку возврата до начала движения.",
-
   "itemGroup.riftborne.equipment": "Riftborne: Экипировка",
   "item.riftborne.riftwalker_hood": "Капюшон Рифтволкера",
   "item.riftborne.riftwalker_coat": "Облачение Рифтволкера",
@@ -503,5 +490,6 @@
   "hud.riftborne.pushup.hold": "ВЕРХНЯЯ ТОЧКА · %s",
   "hud.riftborne.pushup.raise": "ПОДЪЁМ · %s",
   "hud.riftborne.pushup.rest": "ОПУСКАНИЕ · %s",
-  "hud.riftborne.pushup.paused": "ПЕРЕДЫШКА · %s"
+  "hud.riftborne.pushup.paused": "ПЕРЕДЫШКА · %s",
+  "message.riftborne.training.training_soon": "Тренировка техник пока недоступна на этом узле."
 }
