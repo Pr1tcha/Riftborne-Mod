@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.pr1tcha.riftborne.rna.power.Primitive;
 import com.pr1tcha.riftborne.rna.power.PowerApi;
 import com.pr1tcha.riftborne.rna.power.PowerCast;
+import com.pr1tcha.riftborne.rna.power.PowerCrystallization;
 import com.pr1tcha.riftborne.rna.power.PowerGates;
 import com.pr1tcha.riftborne.rna.power.PowerRules;
 import com.pr1tcha.riftborne.rna.power.data.RNAProfile;
@@ -43,6 +44,10 @@ public final class PowerCommand {
                         .then(Commands.argument("value", IntegerArgumentType.integer(1, 3))
                                 .executes(ctx -> setConnectivity(ctx.getSource(),
                                         IntegerArgumentType.getInteger(ctx, "value")))))
+                .then(Commands.literal("progress")
+                        .executes(ctx -> progress(ctx.getSource())))
+                .then(Commands.literal("crystallize")
+                        .executes(ctx -> crystallize(ctx.getSource())))
                 .then(cast);
     }
 
@@ -83,6 +88,26 @@ public final class PowerCommand {
         PowerApi.set(player, p.withStats(p.throughput(), value, p.nodeDensity(), p.overloadRes()));
         source.sendSuccess(() -> Component.literal("Connectivity set to C" + value).withStyle(ChatFormatting.GRAY), false);
         return 1;
+    }
+
+    private static int progress(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        var prog = PowerApi.getProgress(player);
+        source.sendSuccess(() -> Component.literal("practice=" + prog.practiceByAxis()
+                + " total=" + prog.totalPractice()
+                + " facet=" + (prog.facet().isEmpty() ? "none"
+                        : prog.facet().get().signature() + prog.facet().get().dominantAxes()))
+                .withStyle(ChatFormatting.LIGHT_PURPLE), false);
+        return 1;
+    }
+
+    private static int crystallize(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        boolean formed = PowerCrystallization.tryCrystallize(player);
+        source.sendSuccess(() -> Component.literal(formed ? "Facet crystallized."
+                : "Cannot crystallize (need active RNA, no facet, practice≥"
+                        + PowerCrystallization.MIN_PRACTICE + ").").withStyle(ChatFormatting.GRAY), false);
+        return formed ? 1 : 0;
     }
 
     private static int cast(CommandSourceStack source, Primitive primitive) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

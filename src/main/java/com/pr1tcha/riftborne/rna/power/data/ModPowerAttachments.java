@@ -25,6 +25,15 @@ public final class ModPowerAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<PowerProgress>> POWER_PROGRESS = ATTACHMENT_TYPES.register(
+            "power_progress",
+            () -> AttachmentType.builder(PowerProgress::empty)
+                    .serialize(PowerProgress.CODEC)
+                    .sync(PowerProgress.STREAM_CODEC)
+                    .copyOnDeath()
+                    .build()
+    );
+
     private ModPowerAttachments() {
     }
 

@@ -69,6 +69,9 @@ public final class PowerCast {
         boolean overload = load > profile.throughput();
         if (effect == Result.OK) {
             PowerApi.addMetaWear(player, PowerRules.metaWearForLoad(load));
+            for (DeltaAxis axis : axes) {
+                PowerApi.addPractice(player, axis.id(), 1);
+            }
         }
         return new Outcome(effect, load, window, overload);
     }

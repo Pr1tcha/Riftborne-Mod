@@ -1,6 +1,7 @@
 package com.pr1tcha.riftborne.rna.power;
 
 import com.pr1tcha.riftborne.rna.power.data.ModPowerAttachments;
+import com.pr1tcha.riftborne.rna.power.data.PowerProgress;
 import com.pr1tcha.riftborne.rna.power.data.RNAProfile;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -42,6 +43,22 @@ public final class PowerApi {
 
     public static void reset(ServerPlayer player) {
         set(player, RNAProfile.empty());
+        setProgress(player, PowerProgress.empty());
+    }
+
+    public static PowerProgress getProgress(ServerPlayer player) {
+        return player.getData(ModPowerAttachments.POWER_PROGRESS.get());
+    }
+
+    public static void setProgress(ServerPlayer player, PowerProgress progress) {
+        player.setData(ModPowerAttachments.POWER_PROGRESS.get(), progress);
+    }
+
+    public static void addPractice(ServerPlayer player, String axisId, int amount) {
+        if (amount <= 0) {
+            return;
+        }
+        setProgress(player, getProgress(player).withPractice(axisId, amount));
     }
 
     /**
