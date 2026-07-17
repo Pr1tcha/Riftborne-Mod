@@ -17,7 +17,6 @@ import com.pr1tcha.riftborne.riftwalker.network.RiftwalkerNetwork;
 import com.pr1tcha.riftborne.rna.combat.RnaCombatNetwork;
 import com.pr1tcha.riftborne.rna.combat.client.VeilBarrierField;
 import com.pr1tcha.riftborne.rna.combat.training.client.RnaTrainingAnchorRenderer;
-import com.pr1tcha.riftborne.physical.pushup.PhysicalTrainingNetwork;
 import com.pr1tcha.riftborne.codex.data.entry.CodexEntryReloadListener;
 import com.pr1tcha.riftborne.codex.scan.CodexScanTargetReloadListener;
 import com.pr1tcha.riftborne.codex.client.CodexLaptopRenderer;
@@ -58,7 +57,6 @@ public class Riftborne {
         modEventBus.addListener(CodexNetwork::register);
         modEventBus.addListener(RiftwalkerNetwork::register);
         modEventBus.addListener(RnaCombatNetwork::register);
-        modEventBus.addListener(PhysicalTrainingNetwork::register);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);

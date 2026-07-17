@@ -1,7 +1,6 @@
 package com.pr1tcha.riftborne.rna.combat;
 
 import com.pr1tcha.riftborne.player.RiftbornePlayerData;
-import com.pr1tcha.riftborne.physical.PhysicalTrainingManager;
 import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.config.Config;
 import com.pr1tcha.riftborne.rna.RnaApi;
@@ -617,9 +616,13 @@ public final class RnaAbilityManager {
         return Math.max(1.0F, structuralCapacity * physicalCondition * loadCondition * wearCondition);
     }
 
+    /** Neutral overload capacity; the physical-condition source was removed pending a training rework. */
+    public static float overloadCapacity(ServerPlayer player) {
+        return 100.0F;
+    }
+
     private static void applyPhysicalLoadDelta(ServerPlayer player, RnaAbilityData data, float rawDelta) {
-        float capacityMultiplier = Math.max(0.1F, PhysicalTrainingManager.overloadCapacityMultiplier(player));
-        data.addLoad(rawDelta / capacityMultiplier);
+        data.addLoad(rawDelta);
     }
 
     private static void recordMeaningfulTechniqueUse(

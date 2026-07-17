@@ -16,7 +16,6 @@ import com.pr1tcha.riftborne.rna.combat.training.RnaTrainingPhase;
 import com.pr1tcha.riftborne.rna.combat.training.TrainingPulseState;
 import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
 import com.pr1tcha.riftborne.rna.combat.training.client.RnaTrainingAnchorClient;
-import com.pr1tcha.riftborne.physical.PhysicalTrainingManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -59,7 +58,7 @@ public final class RnaCombatNetwork {
         int cooldown = abilityId == null ? 0 : (int) Math.min(Integer.MAX_VALUE, RnaAbilityManager.remainingCooldown(player, abilityId));
         PacketDistributor.sendToPlayer(player, new CombatSyncPayload(
                 data.currentLoad(),
-                PhysicalTrainingManager.overloadCapacity(player),
+                RnaAbilityManager.overloadCapacity(player),
                 data.activeStrength(RnaAbilityRegistry.BARRIER_ID.toString()),
                 band.ordinal(),
                 cooldown,

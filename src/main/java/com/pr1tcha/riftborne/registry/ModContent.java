@@ -17,7 +17,6 @@ import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.riftwalker.item.RiftwalkerArmorItem;
 import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlock;
 import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
-import com.pr1tcha.riftborne.physical.pushup.block.PushupMatBlock;
 import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -88,10 +87,6 @@ public class ModContent {
             () -> new RnaTrainingAnchorBlock(BlockBehaviour.Properties.of()
                     .strength(3.6F, 8.0F)
                     .lightLevel(state -> 5)
-                    .noOcclusion()));
-    public static final Supplier<Block> PUSHUP_MAT = BLOCKS.register("pushup_mat",
-            () -> new PushupMatBlock(BlockBehaviour.Properties.of()
-                    .strength(0.8F, 1.2F)
                     .noOcclusion()));
     public static final Supplier<Block> RIFT_PORTAL = BLOCKS.register("rift_portal",
             () -> new RiftPortalBlock(BlockBehaviour.Properties.of()
@@ -191,9 +186,6 @@ public class ModContent {
             () -> new BlockItem(CODEX_DIAGNOSTIC_CAPSULE.get(), new Item.Properties()));
     public static final Supplier<Item> RNA_TRAINING_ANCHOR_ITEM = ITEMS.register("rna_training_anchor",
             () -> new BlockItem(RNA_TRAINING_ANCHOR.get(), new Item.Properties().stacksTo(16)));
-    public static final Supplier<Item> TRAINING_WEIGHT = ITEMS.register("training_weight",
-            () -> new Item(new Item.Properties().stacksTo(1)));
-    public static final Supplier<Item> PUSHUP_MAT_ITEM = blockItem("pushup_mat", PUSHUP_MAT);
     public static final Supplier<Item> POCKET_CODEX = ITEMS.register("pocket_codex",
             () -> new PocketCodexItem(new Item.Properties().stacksTo(1)));
     public static final Supplier<Item> CODEX_FLASH_DRIVE = ITEMS.register("codex_flash_drive",
@@ -272,8 +264,6 @@ public class ModContent {
                                 output.accept(CODEX_DOCK_ITEM.get());
                                 output.accept(CODEX_DIAGNOSTIC_CAPSULE_ITEM.get());
                                 output.accept(RNA_TRAINING_ANCHOR_ITEM.get());
-                                output.accept(TRAINING_WEIGHT.get());
-                                output.accept(PUSHUP_MAT_ITEM.get());
                                 output.accept(POCKET_CODEX.get());
                                 output.accept(CODEX_FLASH_DRIVE.get());
                             })

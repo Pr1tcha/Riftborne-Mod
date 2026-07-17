@@ -13,9 +13,6 @@ import com.pr1tcha.riftborne.codex.data.entry.CodexEntryRegistry;
 import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.codex.PocketCodexScanner;
 import com.pr1tcha.riftborne.player.RiftbornePlayerData;
-import com.pr1tcha.riftborne.physical.PhysicalStat;
-import com.pr1tcha.riftborne.physical.PhysicalTrainingData;
-import com.pr1tcha.riftborne.physical.PhysicalTrainingManager;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.rna.RnaApi;
 import com.pr1tcha.riftborne.rna.combat.RnaAbilityManager;
@@ -73,7 +70,6 @@ public final class CodexNetwork {
         CodexData codex = RiftbornePlayerData.getCodex(player);
         RnaData rna = RnaApi.get(player);
         RnaAbilityData combat = RnaAbilityManager.getData(player);
-        PhysicalTrainingData physical = PhysicalTrainingManager.getData(player);
         boolean firstFlashInserted = false;
         boolean secondFlashInserted = false;
         String desktopLayout = "";
@@ -119,25 +115,12 @@ public final class CodexNetwork {
                 join(RnaTechniqueProgression.encodeTechniqueProgress(combat)),
                 join(RnaTechniqueProgression.encodeTechniqueReadiness(rna, combat)),
                 join(RnaTechniqueProgression.encodeAspectResonance(combat)),
-                physical.overallForm(),
-                PhysicalTrainingManager.overloadCapacity(physical),
-                encodePhysicalProfile(physical),
+                0.0F,
+                0.0F,
+                "",
                 desktopLayout,
                 CodexInfobaseSnapshot.encode(player)
         );
-    }
-
-    private static String encodePhysicalProfile(PhysicalTrainingData data) {
-        List<String> values = new ArrayList<>();
-        for (PhysicalStat stat : PhysicalStat.values()) {
-            values.add(String.join(",",
-                    stat.id(),
-                    Float.toString(data.form(stat)),
-                    Float.toString(data.dailyProgress(stat)),
-                    Integer.toString(data.missedDays(stat))
-            ));
-        }
-        return join(values);
     }
 
     private static CodexDiagnosticCapsuleBlockEntity findDiagnosticCapsule(ServerPlayer player, BlockPos laptopPos) {

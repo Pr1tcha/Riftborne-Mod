@@ -1325,7 +1325,6 @@ public final class CodexLaptopScreen extends Screen {
         desktopItems.add(appForId("decryptor", iconX + ICON_STEP_X * 2, iconY));
         desktopItems.add(appForId("explorer", iconX + ICON_STEP_X * 3, iconY));
         desktopItems.add(appForId("diagnostics", iconX + ICON_STEP_X * 4, iconY));
-        desktopItems.add(appForId("physical", iconX + ICON_STEP_X * 5, iconY));
     }
 
     private boolean loadDesktopLayout(String layout, int left, int top) {

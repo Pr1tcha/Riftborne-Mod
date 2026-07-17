@@ -4,11 +4,7 @@
   "package": "com.pr1tcha.riftborne.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "client.CameraMixin",
-    "client.HumanoidModelMixin",
-    "client.ItemInHandRendererMixin",
-    "client.LivingEntityRendererMixin",
-    "client.PlayerModelPushupBendMixin"
+    "client.ItemInHandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -4,7 +4,6 @@ import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.codex.storage.CodexPlayerProgress;
 import com.pr1tcha.riftborne.rna.data.RnaData;
 import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityData;
-import com.pr1tcha.riftborne.physical.PhysicalTrainingData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
@@ -14,7 +13,6 @@ public final class RiftbornePlayerData {
     private static final String RNA_COMBAT_TAG = "Combat";
     private static final String CODEX_TAG = "Codex";
     private static final String CODEX_BACKEND_TAG = "CodexBackend";
-    private static final String PHYSICAL_TRAINING_TAG = "PhysicalTraining";
 
     private RiftbornePlayerData() {
     }
@@ -72,19 +70,6 @@ public final class RiftbornePlayerData {
     public static void saveCodexBackend(Player player, CodexPlayerProgress data) {
         CompoundTag root = player.getPersistentData().getCompound(ROOT_TAG);
         root.put(CODEX_BACKEND_TAG, data.save());
-        player.getPersistentData().put(ROOT_TAG, root);
-    }
-
-    public static PhysicalTrainingData getPhysicalTraining(Player player) {
-        CompoundTag root = player.getPersistentData().getCompound(ROOT_TAG);
-        return root.contains(PHYSICAL_TRAINING_TAG)
-                ? PhysicalTrainingData.load(root.getCompound(PHYSICAL_TRAINING_TAG))
-                : new PhysicalTrainingData();
-    }
-
-    public static void savePhysicalTraining(Player player, PhysicalTrainingData data) {
-        CompoundTag root = player.getPersistentData().getCompound(ROOT_TAG);
-        root.put(PHYSICAL_TRAINING_TAG, data.save());
         player.getPersistentData().put(ROOT_TAG, root);
     }
 
