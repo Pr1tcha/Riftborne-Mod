@@ -320,7 +320,7 @@
   "screen.riftborne.codex.physical": "Физическое состояние",
   "screen.riftborne.codex.physical_title": "КОДЕКС // ФИЗИЧЕСКОЕ СОСТОЯНИЕ",
   "screen.riftborne.codex.physical_overall": "Общая физическая форма",
-  "screen.riftborne.codex.physical_overload": "Предел перегрузки РНА",
+  "screen.riftborne.codex.physical_overload": "НАГРУЗКА",
   "screen.riftborne.codex.physical_form": "Форма: %s / 100",
   "screen.riftborne.codex.physical_daily": "Суточная норма: %s%%",
   "screen.riftborne.codex.physical_complete": "Норма выполнена",
@@ -541,5 +541,10 @@
   "rna.riftborne.track.bandwidth": "Пропускная способность",
   "rna.riftborne.track.node_density": "Плотность узлов",
   "rna.riftborne.track.overload_resistance": "Устойчивость к перегрузке",
-  "rna.riftborne.track.connectivity": "Связность"
+  "rna.riftborne.track.connectivity": "Связность",
+  "screen.riftborne.codex.physical_activity": "АКТИВНОСТЬ ЦИКЛА %s",
+  "screen.riftborne.codex.physical_step_full": "Полная норма — максимальный рост",
+  "screen.riftborne.codex.physical_step_high": "Высокая ступень",
+  "screen.riftborne.codex.physical_step_low": "Низкая ступень",
+  "screen.riftborne.codex.physical_step_none": "Ниже порога роста"
 }

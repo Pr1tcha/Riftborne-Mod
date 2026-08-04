@@ -320,7 +320,7 @@
   "screen.riftborne.codex.physical": "Physical Status",
   "screen.riftborne.codex.physical_title": "CODEX // PHYSICAL STATUS",
   "screen.riftborne.codex.physical_overall": "Overall physical condition",
-  "screen.riftborne.codex.physical_overload": "RNA overload capacity",
+  "screen.riftborne.codex.physical_overload": "EXERTION",
   "screen.riftborne.codex.physical_form": "Condition: %s / 100",
   "screen.riftborne.codex.physical_daily": "Daily norm: %s%%",
   "screen.riftborne.codex.physical_complete": "Daily norm complete",
@@ -543,5 +543,10 @@
   "rna.riftborne.track.bandwidth": "Bandwidth",
   "rna.riftborne.track.node_density": "Node density",
   "rna.riftborne.track.overload_resistance": "Overload resistance",
-  "rna.riftborne.track.connectivity": "Connectivity"
+  "rna.riftborne.track.connectivity": "Connectivity",
+  "screen.riftborne.codex.physical_activity": "CYCLE ACTIVITY %s",
+  "screen.riftborne.codex.physical_step_full": "Full norm — maximum growth",
+  "screen.riftborne.codex.physical_step_high": "High step",
+  "screen.riftborne.codex.physical_step_low": "Low step",
+  "screen.riftborne.codex.physical_step_none": "Below the growth threshold"
 }

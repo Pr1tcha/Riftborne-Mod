@@ -492,7 +492,7 @@ public final class CodexLaptopScreen extends Screen {
                 snapshot.physicalOverallForm(), 100.0F, COLOR_CYAN);
         drawPhysicalSummary(graphics, windowX + 24 + summaryWidth, summaryY, summaryWidth,
                 Component.translatable("screen.riftborne.codex.physical_overload"),
-                snapshot.physicalOverloadCapacity(), 125.0F, COLOR_ACCENT);
+                snapshot.physicalOverloadCapacity(), 100.0F, COLOR_ACCENT);
 
         List<PhysicalSnapshot> stats = physicalSnapshots();
         int cardWidth = (windowWidth - 36) / 2;
@@ -538,28 +538,35 @@ public final class CodexLaptopScreen extends Screen {
         graphics.drawString(font, Component.translatable("physical.riftborne." + stat.id()),
                 x + 9, y + 7, COLOR_TEXT, false);
 
-        Component formLabel = Component.translatable("screen.riftborne.codex.physical_form", oneDecimal(stat.form()));
+        Component formLabel = Component.translatable("screen.riftborne.codex.physical_form", oneDecimal(stat.value()));
         graphics.drawString(font, formLabel, x + 9, y + 22, COLOR_MUTED, false);
-        drawPhysicalBar(graphics, x + 9, y + 34, width - 18, stat.form(), COLOR_CYAN);
+        drawPhysicalBar(graphics, x + 9, y + 34, width - 18, stat.value(), COLOR_CYAN);
 
-        int dailyColor = stat.daily() >= 100.0F
+        int activityColor = stat.activity() >= 100.0F
                 ? COLOR_GREEN
-                : stat.daily() >= 60.0F ? COLOR_CYAN : COLOR_AMBER;
-        Component dailyLabel = Component.translatable(
-                "screen.riftborne.codex.physical_daily", Math.round(stat.daily()));
-        graphics.drawString(font, dailyLabel, x + 9, y + 46, COLOR_MUTED, false);
-        drawPhysicalBar(graphics, x + 9, y + 58, width - 18, stat.daily(), dailyColor);
+                : stat.activity() >= 70.0F ? COLOR_CYAN : COLOR_AMBER;
+        Component activityLabel = Component.translatable(
+                "screen.riftborne.codex.physical_activity", Math.round(stat.activity()));
+        graphics.drawString(font, activityLabel, x + 9, y + 46, COLOR_MUTED, false);
+        drawPhysicalBar(graphics, x + 9, y + 58, width - 18, stat.activity(), activityColor);
 
+        // The status names which growth step this cycle's activity has actually reached.
         Component status;
-        if (stat.daily() >= 100.0F) {
-            status = Component.translatable("screen.riftborne.codex.physical_complete");
-        } else if (stat.daily() >= 60.0F) {
-            status = Component.translatable("screen.riftborne.codex.physical_maintained");
+        int statusColor;
+        if (stat.activity() >= 100.0F) {
+            status = Component.translatable("screen.riftborne.codex.physical_step_full");
+            statusColor = COLOR_GREEN;
+        } else if (stat.activity() >= 70.0F) {
+            status = Component.translatable("screen.riftborne.codex.physical_step_high");
+            statusColor = COLOR_CYAN;
+        } else if (stat.activity() >= 40.0F) {
+            status = Component.translatable("screen.riftborne.codex.physical_step_low");
+            statusColor = COLOR_AMBER;
         } else {
-            status = Component.translatable("screen.riftborne.codex.physical_missed", stat.missedDays());
+            status = Component.translatable("screen.riftborne.codex.physical_step_none");
+            statusColor = COLOR_FAINT;
         }
-        drawTrimmed(graphics, status, x + 9, y + 70, width - 18,
-                stat.missedDays() > 2 ? COLOR_DANGER : COLOR_FAINT);
+        drawTrimmed(graphics, status, x + 9, y + 70, width - 18, statusColor);
     }
 
     private void drawPhysicalBar(GuiGraphics graphics, int x, int y, int width, float value, int color) {
@@ -572,15 +579,14 @@ public final class CodexLaptopScreen extends Screen {
         List<PhysicalSnapshot> result = new ArrayList<>();
         for (String encoded : CodexNetwork.split(snapshot.physicalProfile())) {
             String[] fields = encoded.split(",", -1);
-            if (fields.length < 4) {
+            if (fields.length < 3) {
                 continue;
             }
             try {
                 result.add(new PhysicalSnapshot(
                         fields[0],
                         Float.parseFloat(fields[1]),
-                        Float.parseFloat(fields[2]),
-                        Integer.parseInt(fields[3])
+                        Float.parseFloat(fields[2])
                 ));
             } catch (NumberFormatException ignored) {
                 // Ignore a malformed diagnostic row without breaking the entire Rift OS screen.
@@ -1308,6 +1314,7 @@ public final class CodexLaptopScreen extends Screen {
         desktopItems.add(appForId("decryptor", iconX + ICON_STEP_X * 2, iconY));
         desktopItems.add(appForId("explorer", iconX + ICON_STEP_X * 3, iconY));
         desktopItems.add(appForId("diagnostics", iconX + ICON_STEP_X * 4, iconY));
+        desktopItems.add(appForId("physical", iconX + ICON_STEP_X * 5, iconY));
     }
 
     private boolean loadDesktopLayout(String layout, int left, int top) {
@@ -1717,7 +1724,7 @@ public final class CodexLaptopScreen extends Screen {
         FOLDER
     }
 
-    private record PhysicalSnapshot(String id, float form, float daily, int missedDays) {
+    private record PhysicalSnapshot(String id, float value, float activity) {
     }
 
     private static final class DesktopItem {

@@ -1,18 +1,16 @@
 package com.pr1tcha.riftborne.rna.power;
 
+import com.pr1tcha.riftborne.rna.power.data.PhysicalProfile;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 
 /**
  * The four organism gates of PS V2.5 (spec §5.5) that cap how far RNA parameters can be trained.
- * All four are placeholder defaults for now. The physical-condition source that fed {@code phys}
- * was removed pending a training rework, so {@code phys} is a neutral default until the reworked
- * training system supplies it; {@code mental/psych/genetic} become stored innate values when growth
- * caps are enforced (progression phase).
+ * {@code phys} is live — it is the mean of the four trained body parameters. The other three are
+ * still placeholders and become stored innate values once per-player generation lands.
  */
 public final class PowerGates {
-    // Placeholder defaults until the reworked training + per-player generation land.
-    private static final float DEFAULT_PHYS = 60.0F;
+    // Placeholders until per-player generation lands; phys is live again from the body itself.
     private static final int DEFAULT_MENTAL = 50;
     private static final int DEFAULT_PSYCH = 50;
     private static final float DEFAULT_GENETIC = 1.0F;
@@ -20,9 +18,10 @@ public final class PowerGates {
     private PowerGates() {
     }
 
-    /** Physical condition gate (0-100). Neutral placeholder until reworked training supplies it. */
+    /** Physical condition gate (0-100): the mean of the four body parameters. */
     public static float phys(ServerPlayer player) {
-        return DEFAULT_PHYS;
+        PhysicalProfile profile = AdaptationService.physical(player);
+        return (float) profile.overall();
     }
 
     public static int mental(ServerPlayer player) {

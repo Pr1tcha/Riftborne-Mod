@@ -14,6 +14,7 @@ import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.codex.PocketCodexScanner;
 import com.pr1tcha.riftborne.player.RiftbornePlayerData;
 import com.pr1tcha.riftborne.registry.ModContent;
+import com.pr1tcha.riftborne.rna.power.AdaptationService;
 import com.pr1tcha.riftborne.rna.power.PowerApi;
 import com.pr1tcha.riftborne.rna.power.PowerRules;
 import com.pr1tcha.riftborne.rna.power.Primitive;
@@ -70,6 +71,8 @@ public final class CodexNetwork {
         CodexData codex = RiftbornePlayerData.getCodex(player);
         RNAProfile rna = PowerApi.get(player);
         PowerProgress progress = PowerApi.getProgress(player);
+        com.pr1tcha.riftborne.rna.power.data.PhysicalProfile physical = AdaptationService.physical(player);
+        com.pr1tcha.riftborne.rna.power.data.AdaptationCycle cycle = AdaptationService.cycle(player);
         boolean firstFlashInserted = false;
         boolean secondFlashInserted = false;
         String desktopLayout = "";
@@ -115,12 +118,24 @@ public final class CodexNetwork {
                 join(encodePrimitiveLevels(rna)),
                 join(encodeAxisPractice(progress)),
                 progress.facet().map(f -> f.signature()).orElse(""),
-                0.0F,
-                0.0F,
-                "",
+                (float) physical.overall(),
+                (float) physical.physicalLoad(),
+                join(encodePhysical(physical, cycle)),
                 desktopLayout,
                 CodexInfobaseSnapshot.encode(player)
         );
+    }
+
+    /** Physical readout rows: {@code stat,value,cycleActivity}. */
+    private static List<String> encodePhysical(
+            com.pr1tcha.riftborne.rna.power.data.PhysicalProfile profile,
+            com.pr1tcha.riftborne.rna.power.data.AdaptationCycle cycle) {
+        List<String> out = new ArrayList<>();
+        for (com.pr1tcha.riftborne.rna.power.data.PhysicalStat stat
+                : com.pr1tcha.riftborne.rna.power.data.PhysicalStat.values()) {
+            out.add(stat.id() + "," + profile.get(stat) + "," + cycle.activity(stat));
+        }
+        return out;
     }
 
     /** Primitive execution levels for the Codex readout: {@code id,level}, strongest first. */
