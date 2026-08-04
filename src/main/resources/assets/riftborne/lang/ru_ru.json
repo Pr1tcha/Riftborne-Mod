@@ -519,5 +519,21 @@
   "hud.riftborne.power.result.no_anchor": "Нет якоря: времени не на что опереться",
   "hud.riftborne.power.result.no_phase": "Нет фазы: сначала войдите в поток",
   "message.riftborne.power.tempo_active": "%s: поток идёт",
-  "message.riftborne.power.tempo_inert": "%s: поток инертен"
+  "message.riftborne.power.tempo_inert": "%s: поток инертен",
+  "screen.riftborne.codex.primitive_profile": "ПРИМИТИВЫ",
+  "screen.riftborne.codex.primitive_profile.empty": "Практика не зафиксирована",
+  "screen.riftborne.codex.axis_practice": "ПРАКТИКА Δ-СЕМЕЙСТВ",
+  "screen.riftborne.codex.axis_practice.empty": "Следов резонанса нет",
+  "screen.riftborne.codex.facet": "ГРАНЬ",
+  "screen.riftborne.codex.facet.empty": "Не кристаллизована",
+  "screen.riftborne.codex.facet.value": "Кристаллизована: %s",
+  "screen.riftborne.rna_training_anchor.training": "Тренировка: техника",
+  "facet.riftborne.distribution": "Распределение",
+  "facet.riftborne.environment": "Среда",
+  "facet.riftborne.structure": "Структура",
+  "facet.riftborne.geometry": "Геометрия",
+  "facet.riftborne.tempo": "Темп",
+  "facet.riftborne.sequence": "Последовательность",
+  "facet.riftborne.fixation": "Фиксация",
+  "facet.riftborne.undefined": "Не определена"
 }

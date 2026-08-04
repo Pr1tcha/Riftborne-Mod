@@ -32,6 +32,30 @@ public final class PowerNetwork {
         PayloadRegistrar registrar = event.registrar(VERSION);
         registrar.playToServer(CastRequestPayload.TYPE, CastRequestPayload.STREAM_CODEC, PowerNetwork::handleCastRequest);
         registrar.playToClient(CastFeedbackPayload.TYPE, CastFeedbackPayload.STREAM_CODEC, PowerNetwork::handleCastFeedback);
+        registrar.playToClient(AnchorMenuPayload.TYPE, AnchorMenuPayload.STREAM_CODEC, PowerNetwork::handleAnchorMenu);
+        registrar.playToServer(AnchorMenuSelectPayload.TYPE, AnchorMenuSelectPayload.STREAM_CODEC,
+                PowerNetwork::handleAnchorMenuSelect);
+    }
+
+    public static void sendAnchorMenu(ServerPlayer player, net.minecraft.core.BlockPos anchorPos, boolean hasActiveRna) {
+        PacketDistributor.sendToPlayer(player, new AnchorMenuPayload(anchorPos.asLong(), hasActiveRna));
+    }
+
+    private static void handleAnchorMenu(AnchorMenuPayload payload, IPayloadContext context) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            com.pr1tcha.riftborne.rna.power.anchor.client.RnaTrainingAnchorClient.openMenu(payload);
+        }
+    }
+
+    private static void handleAnchorMenuSelect(AnchorMenuSelectPayload payload, IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) {
+            return;
+        }
+        // The node is a shell until the training rework lands; both branches only report status.
+        String key = AnchorMenuSelectPayload.OPTION_FORMATION.equals(payload.option())
+                ? "message.riftborne.training.formation_soon"
+                : "message.riftborne.training.training_soon";
+        player.displayClientMessage(net.minecraft.network.chat.Component.translatable(key), true);
     }
 
     private static void handleCastRequest(CastRequestPayload payload, IPayloadContext context) {
@@ -70,6 +94,46 @@ public final class PowerNetwork {
 
         @Override
         public Type<CastRequestPayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record AnchorMenuPayload(long anchorPos, boolean hasActiveRna) implements CustomPacketPayload {
+        public static final Type<AnchorMenuPayload> TYPE = new Type<>(
+                ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_training_anchor_menu")
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, AnchorMenuPayload> STREAM_CODEC = StreamCodec.of(
+                (buffer, payload) -> {
+                    buffer.writeLong(payload.anchorPos());
+                    buffer.writeBoolean(payload.hasActiveRna());
+                },
+                buffer -> new AnchorMenuPayload(buffer.readLong(), buffer.readBoolean())
+        );
+
+        @Override
+        public Type<AnchorMenuPayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record AnchorMenuSelectPayload(long anchorPos, String option) implements CustomPacketPayload {
+        public static final String OPTION_FORMATION = "formation";
+        public static final String OPTION_TRAINING = "training";
+
+        public static final Type<AnchorMenuSelectPayload> TYPE = new Type<>(
+                ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rna_training_anchor_menu_select")
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, AnchorMenuSelectPayload> STREAM_CODEC =
+                StreamCodec.of(
+                        (buffer, payload) -> {
+                            buffer.writeLong(payload.anchorPos());
+                            buffer.writeUtf(payload.option());
+                        },
+                        buffer -> new AnchorMenuSelectPayload(buffer.readLong(), buffer.readUtf())
+                );
+
+        @Override
+        public Type<AnchorMenuSelectPayload> type() {
             return TYPE;
         }
     }

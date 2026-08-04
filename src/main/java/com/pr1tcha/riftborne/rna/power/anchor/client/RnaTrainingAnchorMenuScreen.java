@@ -1,6 +1,6 @@
-package com.pr1tcha.riftborne.rna.combat.training.client;
+package com.pr1tcha.riftborne.rna.power.anchor.client;
 
-import com.pr1tcha.riftborne.rna.combat.RnaCombatNetwork;
+import com.pr1tcha.riftborne.rna.power.network.PowerNetwork;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,13 +28,13 @@ public final class RnaTrainingAnchorMenuScreen extends Screen {
 
         if (hasActiveRna) {
             addRenderableWidget(Button.builder(
-                    Component.translatable("screen.riftborne.rna_training_anchor.barrier_training"),
-                    button -> select(RnaCombatNetwork.AnchorMenuSelectPayload.OPTION_BARRIER_TRAINING)
+                    Component.translatable("screen.riftborne.rna_training_anchor.training"),
+                    button -> select(PowerNetwork.AnchorMenuSelectPayload.OPTION_TRAINING)
             ).bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT).build());
         } else {
             addRenderableWidget(Button.builder(
                     Component.translatable("screen.riftborne.rna_training_anchor.formation"),
-                    button -> select(RnaCombatNetwork.AnchorMenuSelectPayload.OPTION_FORMATION)
+                    button -> select(PowerNetwork.AnchorMenuSelectPayload.OPTION_FORMATION)
             ).bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT).build());
         }
 
@@ -46,7 +46,7 @@ public final class RnaTrainingAnchorMenuScreen extends Screen {
     }
 
     private void select(String option) {
-        PacketDistributor.sendToServer(new RnaCombatNetwork.AnchorMenuSelectPayload(anchorPos, option));
+        PacketDistributor.sendToServer(new PowerNetwork.AnchorMenuSelectPayload(anchorPos, option));
         onClose();
     }
 

@@ -1,6 +1,6 @@
-package com.pr1tcha.riftborne.rna.combat.training.client;
+package com.pr1tcha.riftborne.rna.power.anchor.client;
 
-import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
+import com.pr1tcha.riftborne.rna.power.anchor.RnaTrainingAnchorBlockEntity;
 import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;

@@ -11,13 +11,9 @@ import com.pr1tcha.riftborne.rift.client.RiftSkyEffects;
 import com.pr1tcha.riftborne.rift.client.RiftSplinterRenderer;
 import com.pr1tcha.riftborne.rift.client.VeilRiftDistortion;
 import com.pr1tcha.riftborne.rift.RiftWorldStage;
-import com.pr1tcha.riftborne.aspects.telekinesis.client.TelekineticBlockRenderer;
-import com.pr1tcha.riftborne.aspects.telekinesis.TelekinesisNetwork;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
 import com.pr1tcha.riftborne.riftwalker.network.RiftwalkerNetwork;
-import com.pr1tcha.riftborne.rna.combat.RnaCombatNetwork;
-import com.pr1tcha.riftborne.rna.combat.client.VeilBarrierField;
-import com.pr1tcha.riftborne.rna.combat.training.client.RnaTrainingAnchorRenderer;
+import com.pr1tcha.riftborne.rna.power.anchor.client.RnaTrainingAnchorRenderer;
 import com.pr1tcha.riftborne.codex.data.entry.CodexEntryReloadListener;
 import com.pr1tcha.riftborne.codex.scan.CodexScanTargetReloadListener;
 import com.pr1tcha.riftborne.codex.client.CodexLaptopRenderer;
@@ -54,10 +50,8 @@ public class Riftborne {
         RiftWorldStage.init();
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(ModContent::registerEntityAttributes);
-        modEventBus.addListener(TelekinesisNetwork::register);
         modEventBus.addListener(CodexNetwork::register);
         modEventBus.addListener(RiftwalkerNetwork::register);
-        modEventBus.addListener(RnaCombatNetwork::register);
         modEventBus.addListener(FlightNetwork::register);
         modEventBus.addListener(com.pr1tcha.riftborne.rna.power.network.PowerNetwork::register);
 
@@ -90,7 +84,6 @@ public class Riftborne {
             LOGGER.info("Riftborne client setup for {}", Minecraft.getInstance().getUser().getName());
             event.enqueueWork(() -> {
                 VeilRiftDistortion.registerIfPresent();
-                VeilBarrierField.registerIfPresent();
                 RnaFluidClient.registerRenderLayers();
             });
         }
@@ -115,7 +108,6 @@ public class Riftborne {
                     context -> new RnaTrainingAnchorRenderer()
             );
             event.registerEntityRenderer(ModContent.RIFT_SPLINTER.get(), RiftSplinterRenderer::new);
-            event.registerEntityRenderer(ModContent.TELEKINETIC_BLOCK.get(), TelekineticBlockRenderer::new);
         }
 
         @SubscribeEvent

@@ -1,7 +1,7 @@
-package com.pr1tcha.riftborne.rna.combat.training.client;
+package com.pr1tcha.riftborne.rna.power.anchor.client;
 
 import com.pr1tcha.riftborne.Riftborne;
-import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
+import com.pr1tcha.riftborne.rna.power.anchor.RnaTrainingAnchorBlockEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

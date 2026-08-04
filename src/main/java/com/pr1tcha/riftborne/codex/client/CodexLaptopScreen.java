@@ -4,11 +4,7 @@ import com.pr1tcha.riftborne.codex.CodexEntries;
 import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.codex.data.CodexEntry;
 import com.pr1tcha.riftborne.codex.network.CodexNetwork;
-import com.pr1tcha.riftborne.rna.combat.progression.RnaAspectResonance;
-import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueDefinition;
-import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueRegistry;
-import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueStage;
-import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueEvidence;
+import com.pr1tcha.riftborne.rna.power.Primitive;
 import java.util.ArrayList;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -598,96 +594,83 @@ public final class CodexLaptopScreen extends Screen {
     }
 
     private void renderProgressionSummary(GuiGraphics graphics, int x, int y, int width) {
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.technique_profile"),
+        graphics.drawString(font, Component.translatable("screen.riftborne.codex.primitive_profile"),
                 x, y, COLOR_MUTED, false);
-        List<String> techniques = CodexNetwork.split(snapshot.techniqueProgress());
-        if (techniques.isEmpty()) {
-            graphics.drawString(font, Component.translatable("screen.riftborne.codex.technique_profile.empty"),
+        List<String> primitives = CodexNetwork.split(snapshot.techniqueProgress());
+        if (primitives.isEmpty()) {
+            graphics.drawString(font, Component.translatable("screen.riftborne.codex.primitive_profile.empty"),
                     x, y + 14, COLOR_MUTED, false);
         } else {
-            String[] fields = techniques.getFirst().split(",", -1);
-            if (fields.length >= 5) {
-                ResourceLocation id = ResourceLocation.tryParse(fields[0]);
-                RnaTechniqueDefinition definition = id == null ? null : RnaTechniqueRegistry.get(id);
-                RnaTechniqueStage stage = RnaTechniqueStage.fromId(fields[1]);
-                String uses = fields[2] + "/" + fields[3];
-                Component title = definition == null
-                        ? Component.literal(fields[0])
-                        : Component.translatable(definition.titleKey());
-                Component line = Component.empty()
-                        .append(title)
-                        .append(": ")
-                        .append(Component.translatable(stage.translationKey()))
-                        .append("  " + uses);
-                graphics.drawString(font, font.plainSubstrByWidth(line.getString(), width),
-                        x, y + 14, COLOR_ACCENT, false);
-            }
+            graphics.drawString(font, font.plainSubstrByWidth(primitiveLine(primitives), width),
+                    x, y + 14, COLOR_ACCENT, false);
         }
 
-        String[] readiness = findTechniqueReadiness(techniques.isEmpty() ? "" : techniques.getFirst());
-        if (readiness.length >= 6) {
-            Component conditions = Component.translatable(
-                    "screen.riftborne.codex.technique_conditions",
-                    readiness[1],
-                    readiness[2]
-            );
-            if (!readiness[3].isBlank()) {
-                conditions = conditions.copy()
-                        .append(" · ")
-                        .append(conditionName(readiness[3]))
-                        .append(" " + readiness[4] + "/" + readiness[5]);
-            }
-            graphics.drawString(font, font.plainSubstrByWidth(conditions.getString(), width),
-                    x, y + 26, COLOR_MUTED, false);
-        }
+        graphics.drawString(font, Component.translatable("screen.riftborne.codex.axis_practice"),
+                x, y + 26, COLOR_MUTED, false);
+        List<String> practice = CodexNetwork.split(snapshot.techniqueReadiness());
+        Component practiceLine = practice.isEmpty()
+                ? Component.translatable("screen.riftborne.codex.axis_practice.empty")
+                : Component.literal(practiceLine(practice));
+        graphics.drawString(font, font.plainSubstrByWidth(practiceLine.getString(), width),
+                x, y + 38, practice.isEmpty() ? COLOR_MUTED : COLOR_CYAN, false);
 
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.resonance"),
-                x, y + 38, COLOR_MUTED, false);
-        List<String> resonance = CodexNetwork.split(snapshot.aspectResonance());
-        if (resonance.isEmpty()) {
-            graphics.drawString(font, Component.translatable("screen.riftborne.codex.resonance.empty"),
-                    x, y + 50, COLOR_MUTED, false);
-            return;
-        }
-        String[] fields = resonance.getFirst().split(",", -1);
-        RnaAspectResonance direction = fields.length == 0 ? null : RnaAspectResonance.fromId(fields[0]);
-        String amount = fields.length > 1 ? fields[1] : "0";
-        Component line = direction == null
-                ? Component.literal(fields[0] + " " + amount)
-                : Component.translatable("screen.riftborne.codex.resonance.value",
-                        Component.translatable(direction.translationKey()), amount);
-        graphics.drawString(font, font.plainSubstrByWidth(line.getString(), width),
-                x, y + 50, COLOR_ACCENT, false);
+        graphics.drawString(font, Component.translatable("screen.riftborne.codex.facet"),
+                x, y + 50, COLOR_MUTED, false);
+        String facet = snapshot.aspectResonance();
+        Component facetLine = facet == null || facet.isBlank()
+                ? Component.translatable("screen.riftborne.codex.facet.empty")
+                : Component.translatable("screen.riftborne.codex.facet.value",
+                        Component.translatable("facet.riftborne." + facet));
+        graphics.drawString(font, font.plainSubstrByWidth(facetLine.getString(), width),
+                x, y + 62, facet == null || facet.isBlank() ? COLOR_MUTED : COLOR_ACCENT, false);
     }
 
-    private String[] findTechniqueReadiness(String techniqueProgress) {
-        String techniqueId = techniqueProgress.isBlank()
-                ? "riftborne:barrier"
-                : techniqueProgress.split(",", -1)[0];
-        for (String encoded : CodexNetwork.split(snapshot.techniqueReadiness())) {
-            String[] fields = encoded.split(",", -1);
-            if (fields.length >= 6 && fields[0].equals(techniqueId)) {
-                return fields;
+    /** Top primitives by execution level, e.g. "Shift 3 · Reading 2". */
+    private String primitiveLine(List<String> encoded) {
+        StringBuilder builder = new StringBuilder();
+        int shown = 0;
+        for (String entry : encoded) {
+            String[] fields = entry.split(",", -1);
+            if (fields.length < 2) {
+                continue;
+            }
+            Primitive primitive = Primitive.fromId(fields[0]);
+            if (primitive == null) {
+                continue;
+            }
+            if (shown > 0) {
+                builder.append(" · ");
+            }
+            builder.append(Component.translatable(primitive.translationKey()).getString())
+                    .append(' ')
+                    .append(fields[1]);
+            if (++shown >= 3) {
+                break;
             }
         }
-        return new String[0];
+        return builder.toString();
     }
 
-    private Component conditionName(String conditionId) {
-        if (conditionId.startsWith("stat.")) {
-            return Component.translatable("rna.riftborne.stat." + conditionId.substring("stat.".length()));
+    /** Most practised Δ-families, e.g. "dG 24 · dS 11". */
+    private String practiceLine(List<String> encoded) {
+        StringBuilder builder = new StringBuilder();
+        int shown = 0;
+        for (String entry : encoded) {
+            String[] fields = entry.split(",", -1);
+            if (fields.length < 2) {
+                continue;
+            }
+            if (shown > 0) {
+                builder.append(" · ");
+            }
+            builder.append(fields[0].toUpperCase(Locale.ROOT).replace("DST", "dSt").replace("D", "d"))
+                    .append(' ')
+                    .append(fields[1]);
+            if (++shown >= 4) {
+                break;
+            }
         }
-        if (conditionId.startsWith("evidence.")) {
-            RnaTechniqueEvidence evidence = RnaTechniqueEvidence.fromId(
-                    conditionId.substring("evidence.".length()));
-            return evidence == null
-                    ? Component.literal(conditionId)
-                    : Component.translatable(evidence.translationKey());
-        }
-        if (conditionId.startsWith("prerequisite.")) {
-            return Component.translatable("screen.riftborne.codex.condition.prerequisite");
-        }
-        return Component.translatable("screen.riftborne.codex.condition." + conditionId);
+        return builder.toString();
     }
 
     private void renderFolderWindow(GuiGraphics graphics, int left, int top, int mouseX, int mouseY) {

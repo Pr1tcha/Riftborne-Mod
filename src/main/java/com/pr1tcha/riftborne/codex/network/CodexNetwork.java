@@ -14,11 +14,11 @@ import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.codex.PocketCodexScanner;
 import com.pr1tcha.riftborne.player.RiftbornePlayerData;
 import com.pr1tcha.riftborne.registry.ModContent;
-import com.pr1tcha.riftborne.rna.RnaApi;
-import com.pr1tcha.riftborne.rna.combat.RnaAbilityManager;
-import com.pr1tcha.riftborne.rna.combat.data.RnaAbilityData;
-import com.pr1tcha.riftborne.rna.combat.progression.RnaTechniqueProgression;
-import com.pr1tcha.riftborne.rna.data.RnaData;
+import com.pr1tcha.riftborne.rna.power.PowerApi;
+import com.pr1tcha.riftborne.rna.power.PowerRules;
+import com.pr1tcha.riftborne.rna.power.Primitive;
+import com.pr1tcha.riftborne.rna.power.data.PowerProgress;
+import com.pr1tcha.riftborne.rna.power.data.RNAProfile;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -68,8 +68,8 @@ public final class CodexNetwork {
 
     private static SnapshotPayload createSnapshot(ServerPlayer player, BlockPos laptopPos) {
         CodexData codex = RiftbornePlayerData.getCodex(player);
-        RnaData rna = RnaApi.get(player);
-        RnaAbilityData combat = RnaAbilityManager.getData(player);
+        RNAProfile rna = PowerApi.get(player);
+        PowerProgress progress = PowerApi.getProgress(player);
         boolean firstFlashInserted = false;
         boolean secondFlashInserted = false;
         String desktopLayout = "";
@@ -88,14 +88,14 @@ public final class CodexNetwork {
                 join(codex.damagedEntries().stream().toList()),
                 join(codex.notifications()),
                 join(codex.recentData()),
-                rna.hasRNA(),
+                rna.active(),
                 rna.nodeDensity(),
                 rna.connectivity(),
                 rna.throughput(),
-                rna.overloadResistance(),
-                rna.metaWear(),
-                rna.metaWearStage().name(),
-                rna.formationPath().name(),
+                rna.overloadRes(),
+                Math.round(rna.metaWear()),
+                PowerRules.wearBand(rna.metaWear()),
+                rna.formationPath().toUpperCase(java.util.Locale.ROOT),
                 firstFlashInserted,
                 secondFlashInserted,
                 "",
@@ -112,15 +112,35 @@ public final class CodexNetwork {
                 diagnostic == null ? "STABLE" : diagnostic.metaWearStage(),
                 diagnostic == null ? "UNKNOWN" : diagnostic.formationPath(),
                 diagnostic == null ? "" : diagnostic.techniqueNotice(),
-                join(RnaTechniqueProgression.encodeTechniqueProgress(combat)),
-                join(RnaTechniqueProgression.encodeTechniqueReadiness(rna, combat)),
-                join(RnaTechniqueProgression.encodeAspectResonance(combat)),
+                join(encodePrimitiveLevels(rna)),
+                join(encodeAxisPractice(progress)),
+                progress.facet().map(f -> f.signature()).orElse(""),
                 0.0F,
                 0.0F,
                 "",
                 desktopLayout,
                 CodexInfobaseSnapshot.encode(player)
         );
+    }
+
+    /** Primitive execution levels for the Codex readout: {@code id,level}, strongest first. */
+    private static List<String> encodePrimitiveLevels(RNAProfile profile) {
+        List<String> out = new ArrayList<>();
+        for (Primitive primitive : Primitive.values()) {
+            out.add(primitive.id() + "," + profile.level(primitive));
+        }
+        out.sort((a, b) -> Integer.compare(
+                Integer.parseInt(b.split(",")[1]), Integer.parseInt(a.split(",")[1])));
+        return out;
+    }
+
+    /** Accumulated Δ-axis practice: {@code axis,count}, most practised first. */
+    private static List<String> encodeAxisPractice(PowerProgress progress) {
+        List<String> out = new ArrayList<>();
+        progress.practiceByAxis().forEach((axis, count) -> out.add(axis + "," + count));
+        out.sort((a, b) -> Integer.compare(
+                Integer.parseInt(b.split(",")[1]), Integer.parseInt(a.split(",")[1])));
+        return out;
     }
 
     private static CodexDiagnosticCapsuleBlockEntity findDiagnosticCapsule(ServerPlayer player, BlockPos laptopPos) {

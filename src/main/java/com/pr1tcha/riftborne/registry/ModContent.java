@@ -15,9 +15,8 @@ import com.pr1tcha.riftborne.codex.block.CodexDiagnosticCapsuleBlockEntity;
 import com.pr1tcha.riftborne.codex.item.CodexLaptopItem;
 import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.riftwalker.item.RiftwalkerArmorItem;
-import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlock;
-import com.pr1tcha.riftborne.rna.combat.training.block.RnaTrainingAnchorBlockEntity;
-import com.pr1tcha.riftborne.aspects.telekinesis.entity.TelekineticBlockEntity;
+import com.pr1tcha.riftborne.rna.power.anchor.RnaTrainingAnchorBlock;
+import com.pr1tcha.riftborne.rna.power.anchor.RnaTrainingAnchorBlockEntity;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -213,13 +212,6 @@ public class ModContent {
                     .sized(0.72F, 1.6F)
                     .clientTrackingRange(8)
                     .build(ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "rift_splinter").toString()));
-
-    public static final Supplier<EntityType<TelekineticBlockEntity>> TELEKINETIC_BLOCK = ENTITY_TYPES.register("telekinetic_block",
-            () -> EntityType.Builder.<TelekineticBlockEntity>of(TelekineticBlockEntity::new, MobCategory.MISC)
-                    .sized(0.98F, 0.98F)
-                    .clientTrackingRange(10)
-                    .updateInterval(1)
-                    .build(ResourceLocation.fromNamespaceAndPath(Riftborne.MODID, "telekinetic_block").toString()));
 
     public static final Supplier<Item> RIFT_SPLINTER_SPAWN_EGG = ITEMS.register("rift_splinter_spawn_egg",
             () -> new SpawnEggItem(RIFT_SPLINTER.get(), 0x101823, 0x35BCEB, new Item.Properties()));

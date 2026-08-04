@@ -43,6 +43,26 @@ public final class PowerRules {
         return Math.max(1.0F, load * 0.05F);
     }
 
+    /**
+     * Coarse label for how badly worn the architecture is. Presentation only — the model itself is
+     * the continuous meta-wear value; this just gives readouts (Codex, diagnostics) something to name.
+     */
+    public static String wearBand(float metaWear) {
+        if (metaWear >= 95.0F) {
+            return "ARCHITECTURE_BREAK";
+        }
+        if (metaWear >= 75.0F) {
+            return "REJECTION";
+        }
+        if (metaWear >= 50.0F) {
+            return "DISTORTION";
+        }
+        if (metaWear >= 25.0F) {
+            return "STRAIN";
+        }
+        return "STABLE";
+    }
+
     /** Depth level (1-4) of a cast = the player's execution level for that primitive. */
     public static int depthLevel(RNAProfile profile, Primitive primitive) {
         return Mth.clamp(profile.level(primitive), RNAProfile.MIN_PRIMITIVE_LEVEL, RNAProfile.MAX_PRIMITIVE_LEVEL);

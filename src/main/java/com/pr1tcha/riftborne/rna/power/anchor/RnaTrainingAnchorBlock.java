@@ -1,4 +1,4 @@
-package com.pr1tcha.riftborne.rna.combat.training.block;
+package com.pr1tcha.riftborne.rna.power.anchor;
 
 import com.mojang.serialization.MapCodec;
 import com.pr1tcha.riftborne.registry.ModContent;

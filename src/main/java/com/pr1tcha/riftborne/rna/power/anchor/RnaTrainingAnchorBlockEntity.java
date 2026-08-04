@@ -1,8 +1,8 @@
-package com.pr1tcha.riftborne.rna.combat.training.block;
+package com.pr1tcha.riftborne.rna.power.anchor;
 
 import com.pr1tcha.riftborne.registry.ModContent;
-import com.pr1tcha.riftborne.rna.RnaApi;
-import com.pr1tcha.riftborne.rna.combat.RnaCombatNetwork;
+import com.pr1tcha.riftborne.rna.power.PowerApi;
+import com.pr1tcha.riftborne.rna.power.network.PowerNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -67,7 +67,7 @@ public final class RnaTrainingAnchorBlockEntity extends BlockEntity implements G
             player.displayClientMessage(Component.translatable("message.riftborne.training.not_deployed"), true);
             return;
         }
-        RnaCombatNetwork.sendAnchorMenu(player, worldPosition, RnaApi.hasActiveRna(player));
+        PowerNetwork.sendAnchorMenu(player, worldPosition, PowerApi.hasActive(player));
     }
 
     private void tickServer() {

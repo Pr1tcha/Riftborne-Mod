@@ -521,5 +521,21 @@
   "hud.riftborne.power.result.no_anchor": "No anchor: time has nothing to rest on",
   "hud.riftborne.power.result.no_phase": "Not in phase: enter the flow first",
   "message.riftborne.power.tempo_active": "%s: flow is running",
-  "message.riftborne.power.tempo_inert": "%s: flow is inert"
+  "message.riftborne.power.tempo_inert": "%s: flow is inert",
+  "screen.riftborne.codex.primitive_profile": "PRIMITIVES",
+  "screen.riftborne.codex.primitive_profile.empty": "No practice recorded",
+  "screen.riftborne.codex.axis_practice": "Δ-FAMILY PRACTICE",
+  "screen.riftborne.codex.axis_practice.empty": "No resonance traces",
+  "screen.riftborne.codex.facet": "FACET",
+  "screen.riftborne.codex.facet.empty": "Not crystallized",
+  "screen.riftborne.codex.facet.value": "Crystallized: %s",
+  "screen.riftborne.rna_training_anchor.training": "Train: technique",
+  "facet.riftborne.distribution": "Distribution",
+  "facet.riftborne.environment": "Environment",
+  "facet.riftborne.structure": "Structure",
+  "facet.riftborne.geometry": "Geometry",
+  "facet.riftborne.tempo": "Tempo",
+  "facet.riftborne.sequence": "Sequence",
+  "facet.riftborne.fixation": "Fixation",
+  "facet.riftborne.undefined": "Undefined"
 }

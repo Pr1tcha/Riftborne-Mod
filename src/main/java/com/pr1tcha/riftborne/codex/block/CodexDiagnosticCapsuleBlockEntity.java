@@ -3,8 +3,9 @@ package com.pr1tcha.riftborne.codex.block;
 import com.pr1tcha.riftborne.registry.ModContent;
 import com.pr1tcha.riftborne.codex.data.CodexData;
 import com.pr1tcha.riftborne.player.RiftbornePlayerData;
-import com.pr1tcha.riftborne.rna.RnaApi;
-import com.pr1tcha.riftborne.rna.data.RnaData;
+import com.pr1tcha.riftborne.rna.power.PowerApi;
+import com.pr1tcha.riftborne.rna.power.PowerRules;
+import com.pr1tcha.riftborne.rna.power.data.RNAProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -188,16 +189,16 @@ public final class CodexDiagnosticCapsuleBlockEntity extends BlockEntity impleme
     }
 
     private void capture(ServerPlayer player) {
-        RnaData rna = RnaApi.get(player);
+        RNAProfile profile = PowerApi.get(player);
         subjectName = player.getGameProfile().getName();
-        hasRna = rna.hasRNA();
-        nodeDensity = rna.nodeDensity();
-        connectivity = rna.connectivity();
-        throughput = rna.throughput();
-        overloadResistance = rna.overloadResistance();
-        metaWear = rna.metaWear();
-        metaWearStage = rna.metaWearStage().name();
-        formationPath = rna.formationPath().name();
+        hasRna = profile.active();
+        nodeDensity = profile.nodeDensity();
+        connectivity = profile.connectivity();
+        throughput = profile.throughput();
+        overloadResistance = profile.overloadRes();
+        metaWear = Math.round(profile.metaWear());
+        metaWearStage = PowerRules.wearBand(profile.metaWear());
+        formationPath = profile.formationPath().toUpperCase(java.util.Locale.ROOT);
         sync();
     }
 
