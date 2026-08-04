@@ -317,7 +317,7 @@
   "screen.riftborne.codex.synapsis_source": "Capsule",
   "screen.riftborne.codex.synapsis_path": "Formation path",
   "screen.riftborne.codex.synapsis_no_rna": "No active RNA detected.",
-  "screen.riftborne.codex.physical": "Physical Status",
+  "screen.riftborne.codex.physical": "Physical",
   "screen.riftborne.codex.physical_title": "CODEX // PHYSICAL STATUS",
   "screen.riftborne.codex.physical_overall": "Overall physical condition",
   "screen.riftborne.codex.physical_overload": "EXERTION",
@@ -498,7 +498,7 @@
   "key.riftborne.power_select": "Primitive selector",
   "hud.riftborne.power.title": "RNA",
   "hud.riftborne.power.c_class": "C%s",
-  "hud.riftborne.power.cast_info": "%s · L%s · %s",
+  "hud.riftborne.power.cast_info": "%s · %s",
   "screen.riftborne.power_selector": "Resonant primitives",
   "screen.riftborne.power_selector.window": "window %s · connectivity C%s",
   "hud.riftborne.power.result.ok": "Applied",
@@ -548,5 +548,6 @@
   "screen.riftborne.codex.physical_step_full": "Full norm — maximum growth",
   "screen.riftborne.codex.physical_step_high": "High step",
   "screen.riftborne.codex.physical_step_low": "Low step",
-  "screen.riftborne.codex.physical_step_none": "Below the growth threshold"
+  "screen.riftborne.codex.physical_step_none": "Below the growth threshold",
+  "hud.riftborne.power.cast_info_full": "%s · L%s · %s"
 }

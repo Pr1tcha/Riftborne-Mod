@@ -22,7 +22,7 @@ import net.minecraft.network.chat.Component;
  * be compensated, and the bar says so before the key is pressed.
  */
 public final class PowerHud {
-    private static final int BAR_WIDTH = 132;
+    private static final int BAR_WIDTH = 160;
     private static final int BAR_HEIGHT = 7;
     private static final int MARGIN_X = 10;
     private static final int BOTTOM_OFFSET = 58;
@@ -64,7 +64,7 @@ public final class PowerHud {
 
         drawHeader(graphics, minecraft, profile, x, y - 11);
         drawBar(graphics, profile, projected, window, x, y);
-        drawArmed(graphics, minecraft, armed, axes, projected, depth, fits, x, y + BAR_HEIGHT + 4);
+        drawArmed(graphics, minecraft, armed, axes, projected, fits, x, y + BAR_HEIGHT + 4);
 
         if (PowerClientState.hasFeedback()) {
             drawFeedback(graphics, minecraft, x, y + BAR_HEIGHT + 15);
@@ -105,11 +105,8 @@ public final class PowerHud {
     }
 
     private static void drawArmed(GuiGraphics graphics, Minecraft minecraft, Primitive armed,
-                                  Set<DeltaAxis> axes, float projected, int depth, boolean fits,
+                                  Set<DeltaAxis> axes, float projected, boolean fits,
                                   int x, int y) {
-        Component name = Component.translatable(armed.translationKey());
-        graphics.drawString(minecraft.font, name, x, y, fits ? COLOR_TEXT : COLOR_PROJECTION_BAD, false);
-
         StringBuilder axisLabel = new StringBuilder();
         for (DeltaAxis axis : axes) {
             if (axisLabel.length() > 0) {
@@ -118,9 +115,18 @@ public final class PowerHud {
             axisLabel.append(axis.name().replace("DST", "dSt").replace("D", "d"));
         }
         Component right = Component.translatable("hud.riftborne.power.cast_info",
-                axisLabel.toString(), depth, Math.round(projected));
+                axisLabel.toString(), Math.round(projected));
         int rightWidth = minecraft.font.width(right);
         graphics.drawString(minecraft.font, right, x + BAR_WIDTH - rightWidth, y, COLOR_MUTED, false);
+
+        // The primitive name is a canonical term and can be long; clamp it against the cost.
+        String name = Component.translatable(armed.translationKey()).getString();
+        int nameRoom = BAR_WIDTH - rightWidth - 8;
+        if (minecraft.font.width(name) > nameRoom) {
+            name = minecraft.font.plainSubstrByWidth(name, Math.max(0, nameRoom - minecraft.font.width("...")))
+                    + "...";
+        }
+        graphics.drawString(minecraft.font, name, x, y, fits ? COLOR_TEXT : COLOR_PROJECTION_BAD, false);
     }
 
     private static void drawFeedback(GuiGraphics graphics, Minecraft minecraft, int x, int y) {

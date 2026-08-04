@@ -19,8 +19,11 @@ import org.lwjgl.glfw.GLFW;
  * hovered one's cost — Δ-families, depth and projected load against the current window.
  */
 public final class PowerSelectorScreen extends Screen {
-    private static final int RADIUS = 78;
-    private static final int SPOKE_BOX_W = 78;
+    // Laid out on an ellipse rather than a circle: nine spokes need horizontal room for the
+    // canonical primitive names, but the vertical extent has to stay inside a scaled-up GUI.
+    private static final int RADIUS_X = 170;
+    private static final int RADIUS_Y = 110;
+    private static final int SPOKE_BOX_W = 104;
     private static final int SPOKE_BOX_H = 18;
 
     private static final int COLOR_PANEL = 0xE00A0F16;
@@ -49,7 +52,7 @@ public final class PowerSelectorScreen extends Screen {
         int cx = width / 2;
         int cy = height / 2;
         Primitive[] all = Primitive.values();
-        hovered = pick(mouseX - cx, mouseY - cy, all);
+        hovered = pick(mouseX, mouseY, cx, cy, all);
 
         RNAProfile profile = minecraft == null || minecraft.player == null
                 ? RNAProfile.empty()
@@ -58,8 +61,8 @@ public final class PowerSelectorScreen extends Screen {
 
         for (int i = 0; i < all.length; i++) {
             double angle = angleFor(i, all.length);
-            int bx = cx + (int) Math.round(Math.cos(angle) * RADIUS) - SPOKE_BOX_W / 2;
-            int by = cy + (int) Math.round(Math.sin(angle) * RADIUS) - SPOKE_BOX_H / 2;
+            int bx = cx + (int) Math.round(Math.cos(angle) * RADIUS_X) - SPOKE_BOX_W / 2;
+            int by = cy + (int) Math.round(Math.sin(angle) * RADIUS_Y) - SPOKE_BOX_H / 2;
             drawSpoke(graphics, all[i], profile, window, bx, by, all[i] == hovered);
         }
 
@@ -74,7 +77,8 @@ public final class PowerSelectorScreen extends Screen {
                 selected ? COLOR_BORDER_SEL : COLOR_BORDER);
         graphics.fill(x, y, x + SPOKE_BOX_W, y + SPOKE_BOX_H, COLOR_PANEL);
 
-        Component name = Component.translatable(primitive.translationKey());
+        String name = font.plainSubstrByWidth(
+                Component.translatable(primitive.translationKey()).getString(), SPOKE_BOX_W - 10);
         graphics.drawString(font, name, x + 5, y + 5,
                 castable ? (selected ? COLOR_TEXT : COLOR_MUTED) : COLOR_BAD, false);
     }
@@ -86,7 +90,7 @@ public final class PowerSelectorScreen extends Screen {
         boolean castable = castable(hovered, profile, window);
 
         Component title = Component.translatable(hovered.translationKey());
-        Component cost = Component.translatable("hud.riftborne.power.cast_info",
+        Component cost = Component.translatable("hud.riftborne.power.cast_info_full",
                 axisLabel(axes), depth, Math.round(load));
         Component windowLine = Component.translatable("screen.riftborne.power_selector.window",
                 Math.round(window), profile.connectivity());
@@ -116,19 +120,26 @@ public final class PowerSelectorScreen extends Screen {
         return builder.toString();
     }
 
-    /** Nearest spoke to the cursor; keeps the current pick while the cursor rests near the centre. */
-    private Primitive pick(int dx, int dy, Primitive[] all) {
-        if (dx * dx + dy * dy < 24 * 24) {
+    /**
+     * Nearest spoke to the cursor, measured against where the spokes are actually drawn. The
+     * layout is elliptical, so matching on angle alone would drift away from the visible boxes.
+     * Resting near the centre keeps the current pick rather than snapping around.
+     */
+    private Primitive pick(int mouseX, int mouseY, int cx, int cy, Primitive[] all) {
+        int dx = mouseX - cx;
+        int dy = mouseY - cy;
+        if (dx * dx + dy * dy < 30 * 30) {
             return hovered;
         }
-        double cursor = Math.atan2(dy, dx);
         Primitive best = all[0];
-        double bestDelta = Double.MAX_VALUE;
+        double bestDistance = Double.MAX_VALUE;
         for (int i = 0; i < all.length; i++) {
-            double delta = Math.abs(Math.atan2(Math.sin(cursor - angleFor(i, all.length)),
-                    Math.cos(cursor - angleFor(i, all.length))));
-            if (delta < bestDelta) {
-                bestDelta = delta;
+            double angle = angleFor(i, all.length);
+            double sx = cx + Math.cos(angle) * RADIUS_X;
+            double sy = cy + Math.sin(angle) * RADIUS_Y;
+            double distance = (mouseX - sx) * (mouseX - sx) + (mouseY - sy) * (mouseY - sy);
+            if (distance < bestDistance) {
+                bestDistance = distance;
                 best = all[i];
             }
         }

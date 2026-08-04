@@ -317,7 +317,7 @@
   "screen.riftborne.codex.synapsis_source": "Капсула",
   "screen.riftborne.codex.synapsis_path": "Путь формирования",
   "screen.riftborne.codex.synapsis_no_rna": "Активная РНА не обнаружена.",
-  "screen.riftborne.codex.physical": "Физическое состояние",
+  "screen.riftborne.codex.physical": "Организм",
   "screen.riftborne.codex.physical_title": "КОДЕКС // ФИЗИЧЕСКОЕ СОСТОЯНИЕ",
   "screen.riftborne.codex.physical_overall": "Общая физическая форма",
   "screen.riftborne.codex.physical_overload": "НАГРУЗКА",
@@ -496,7 +496,7 @@
   "key.riftborne.power_select": "Выбор примитива",
   "hud.riftborne.power.title": "РНА",
   "hud.riftborne.power.c_class": "C%s",
-  "hud.riftborne.power.cast_info": "%s · У%s · %s",
+  "hud.riftborne.power.cast_info": "%s · %s",
   "screen.riftborne.power_selector": "Резонансные примитивы",
   "screen.riftborne.power_selector.window": "окно %s · связность C%s",
   "hud.riftborne.power.result.ok": "Проведено",
@@ -546,5 +546,6 @@
   "screen.riftborne.codex.physical_step_full": "Полная норма — максимальный рост",
   "screen.riftborne.codex.physical_step_high": "Высокая ступень",
   "screen.riftborne.codex.physical_step_low": "Низкая ступень",
-  "screen.riftborne.codex.physical_step_none": "Ниже порога роста"
+  "screen.riftborne.codex.physical_step_none": "Ниже порога роста",
+  "hud.riftborne.power.cast_info_full": "%s · Г%s · %s"
 }
