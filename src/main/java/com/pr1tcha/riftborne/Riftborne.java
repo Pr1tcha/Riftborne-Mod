@@ -59,6 +59,7 @@ public class Riftborne {
         modEventBus.addListener(RiftwalkerNetwork::register);
         modEventBus.addListener(RnaCombatNetwork::register);
         modEventBus.addListener(FlightNetwork::register);
+        modEventBus.addListener(com.pr1tcha.riftborne.rna.power.network.PowerNetwork::register);
 
         NeoForge.EVENT_BUS.register(this);
         ModContent.register(modEventBus);
