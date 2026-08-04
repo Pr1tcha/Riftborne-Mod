@@ -34,6 +34,24 @@ public final class ModPowerAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<PhysicalProfile>> PHYSICAL_PROFILE = ATTACHMENT_TYPES.register(
+            "physical_profile",
+            () -> AttachmentType.builder(PhysicalProfile::initial)
+                    .serialize(PhysicalProfile.CODEC)
+                    .sync(PhysicalProfile.STREAM_CODEC)
+                    .copyOnDeath()
+                    .build()
+    );
+
+    public static final Supplier<AttachmentType<AdaptationCycle>> ADAPTATION_CYCLE = ATTACHMENT_TYPES.register(
+            "adaptation_cycle",
+            () -> AttachmentType.builder(AdaptationCycle::empty)
+                    .serialize(AdaptationCycle.CODEC)
+                    .sync(AdaptationCycle.STREAM_CODEC)
+                    .copyOnDeath()
+                    .build()
+    );
+
     private ModPowerAttachments() {
     }
 

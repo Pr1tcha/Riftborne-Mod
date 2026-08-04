@@ -95,7 +95,7 @@ public final class PowerHud {
                 critical ? COLOR_WEAR_CRIT : COLOR_WEAR);
 
         // Throughput line: past this a cast overloads the nodes even when it is admissible.
-        int throughputX = x + scale(profile.throughput());
+        int throughputX = x + scale((float) profile.throughput());
         graphics.fill(throughputX, y - 2, throughputX + 1, y + BAR_HEIGHT + 2, COLOR_THROUGHPUT);
 
         // Projection of the armed primitive.

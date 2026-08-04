@@ -25,6 +25,26 @@ public class Config {
     public static final ModConfigSpec.IntValue basicRnaImpulseStepCooldown;
     public static final ModConfigSpec.IntValue basicRnaOverloadVentCooldown;
     public static final ModConfigSpec.DoubleValue codexScanDistance;
+    public static final ModConfigSpec.IntValue adaptationCycleTicks;
+    public static final ModConfigSpec.DoubleValue adaptationActivityLow;
+    public static final ModConfigSpec.DoubleValue adaptationActivityHigh;
+    public static final ModConfigSpec.DoubleValue adaptationGrowthLow;
+    public static final ModConfigSpec.DoubleValue adaptationGrowthHigh;
+    public static final ModConfigSpec.DoubleValue adaptationGrowthFull;
+    public static final ModConfigSpec.DoubleValue adaptationRequiredPractice;
+    public static final ModConfigSpec.DoubleValue adaptationConnectivityC2;
+    public static final ModConfigSpec.IntValue adaptationRecoveryEpisodeLimit;
+    public static final ModConfigSpec.DoubleValue adaptationRecoveryLoadThreshold;
+    public static final ModConfigSpec.DoubleValue adaptationSprintBlocksFull;
+    public static final ModConfigSpec.DoubleValue adaptationSwimBlocksFull;
+    public static final ModConfigSpec.DoubleValue adaptationMiningHardnessFull;
+    public static final ModConfigSpec.DoubleValue adaptationMeleeShareCap;
+    public static final ModConfigSpec.IntValue adaptationPrimitiveFullUses;
+    public static final ModConfigSpec.IntValue adaptationPrimitiveHalfUses;
+    public static final ModConfigSpec.DoubleValue adaptationBandwidthLoadShare;
+    public static final ModConfigSpec.DoubleValue adaptationOverloadBandMin;
+    public static final ModConfigSpec.DoubleValue adaptationOverloadBandMax;
+
     public static final ModConfigSpec.DoubleValue flightSlowBoostMax;
     public static final ModConfigSpec.DoubleValue flightFastBoostMax;
     public static final ModConfigSpec.DoubleValue flightSlowAcceleration;
@@ -229,6 +249,86 @@ public class Config {
         flightElytraPoseBoostThreshold = BUILDER
                 .comment("Boost level required before the fall-flying pose is shown")
                 .defineInRange("elytraPoseBoostThreshold", 1.2D, 0.0D, 10.0D);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Base adaptation of the organism and RNA (progression v0.1)").push("adaptation");
+
+        adaptationCycleTicks = BUILDER
+                .comment("Active player ticks in one adaptation cycle (24000 = 20 real minutes)")
+                .defineInRange("cycleTicks", 24000, 1200, 1728000);
+
+        adaptationActivityLow = BUILDER
+                .comment("Activity score at which a cycle starts producing growth")
+                .defineInRange("activityLowThreshold", 40.0D, 0.0D, 100.0D);
+
+        adaptationActivityHigh = BUILDER
+                .comment("Activity score for the higher growth step")
+                .defineInRange("activityHighThreshold", 70.0D, 0.0D, 100.0D);
+
+        adaptationGrowthLow = BUILDER
+                .comment("Physical growth per cycle at the low activity step")
+                .defineInRange("growthLow", 0.10D, 0.0D, 10.0D);
+
+        adaptationGrowthHigh = BUILDER
+                .comment("Physical growth per cycle at the high activity step")
+                .defineInRange("growthHigh", 0.25D, 0.0D, 10.0D);
+
+        adaptationGrowthFull = BUILDER
+                .comment("Physical growth per cycle at a full activity score")
+                .defineInRange("growthFull", 0.50D, 0.0D, 10.0D);
+
+        adaptationRequiredPractice = BUILDER
+                .comment("Quality RNA practice needed in a cycle for the full per-cycle growth cap")
+                .defineInRange("requiredPractice", 20.0D, 1.0D, 1000.0D);
+
+        adaptationConnectivityC2 = BUILDER
+                .comment("Hidden connectivity progress required for C1 -> C2")
+                .defineInRange("connectivityC2Threshold", 60.0D, 1.0D, 10000.0D);
+
+        adaptationRecoveryEpisodeLimit = BUILDER
+                .comment("Maximum scoring Recovery episodes per cycle")
+                .defineInRange("recoveryEpisodeLimit", 3, 0, 64);
+
+        adaptationRecoveryLoadThreshold = BUILDER
+                .comment("Physical load a Recovery episode must reach before it can count")
+                .defineInRange("recoveryLoadThreshold", 60.0D, 1.0D, 100.0D);
+
+        adaptationSprintBlocksFull = BUILDER
+                .comment("Sprinted blocks for a full Endurance activity score")
+                .defineInRange("sprintBlocksFull", 1200.0D, 1.0D, 100000.0D);
+
+        adaptationSwimBlocksFull = BUILDER
+                .comment("Swum blocks for a full Endurance activity score")
+                .defineInRange("swimBlocksFull", 700.0D, 1.0D, 100000.0D);
+
+        adaptationMiningHardnessFull = BUILDER
+                .comment("Total block hardness for a full Strength activity score (~150 stone)")
+                .defineInRange("miningHardnessFull", 225.0D, 1.0D, 100000.0D);
+
+        adaptationMeleeShareCap = BUILDER
+                .comment("Share of the Strength cycle norm that melee alone may fill")
+                .defineInRange("meleeShareCap", 0.25D, 0.0D, 1.0D);
+
+        adaptationPrimitiveFullUses = BUILDER
+                .comment("Uses of one primitive per cycle that still give full training value")
+                .defineInRange("primitiveFullUses", 8, 1, 512);
+
+        adaptationPrimitiveHalfUses = BUILDER
+                .comment("Uses of one primitive per cycle after which training value drops to zero")
+                .defineInRange("primitiveHalfUses", 16, 1, 1024);
+
+        adaptationBandwidthLoadShare = BUILDER
+                .comment("Share of throughput a cast must reach to train Bandwidth")
+                .defineInRange("bandwidthLoadShare", 0.40D, 0.0D, 1.0D);
+
+        adaptationOverloadBandMin = BUILDER
+                .comment("Lower bound of the load band that trains Overload Resistance")
+                .defineInRange("overloadBandMin", 0.70D, 0.0D, 1.0D);
+
+        adaptationOverloadBandMax = BUILDER
+                .comment("Upper bound of the load band that trains Overload Resistance")
+                .defineInRange("overloadBandMax", 1.00D, 0.0D, 2.0D);
 
         BUILDER.pop();
     }

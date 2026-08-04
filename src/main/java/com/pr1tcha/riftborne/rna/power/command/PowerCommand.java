@@ -4,7 +4,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.pr1tcha.riftborne.rna.power.Primitive;
+import com.pr1tcha.riftborne.rna.power.AdaptationService;
 import com.pr1tcha.riftborne.rna.power.PowerApi;
+import com.pr1tcha.riftborne.rna.power.PowerPractice;
 import com.pr1tcha.riftborne.rna.power.PowerCast;
 import com.pr1tcha.riftborne.rna.power.PowerCrystallization;
 import com.pr1tcha.riftborne.rna.power.PowerGates;
@@ -48,6 +50,10 @@ public final class PowerCommand {
                         .executes(ctx -> progress(ctx.getSource())))
                 .then(Commands.literal("crystallize")
                         .executes(ctx -> crystallize(ctx.getSource())))
+                .then(Commands.literal("adaptation")
+                        .executes(ctx -> adaptation(ctx.getSource()))
+                        .then(Commands.literal("complete")
+                                .executes(ctx -> completeCycle(ctx.getSource()))))
                 .then(cast);
     }
 
@@ -56,7 +62,7 @@ public final class PowerCommand {
         PowerApi.activate(player, path);
         RNAProfile profile = PowerApi.get(player);
         source.sendSuccess(() -> Component.literal("RNA activated: path=" + profile.formationPath()
-                + " C" + profile.connectivity() + " thr=" + profile.throughput()).withStyle(ChatFormatting.AQUA), false);
+                + " C" + profile.connectivity() + String.format(" thr=%.1f", profile.throughput())).withStyle(ChatFormatting.AQUA), false);
         return 1;
     }
 
@@ -70,7 +76,7 @@ public final class PowerCommand {
         ServerPlayer player = source.getPlayerOrException();
         RNAProfile p = PowerApi.get(player);
         source.sendSuccess(() -> Component.literal(String.format(
-                "RNA[%s] path=%s C%d thr=%d nd=%d or=%d wear=%.1f window=%.1f",
+                "RNA[%s] path=%s C%d thr=%.1f nd=%.1f or=%.1f wear=%.1f window=%.1f",
                 p.active() ? "active" : "dormant", p.formationPath(), p.connectivity(),
                 p.throughput(), p.nodeDensity(), p.overloadRes(), p.metaWear(),
                 PowerRules.admissibilityWindow(p))).withStyle(ChatFormatting.AQUA), false);
@@ -80,6 +86,56 @@ public final class PowerCommand {
                 PowerGates.genetic(player), PowerGates.physicalStatCap(player),
                 PowerGates.connectivityCap(player))).withStyle(ChatFormatting.DARK_AQUA), false);
         return 1;
+    }
+
+
+    /** Full readout of the current adaptation cycle: what has been earned but not yet applied. */
+    private static int adaptation(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        com.pr1tcha.riftborne.rna.power.data.PhysicalProfile phys = AdaptationService.physical(player);
+        com.pr1tcha.riftborne.rna.power.data.AdaptationCycle cycle = AdaptationService.cycle(player);
+        RNAProfile rna = PowerApi.get(player);
+
+        source.sendSuccess(() -> Component.literal(String.format(
+                "physical: str=%.1f end=%.1f res=%.1f rec=%.1f load=%.1f",
+                phys.strength(), phys.endurance(), phys.resilience(), phys.recovery(),
+                phys.physicalLoad())).withStyle(ChatFormatting.GREEN), false);
+
+        source.sendSuccess(() -> Component.literal(String.format(
+                "cycle: %d/%d ticks | episodes=%d",
+                cycle.activeTicks(), com.pr1tcha.riftborne.config.Config.adaptationCycleTicks.get(),
+                cycle.recoveryEpisodes())).withStyle(ChatFormatting.GRAY), false);
+
+        StringBuilder activity = new StringBuilder("activity:");
+        for (com.pr1tcha.riftborne.rna.power.data.PhysicalStat stat
+                : com.pr1tcha.riftborne.rna.power.data.PhysicalStat.values()) {
+            activity.append(String.format(" %s=%.1f(+%.2f)", stat.id(), cycle.activity(stat),
+                    AdaptationService.basePhysicalGrowth(cycle.activity(stat))
+                            * AdaptationService.diminishing(phys.get(stat))));
+        }
+        source.sendSuccess(() -> Component.literal(activity.toString()).withStyle(ChatFormatting.DARK_GREEN), false);
+
+        StringBuilder practice = new StringBuilder("practice:");
+        for (com.pr1tcha.riftborne.rna.power.data.RnaTrack track
+                : com.pr1tcha.riftborne.rna.power.data.RnaTrack.values()) {
+            practice.append(String.format(" %s=%.1f", track.id(), cycle.practice(track)));
+        }
+        practice.append(String.format(" | connectivityThisCycle=%.2f progress=%.1f",
+                PowerPractice.connectivityPractice(cycle), rna.connectivityProgress()));
+        source.sendSuccess(() -> Component.literal(practice.toString()).withStyle(ChatFormatting.AQUA), false);
+
+        source.sendSuccess(() -> Component.literal("primitiveUses: " + cycle.primitiveUses())
+                .withStyle(ChatFormatting.DARK_AQUA), false);
+        return 1;
+    }
+
+    /** Close the cycle immediately so a full cycle can be verified without waiting 20 minutes. */
+    private static int completeCycle(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        AdaptationService.completeCycle(player, AdaptationService.cycle(player));
+        source.sendSuccess(() -> Component.literal("Adaptation cycle closed and applied.")
+                .withStyle(ChatFormatting.YELLOW), false);
+        return adaptation(source);
     }
 
     private static int setConnectivity(CommandSourceStack source, int value) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

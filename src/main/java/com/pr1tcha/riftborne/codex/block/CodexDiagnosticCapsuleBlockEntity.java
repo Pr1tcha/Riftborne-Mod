@@ -192,10 +192,10 @@ public final class CodexDiagnosticCapsuleBlockEntity extends BlockEntity impleme
         RNAProfile profile = PowerApi.get(player);
         subjectName = player.getGameProfile().getName();
         hasRna = profile.active();
-        nodeDensity = profile.nodeDensity();
+        nodeDensity = (int) Math.round(profile.nodeDensity());
         connectivity = profile.connectivity();
-        throughput = profile.throughput();
-        overloadResistance = profile.overloadRes();
+        throughput = (int) Math.round(profile.throughput());
+        overloadResistance = (int) Math.round(profile.overloadRes());
         metaWear = Math.round(profile.metaWear());
         metaWearStage = PowerRules.wearBand(profile.metaWear());
         formationPath = profile.formationPath().toUpperCase(java.util.Locale.ROOT);

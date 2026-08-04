@@ -537,5 +537,11 @@
   "facet.riftborne.tempo": "Tempo",
   "facet.riftborne.sequence": "Sequence",
   "facet.riftborne.fixation": "Fixation",
-  "facet.riftborne.undefined": "Undefined"
+  "facet.riftborne.undefined": "Undefined",
+  "physical.riftborne.resilience": "Resilience",
+  "physical.riftborne.recovery": "Recovery",
+  "rna.riftborne.track.bandwidth": "Bandwidth",
+  "rna.riftborne.track.node_density": "Node density",
+  "rna.riftborne.track.overload_resistance": "Overload resistance",
+  "rna.riftborne.track.connectivity": "Connectivity"
 }

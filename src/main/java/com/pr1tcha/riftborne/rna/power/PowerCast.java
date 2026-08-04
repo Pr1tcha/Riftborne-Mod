@@ -65,6 +65,7 @@ public final class PowerCast {
 
         if (load > window) {
             PowerApi.addMetaWear(player, PowerRules.metaWearForLoad(load) * 1.5F);
+            PowerPractice.recordCompensation(player);
             compensationBacklash(player);
             return new Outcome(Result.COMPENSATION, load, window, load > profile.throughput());
         }
@@ -76,6 +77,7 @@ public final class PowerCast {
             for (DeltaAxis axis : axes) {
                 PowerApi.addPractice(player, axis.id(), 1);
             }
+            PowerPractice.recordSuccess(player, primitive, load);
         }
         return new Outcome(effect, load, window, overload);
     }

@@ -73,7 +73,7 @@ public final class PowerApi {
         if (!profile.active()) {
             return;
         }
-        float reduction = 1.0F - profile.overloadRes() * 0.003F;
+        float reduction = 1.0F - (float) profile.overloadRes() * 0.003F;
         float adjusted = amount * Mth.clamp(reduction, 0.1F, 1.0F);
         set(player, profile.withMetaWear(profile.metaWear() + adjusted));
     }
@@ -89,9 +89,9 @@ public final class PowerApi {
         set(player, profile.withMetaWear(profile.metaWear() - amount));
     }
 
-    private static RNAProfile baseProfile(int throughput, int connectivity, int nodeDensity,
-                                          int overloadRes, String path) {
+    private static RNAProfile baseProfile(double throughput, int connectivity, double nodeDensity,
+                                          double overloadRes, String path) {
         return new RNAProfile(false, throughput, connectivity, nodeDensity, overloadRes,
-                0.0F, path, java.util.Map.of());
+                0.0F, path, java.util.Map.of(), 0.0D);
     }
 }

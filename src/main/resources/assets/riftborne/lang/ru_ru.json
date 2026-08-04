@@ -535,5 +535,11 @@
   "facet.riftborne.tempo": "Темп",
   "facet.riftborne.sequence": "Последовательность",
   "facet.riftborne.fixation": "Фиксация",
-  "facet.riftborne.undefined": "Не определена"
+  "facet.riftborne.undefined": "Не определена",
+  "physical.riftborne.resilience": "Стойкость",
+  "physical.riftborne.recovery": "Восстановление",
+  "rna.riftborne.track.bandwidth": "Пропускная способность",
+  "rna.riftborne.track.node_density": "Плотность узлов",
+  "rna.riftborne.track.overload_resistance": "Устойчивость к перегрузке",
+  "rna.riftborne.track.connectivity": "Связность"
 }
