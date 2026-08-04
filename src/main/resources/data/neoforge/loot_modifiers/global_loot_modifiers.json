@@ -1,8 +1,6 @@
 {
   "replace": false,
   "entries": [
-    "riftborne:damaged_codex_laptop_ancient_city",
-    "riftborne:damaged_codex_laptop_stronghold_library",
-    "riftborne:damaged_codex_laptop_bastion_treasure"
+    "riftborne:damaged_codex_laptop_ancient_city"
   ]
 }
