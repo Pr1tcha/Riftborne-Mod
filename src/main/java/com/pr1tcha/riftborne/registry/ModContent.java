@@ -171,6 +171,16 @@ public class ModContent {
 
     public static final Supplier<Item> RIFT_SHARD = ITEMS.register("rift_shard",
             () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> COPPER_WIRE = ITEMS.register("copper_wire",
+            () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> IRON_PLATE = ITEMS.register("iron_plate",
+            () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> RESONANT_STEEL = ITEMS.register("resonant_steel",
+            () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> RESONANCE_CIRCUIT = ITEMS.register("resonance_circuit",
+            () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> SHIELDED_CASING = ITEMS.register("shielded_casing",
+            () -> new Item(new Item.Properties()));
     public static final Supplier<Item> RESONANCE_CORE = ITEMS.register("resonance_core",
             () -> new Item(new Item.Properties()));
     public static final Supplier<Item> RNA_CONDUCTOR = ITEMS.register("rna_conductor",
@@ -243,6 +253,11 @@ public class ModContent {
                     .icon(() -> new ItemStack(CONTOUR_VEIN.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(RIFT_SHARD.get());
+                        output.accept(COPPER_WIRE.get());
+                        output.accept(IRON_PLATE.get());
+                        output.accept(RESONANT_STEEL.get());
+                        output.accept(RESONANCE_CIRCUIT.get());
+                        output.accept(SHIELDED_CASING.get());
                         output.accept(RESONANCE_CORE.get());
                         output.accept(RNA_CONDUCTOR.get());
                         output.accept(DAMAGED_CODEX_LAPTOP.get());

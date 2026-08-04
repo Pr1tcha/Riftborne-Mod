@@ -555,5 +555,10 @@
   "message.riftborne.stabilizer.full": "Камера заполнена.",
   "message.riftborne.stabilizer.loaded": "Осколков загружено: %s/%s",
   "message.riftborne.stabilizer.status": "В очереди: %s · передел %s%%",
-  "message.riftborne.stabilizer.collected": "Ядра забраны."
+  "message.riftborne.stabilizer.collected": "Ядра забраны.",
+  "item.riftborne.copper_wire": "Медный провод",
+  "item.riftborne.iron_plate": "Железная пластина",
+  "item.riftborne.resonant_steel": "Резонансная сталь",
+  "item.riftborne.resonance_circuit": "Резонансная плата",
+  "item.riftborne.shielded_casing": "Экранированный корпус"
 }

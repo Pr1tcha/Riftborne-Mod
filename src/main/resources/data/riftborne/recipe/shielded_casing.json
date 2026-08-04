@@ -2,23 +2,20 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "ISI",
-    "SRS",
-    "III"
+    "PSP",
+    "S S",
+    "PSP"
   ],
   "key": {
-    "I": {
+    "P": {
       "item": "riftborne:iron_plate"
     },
     "S": {
-      "item": "minecraft:smooth_stone"
-    },
-    "R": {
-      "item": "riftborne:rift_shard"
+      "item": "riftborne:resonant_steel"
     }
   },
   "result": {
-    "id": "riftborne:resonance_stabilizer",
+    "id": "riftborne:shielded_casing",
     "count": 1
   }
 }

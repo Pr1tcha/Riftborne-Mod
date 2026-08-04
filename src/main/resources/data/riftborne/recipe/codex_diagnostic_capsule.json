@@ -3,27 +3,27 @@
   "category": "misc",
   "pattern": [
     "GNG",
-    "KRK",
-    "IEI"
+    "WCW",
+    "PEP"
   ],
   "key": {
     "G": {
       "item": "minecraft:glass"
     },
     "N": {
-      "item": "riftborne:resonance_core"
+      "item": "riftborne:resonance_circuit"
     },
-    "K": {
-      "item": "riftborne:rna_conductor"
+    "W": {
+      "item": "riftborne:copper_wire"
     },
-    "R": {
-      "item": "minecraft:redstone_block"
+    "C": {
+      "item": "riftborne:shielded_casing"
     },
     "E": {
-      "item": "minecraft:redstone"
+      "item": "minecraft:redstone_block"
     },
-    "I": {
-      "item": "minecraft:iron_ingot"
+    "P": {
+      "item": "riftborne:iron_plate"
     }
   },
   "result": {

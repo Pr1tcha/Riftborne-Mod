@@ -97,3 +97,82 @@ save(damaged_codex_laptop(), ITEM_TEX, "damaged_codex_laptop")
 save(stabilizer_face(VIOLET_DARK), BLOCK_TEX, "resonance_stabilizer_side")
 save(stabilizer_face(CYAN), BLOCK_TEX, "resonance_stabilizer_side_working")
 save(stabilizer_top(), BLOCK_TEX, "resonance_stabilizer_top")
+
+
+# --- intermediate parts ------------------------------------------------------------------------
+COPPER = (196, 124, 84)
+COPPER_DARK = (112, 66, 42)
+IRON = (176, 182, 190)
+IRON_DARK = (96, 102, 112)
+STEEL_RES = (138, 156, 176)
+BOARD = (36, 72, 68)
+
+
+def copper_wire():
+    """Coiled filament — reads as flexible, not as an ingot."""
+    img = new()
+    d = ImageDraw.Draw(img)
+    for i, y in enumerate(range(3, 13, 3)):
+        d.line([(3, y), (12, y)], fill=COPPER)
+        d.point((3, y + 1), fill=COPPER_DARK)
+        d.point((12, y + 1), fill=COPPER_DARK)
+        if y + 3 < 13:
+            side = 12 if i % 2 == 0 else 3
+            d.line([(side, y), (side, y + 3)], fill=COPPER_DARK)
+    return img
+
+
+def iron_plate():
+    """Flat stock with rivets, clearly not an ingot."""
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.rectangle([2, 4, 13, 11], fill=IRON, outline=IRON_DARK)
+    for x in (4, 11):
+        for y in (6, 9):
+            d.point((x, y), fill=IRON_DARK)
+    d.line([(3, 5), (12, 5)], fill=(206, 212, 220))
+    return img
+
+
+def resonant_steel():
+    """An ingot, but veined with the cyan of stabilized matter."""
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.polygon([(3, 6), (12, 6), (13, 11), (2, 11)], fill=STEEL_RES, outline=IRON_DARK)
+    d.line([(4, 8), (11, 8)], fill=CYAN)
+    d.point((6, 9), fill=CYAN)
+    d.point((9, 7), fill=CYAN)
+    return img
+
+
+def resonance_circuit():
+    """A board: traces and a seated core."""
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.rectangle([2, 2, 13, 13], fill=BOARD, outline=(18, 38, 36))
+    d.line([(4, 5), (11, 5)], fill=COPPER)
+    d.line([(4, 10), (11, 10)], fill=COPPER)
+    d.line([(4, 5), (4, 10)], fill=COPPER)
+    d.rectangle([6, 6, 9, 9], fill=CYAN_DARK, outline=STEEL)
+    d.point((7, 7), fill=CYAN)
+    d.point((8, 8), fill=CYAN)
+    return img
+
+
+def shielded_casing():
+    """A closed box with a shielded seam."""
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.rectangle([2, 3, 13, 12], fill=IRON_DARK, outline=(60, 66, 76))
+    d.rectangle([4, 5, 11, 10], fill=STEEL_RES)
+    d.line([(4, 7), (11, 7)], fill=IRON_DARK)
+    d.point((3, 4), fill=CYAN)
+    d.point((12, 11), fill=CYAN)
+    return img
+
+
+save(copper_wire(), ITEM_TEX, "copper_wire")
+save(iron_plate(), ITEM_TEX, "iron_plate")
+save(resonant_steel(), ITEM_TEX, "resonant_steel")
+save(resonance_circuit(), ITEM_TEX, "resonance_circuit")
+save(shielded_casing(), ITEM_TEX, "shielded_casing")

@@ -2,19 +2,22 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "IKI",
-    "INI",
-    "III"
+    "PWP",
+    "NCN",
+    "PPP"
   ],
   "key": {
+    "P": {
+      "item": "riftborne:iron_plate"
+    },
+    "W": {
+      "item": "riftborne:copper_wire"
+    },
     "N": {
-      "item": "riftborne:resonance_core"
+      "item": "riftborne:resonance_circuit"
     },
-    "K": {
-      "item": "riftborne:rna_conductor"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
+    "C": {
+      "item": "riftborne:shielded_casing"
     }
   },
   "result": {

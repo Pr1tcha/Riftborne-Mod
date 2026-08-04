@@ -2,25 +2,25 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "IAI",
-    "CNC",
-    "IBI"
+    "PAP",
+    "WNW",
+    "PCP"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
+    "P": {
+      "item": "riftborne:iron_plate"
     },
     "A": {
       "item": "minecraft:amethyst_shard"
     },
-    "C": {
-      "item": "minecraft:copper_ingot"
+    "W": {
+      "item": "riftborne:copper_wire"
     },
     "N": {
-      "item": "riftborne:resonance_core"
+      "item": "riftborne:resonance_circuit"
     },
-    "B": {
-      "item": "minecraft:redstone_block"
+    "C": {
+      "item": "riftborne:shielded_casing"
     }
   },
   "result": {

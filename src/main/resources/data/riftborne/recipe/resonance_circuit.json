@@ -2,29 +2,26 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    " A ",
-    "WNW",
-    "PCP"
+    "WWW",
+    "PNP",
+    "WKW"
   ],
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "N": {
-      "item": "riftborne:resonance_circuit"
-    },
     "W": {
       "item": "riftborne:copper_wire"
     },
     "P": {
       "item": "riftborne:iron_plate"
     },
-    "C": {
-      "item": "riftborne:shielded_casing"
+    "N": {
+      "item": "riftborne:resonance_core"
+    },
+    "K": {
+      "item": "riftborne:rna_conductor"
     }
   },
   "result": {
-    "id": "riftborne:pocket_codex",
+    "id": "riftborne:resonance_circuit",
     "count": 1
   }
 }

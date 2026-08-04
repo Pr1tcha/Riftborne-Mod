@@ -557,5 +557,10 @@
   "message.riftborne.stabilizer.full": "The chamber is full.",
   "message.riftborne.stabilizer.loaded": "Shards loaded: %s/%s",
   "message.riftborne.stabilizer.status": "Queued: %s · refining %s%%",
-  "message.riftborne.stabilizer.collected": "Cores collected."
+  "message.riftborne.stabilizer.collected": "Cores collected.",
+  "item.riftborne.copper_wire": "Copper Wire",
+  "item.riftborne.iron_plate": "Iron Plate",
+  "item.riftborne.resonant_steel": "Resonant Steel",
+  "item.riftborne.resonance_circuit": "Resonance Circuit",
+  "item.riftborne.shielded_casing": "Shielded Casing"
 }

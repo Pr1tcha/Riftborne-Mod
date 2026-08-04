@@ -4,14 +4,14 @@
   "pattern": [
     "CNC",
     "KDK",
-    "III"
+    "SSS"
   ],
   "key": {
     "D": {
       "item": "riftborne:damaged_codex_laptop"
     },
     "N": {
-      "item": "riftborne:resonance_core"
+      "item": "riftborne:resonance_circuit"
     },
     "K": {
       "item": "riftborne:rna_conductor"
@@ -19,8 +19,8 @@
     "C": {
       "item": "minecraft:copper_ingot"
     },
-    "I": {
-      "item": "minecraft:iron_ingot"
+    "S": {
+      "item": "riftborne:resonant_steel"
     }
   },
   "result": {

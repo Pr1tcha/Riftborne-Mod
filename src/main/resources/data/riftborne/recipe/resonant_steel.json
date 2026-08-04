@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "riftborne:iron_plate"
+    },
+    {
+      "item": "riftborne:iron_plate"
+    },
+    {
+      "item": "riftborne:resonance_core"
+    }
+  ],
+  "result": {
+    "id": "riftborne:resonant_steel",
+    "count": 2
+  }
+}
