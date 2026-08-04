@@ -91,7 +91,8 @@ public final class PocketCodexScreen extends Screen {
 
         int infoX = left + 134;
         int infoWidth = WIDTH - 144;
-        graphics.drawString(font, Component.translatable("screen.riftborne.pocket_codex.last_contact"),
+        graphics.drawString(font, trim(
+                Component.translatable("screen.riftborne.pocket_codex.last_contact").getString(), infoWidth),
                 infoX, boxY, MUTED, false);
         if (snapshot.lastTargetTitle().isBlank()) {
             graphics.drawWordWrap(font, Component.translatable("screen.riftborne.pocket_codex.no_contact"),
@@ -99,10 +100,12 @@ public final class PocketCodexScreen extends Screen {
             return;
         }
         graphics.drawString(font, trim(snapshot.lastTargetTitle(), infoWidth), infoX, boxY + 15, TEXT, false);
-        graphics.drawString(font, Component.translatable("screen.riftborne.pocket_codex.threat", snapshot.threat()),
+        graphics.drawString(font, trim(Component.translatable(
+                        "screen.riftborne.pocket_codex.threat", snapshot.threat()).getString(), infoWidth),
                 infoX, boxY + 31, threatColor(snapshot.threat()), false);
-        graphics.drawString(font, Component.translatable("screen.riftborne.pocket_codex.observation",
-                        snapshot.observations(), snapshot.maximumObservations()),
+        graphics.drawString(font, trim(Component.translatable(
+                        "screen.riftborne.pocket_codex.observation",
+                        snapshot.observations(), snapshot.maximumObservations()).getString(), infoWidth),
                 infoX, boxY + 46, CYAN, false);
         int barWidth = infoWidth - 4;
         graphics.fill(infoX, boxY + 61, infoX + barWidth, boxY + 67, 0xFF142825);
@@ -126,11 +129,14 @@ public final class PocketCodexScreen extends Screen {
         }
 
         int infoX = left + 145;
-        graphics.drawString(font, Component.translatable("screen.riftborne.pocket_codex.signatures"),
+        int pulseWidth = WIDTH - 157;
+        graphics.drawString(font, trim(
+                Component.translatable("screen.riftborne.pocket_codex.signatures").getString(), pulseWidth),
                 infoX, top + 63, MUTED, false);
         graphics.drawString(font, Integer.toString(snapshot.pulseSignals()), infoX, top + 78,
                 snapshot.pulseSignals() > 0 ? ACCENT : FAINT, false);
-        graphics.drawString(font, Component.translatable("screen.riftborne.pocket_codex.nearest"),
+        graphics.drawString(font, trim(
+                Component.translatable("screen.riftborne.pocket_codex.nearest").getString(), pulseWidth),
                 infoX, top + 96, MUTED, false);
         String nearest = snapshot.pulseNearestTitle().isBlank()
                 ? Component.translatable("screen.riftborne.pocket_codex.none").getString()
@@ -138,8 +144,9 @@ public final class PocketCodexScreen extends Screen {
         graphics.drawString(font, trim(nearest, WIDTH - 157), infoX, top + 110,
                 snapshot.pulseNearestTitle().isBlank() ? FAINT : TEXT, false);
         if (snapshot.pulseNearestDistance() >= 0) {
-            graphics.drawString(font, Component.translatable("screen.riftborne.pocket_codex.distance",
-                            snapshot.pulseNearestDistance()),
+            graphics.drawString(font, trim(Component.translatable(
+                            "screen.riftborne.pocket_codex.distance",
+                            snapshot.pulseNearestDistance()).getString(), pulseWidth),
                     infoX, top + 122, CYAN, false);
         }
     }
@@ -191,7 +198,8 @@ public final class PocketCodexScreen extends Screen {
             case PULSE -> "screen.riftborne.pocket_codex.action.pulse";
             case BUFFER -> "screen.riftborne.pocket_codex.action.buffer";
         };
-        graphics.drawCenteredString(font, Component.translatable(key), x + width / 2, y + 7, TEXT);
+        graphics.drawCenteredString(font, trim(Component.translatable(key).getString(), width - 8),
+                x + width / 2, y + 7, TEXT);
     }
 
     @Override

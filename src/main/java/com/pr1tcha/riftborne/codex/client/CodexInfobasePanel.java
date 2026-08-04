@@ -108,7 +108,9 @@ final class CodexInfobasePanel {
     ) {
         graphics.fill(x, y, x + width, y + height, COLOR_PANEL);
         graphics.renderOutline(x, y, width, height, COLOR_BORDER);
-        graphics.drawString(font, Component.translatable("screen.riftborne.infobase.sections"), x + 8, y + 8, COLOR_MUTED, false);
+        graphics.drawString(font, trim(font,
+                Component.translatable("screen.riftborne.infobase.sections").getString(), width - 16),
+                x + 8, y + 8, COLOR_MUTED, false);
         int rowY = y + 24;
         rowY = drawCategoryRow(graphics, font, x, rowY, width, HOME, "screen.riftborne.infobase.home", mouseX, mouseY);
         for (String category : categories()) {
@@ -262,9 +264,11 @@ final class CodexInfobasePanel {
     private void renderDashboard(GuiGraphics graphics, Font font, int x, int y, int width, int height) {
         int known = (int) snapshot.entries().stream().filter(entry -> !isLocked(entry)).count();
         int alerts = (int) snapshot.entries().stream().filter(this::isAlert).count();
-        graphics.drawString(font, Component.translatable("screen.riftborne.infobase.dashboard"),
+        graphics.drawString(font, trim(font,
+                Component.translatable("screen.riftborne.infobase.dashboard").getString(), width - 20),
                 x + 10, y + 9, COLOR_TEXT, false);
-        graphics.drawString(font, Component.translatable("screen.riftborne.infobase.dashboard_hint"),
+        graphics.drawString(font, trim(font,
+                Component.translatable("screen.riftborne.infobase.dashboard_hint").getString(), width - 20),
                 x + 10, y + 23, COLOR_MUTED, false);
         int cardY = y + 44;
         int cardWidth = (width - 32) / 3;
@@ -274,7 +278,8 @@ final class CodexInfobasePanel {
                 "screen.riftborne.infobase.metric.known", known, COLOR_GREEN);
         renderMetric(graphics, font, x + 24 + cardWidth * 2, cardY, cardWidth,
                 "screen.riftborne.infobase.metric.alerts", alerts, alerts > 0 ? COLOR_DANGER : COLOR_MUTED);
-        graphics.drawString(font, Component.translatable("screen.riftborne.infobase.dashboard_navigation"),
+        graphics.drawString(font, trim(font,
+                Component.translatable("screen.riftborne.infobase.dashboard_navigation").getString(), width - 20),
                 x + 10, cardY + 55, COLOR_ACCENT_BRIGHT, false);
         graphics.drawWordWrap(font, Component.translatable("screen.riftborne.infobase.dashboard_navigation_hint"),
                 x + 10, cardY + 70, width - 20, COLOR_MUTED);
@@ -284,7 +289,8 @@ final class CodexInfobasePanel {
         graphics.fill(x, y, x + width, y + 42, COLOR_PANEL_RAISED);
         graphics.renderOutline(x, y, width, 42, COLOR_BORDER);
         graphics.fill(x, y, x + 3, y + 42, color);
-        graphics.drawString(font, Component.translatable(key), x + 8, y + 7, COLOR_MUTED, false);
+        graphics.drawString(font, trim(font, Component.translatable(key).getString(), width - 16),
+                x + 8, y + 7, COLOR_MUTED, false);
         graphics.drawString(font, Integer.toString(value), x + 8, y + 23, color, false);
     }
 
@@ -295,8 +301,9 @@ final class CodexInfobasePanel {
         graphics.fill(x, y, x + width, y + 24, COLOR_PANEL_RAISED);
         graphics.renderOutline(x, y, width, 24, COLOR_BORDER);
         graphics.fill(x, y, x + 3, y + 24, stateColor(entry));
-        graphics.drawString(font, stateLabel(entry), x + 8, y + 5, stateColor(entry), false);
         String threat = Component.translatable("screen.riftborne.infobase.threat", entry.threatLevel()).getString();
+        graphics.drawString(font, trim(font, stateLabel(entry), width - font.width(threat) - 22),
+                x + 8, y + 5, stateColor(entry), false);
         graphics.drawString(font, threat, x + width - font.width(threat) - 7, y + 5,
                 threatColor(entry.threatLevel()), false);
         return y + 24;

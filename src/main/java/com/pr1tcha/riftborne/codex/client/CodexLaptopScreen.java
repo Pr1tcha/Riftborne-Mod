@@ -373,12 +373,13 @@ public final class CodexLaptopScreen extends Screen {
             if (hovered) {
                 graphics.fill(contentX + 6, rowY, contentX + contentWidth - 6, rowY + 20, 0x44333A4A);
             }
-            graphics.drawString(font, Component.translatable(entry.titleKey()), contentX + 11, rowY + 6,
-                    COLOR_TEXT, false);
             Component status = selectedDrive == 0 || internal.contains(entry.id())
                     ? Component.translatable("screen.riftborne.codex.file_saved")
                     : Component.translatable("screen.riftborne.codex.file_copy");
             int statusWidth = font.width(status);
+            graphics.drawString(font, fit(Component.translatable(entry.titleKey()).getString(),
+                            contentWidth - statusWidth - 30), contentX + 11, rowY + 6,
+                    COLOR_TEXT, false);
             graphics.drawString(font, status, contentX + contentWidth - statusWidth - 11, rowY + 6,
                     selectedDrive == 0 || internal.contains(entry.id()) ? COLOR_MUTED : COLOR_ACCENT, false);
             rowY += 22;
@@ -417,23 +418,26 @@ public final class CodexLaptopScreen extends Screen {
         int cardWidth = 174;
         graphics.fill(cardX, cardY, cardX + cardWidth, windowY + windowHeight - 12, 0x88050A0F);
         graphics.renderOutline(cardX, cardY, cardWidth, windowHeight - 46, 0x4438A9A4);
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.synapsis_subject"),
-                cardX + 10, cardY + 10, COLOR_MUTED, false);
-        graphics.drawString(font, snapshot.diagnosticSubjectName(), cardX + 10, cardY + 25, COLOR_TEXT, false);
+        int cardTextWidth = cardWidth - 20;
+        drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.synapsis_subject"),
+                cardX + 10, cardY + 10, cardTextWidth, COLOR_MUTED);
+        graphics.drawString(font, fit(snapshot.diagnosticSubjectName(), cardTextWidth),
+                cardX + 10, cardY + 25, COLOR_TEXT, false);
 
         BlockPos capsulePos = BlockPos.of(snapshot.diagnosticCapsulePos());
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.synapsis_source"),
-                cardX + 10, cardY + 48, COLOR_MUTED, false);
-        graphics.drawString(font, capsulePos.toShortString(), cardX + 10, cardY + 63, COLOR_TEXT, false);
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.synapsis_path"),
-                cardX + 10, cardY + 86, COLOR_MUTED, false);
-        graphics.drawString(font, Component.translatable("rna.riftborne.formation_path."
+        drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.synapsis_source"),
+                cardX + 10, cardY + 48, cardTextWidth, COLOR_MUTED);
+        graphics.drawString(font, fit(capsulePos.toShortString(), cardTextWidth),
+                cardX + 10, cardY + 63, COLOR_TEXT, false);
+        drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.synapsis_path"),
+                cardX + 10, cardY + 86, cardTextWidth, COLOR_MUTED);
+        drawTrimmed(graphics, Component.translatable("rna.riftborne.formation_path."
                         + snapshot.diagnosticFormationPath().toLowerCase(Locale.ROOT)),
-                cardX + 10, cardY + 101, COLOR_TEXT, false);
+                cardX + 10, cardY + 101, cardTextWidth, COLOR_TEXT);
 
         if (!snapshot.diagnosticNotice().isBlank()) {
-            graphics.drawString(font, Component.translatable("screen.riftborne.codex.technique"),
-                    cardX + 10, cardY + 130, COLOR_MUTED, false);
+            drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.technique"),
+                    cardX + 10, cardY + 130, cardTextWidth, COLOR_MUTED);
             int lineY = cardY + 145;
             for (var line : font.split(Component.translatable(snapshot.diagnosticNotice()), cardWidth - 20)) {
                 graphics.drawString(font, line, cardX + 10, lineY, COLOR_ACCENT, false);
@@ -447,8 +451,8 @@ public final class CodexLaptopScreen extends Screen {
         if (!snapshot.diagnosticHasRna()) {
             graphics.fill(contentX, cardY, contentX + contentWidth, cardY + 56, 0x661C0B12);
             graphics.renderOutline(contentX, cardY, contentWidth, 56, 0xFF9A3543);
-            graphics.drawString(font, Component.translatable("screen.riftborne.codex.synapsis_no_rna"),
-                    contentX + 12, cardY + 20, 0xFFE65A69, false);
+            drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.synapsis_no_rna"),
+                    contentX + 12, cardY + 20, contentWidth - 24, 0xFFE65A69);
             return;
         }
 
@@ -463,11 +467,9 @@ public final class CodexLaptopScreen extends Screen {
                 "rna.riftborne.stat.overload_resistance", snapshot.diagnosticOverloadResistance(), contentWidth);
 
         int wearY = barY + 158;
-        graphics.drawString(font, Component.translatable("codex.riftborne.entry.meta_wear.title"),
-                contentX, wearY, COLOR_TEXT, false);
-        String wear = snapshot.diagnosticMetaWear() + "%";
-        graphics.drawString(font, wear, contentX + contentWidth - font.width(wear), wearY,
-                diagnosticStageColor(), false);
+        drawLabelValue(graphics, Component.translatable("codex.riftborne.entry.meta_wear.title"),
+                snapshot.diagnosticMetaWear() + "%", contentX, wearY, contentWidth,
+                COLOR_TEXT, diagnosticStageColor());
         graphics.fill(contentX, wearY + 14, contentX + contentWidth, wearY + 23, 0xFF17252B);
         graphics.fill(contentX, wearY + 14,
                 contentX + Math.round(contentWidth * snapshot.diagnosticMetaWear() / 100.0F),
@@ -519,7 +521,7 @@ public final class CodexLaptopScreen extends Screen {
         graphics.fill(x, y, x + width, y + 54, 0x88050A0F);
         graphics.renderOutline(x, y, width, 54, COLOR_BORDER_SOFT);
         graphics.fill(x, y, x + 3, y + 54, color);
-        graphics.drawString(font, label, x + 10, y + 8, COLOR_MUTED, false);
+        drawTrimmed(graphics, label, x + 10, y + 8, width - 20, COLOR_MUTED);
         String formatted = oneDecimal(value);
         graphics.drawString(font, formatted, x + 10, y + 23, COLOR_TEXT, false);
         drawPhysicalBar(graphics, x + 10, y + 40, width - 20, value / maximum * 100.0F, color);
@@ -535,11 +537,11 @@ public final class CodexLaptopScreen extends Screen {
     ) {
         graphics.fill(x, y, x + width, y + height, 0x88050A0F);
         graphics.renderOutline(x, y, width, height, COLOR_BORDER_SOFT);
-        graphics.drawString(font, Component.translatable("physical.riftborne." + stat.id()),
-                x + 9, y + 7, COLOR_TEXT, false);
+        drawTrimmed(graphics, Component.translatable("physical.riftborne." + stat.id()),
+                x + 9, y + 7, width - 18, COLOR_TEXT);
 
         Component formLabel = Component.translatable("screen.riftborne.codex.physical_form", oneDecimal(stat.value()));
-        graphics.drawString(font, formLabel, x + 9, y + 22, COLOR_MUTED, false);
+        drawTrimmed(graphics, formLabel, x + 9, y + 22, width - 18, COLOR_MUTED);
         drawPhysicalBar(graphics, x + 9, y + 34, width - 18, stat.value(), COLOR_CYAN);
 
         int activityColor = stat.activity() >= 100.0F
@@ -547,7 +549,7 @@ public final class CodexLaptopScreen extends Screen {
                 : stat.activity() >= 70.0F ? COLOR_CYAN : COLOR_AMBER;
         Component activityLabel = Component.translatable(
                 "screen.riftborne.codex.physical_activity", Math.round(stat.activity()));
-        graphics.drawString(font, activityLabel, x + 9, y + 46, COLOR_MUTED, false);
+        drawTrimmed(graphics, activityLabel, x + 9, y + 46, width - 18, COLOR_MUTED);
         drawPhysicalBar(graphics, x + 9, y + 58, width - 18, stat.activity(), activityColor);
 
         // The status names which growth step this cycle's activity has actually reached.
@@ -600,34 +602,34 @@ public final class CodexLaptopScreen extends Screen {
     }
 
     private void renderProgressionSummary(GuiGraphics graphics, int x, int y, int width) {
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.primitive_profile"),
-                x, y, COLOR_MUTED, false);
+        drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.primitive_profile"),
+                x, y, width, COLOR_MUTED);
         List<String> primitives = CodexNetwork.split(snapshot.techniqueProgress());
         if (primitives.isEmpty()) {
-            graphics.drawString(font, Component.translatable("screen.riftborne.codex.primitive_profile.empty"),
-                    x, y + 14, COLOR_MUTED, false);
+            drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.primitive_profile.empty"),
+                    x, y + 14, width, COLOR_MUTED);
         } else {
-            graphics.drawString(font, font.plainSubstrByWidth(primitiveLine(primitives), width),
+            graphics.drawString(font, fit(primitiveLine(primitives), width),
                     x, y + 14, COLOR_ACCENT, false);
         }
 
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.axis_practice"),
-                x, y + 26, COLOR_MUTED, false);
+        drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.axis_practice"),
+                x, y + 26, width, COLOR_MUTED);
         List<String> practice = CodexNetwork.split(snapshot.techniqueReadiness());
         Component practiceLine = practice.isEmpty()
                 ? Component.translatable("screen.riftborne.codex.axis_practice.empty")
                 : Component.literal(practiceLine(practice));
-        graphics.drawString(font, font.plainSubstrByWidth(practiceLine.getString(), width),
+        graphics.drawString(font, fit(practiceLine.getString(), width),
                 x, y + 38, practice.isEmpty() ? COLOR_MUTED : COLOR_CYAN, false);
 
-        graphics.drawString(font, Component.translatable("screen.riftborne.codex.facet"),
-                x, y + 50, COLOR_MUTED, false);
+        drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.facet"),
+                x, y + 50, width, COLOR_MUTED);
         String facet = snapshot.aspectResonance();
         Component facetLine = facet == null || facet.isBlank()
                 ? Component.translatable("screen.riftborne.codex.facet.empty")
                 : Component.translatable("screen.riftborne.codex.facet.value",
                         Component.translatable("facet.riftborne." + facet));
-        graphics.drawString(font, font.plainSubstrByWidth(facetLine.getString(), width),
+        graphics.drawString(font, fit(facetLine.getString(), width),
                 x, y + 62, facet == null || facet.isBlank() ? COLOR_MUTED : COLOR_ACCENT, false);
     }
 
@@ -737,9 +739,8 @@ public final class CodexLaptopScreen extends Screen {
     }
 
     private void drawDiagnosticBar(GuiGraphics graphics, int x, int y, String key, int value, int width) {
-        graphics.drawString(font, Component.translatable(key), x, y, COLOR_TEXT, false);
-        String text = value + "%";
-        graphics.drawString(font, text, x + width - font.width(text), y, COLOR_ACCENT, false);
+        drawLabelValue(graphics, Component.translatable(key), value + "%", x, y, width,
+                COLOR_TEXT, COLOR_ACCENT);
         graphics.fill(x, y + 14, x + width, y + 23, 0xFF171D27);
         graphics.fill(x, y + 14, x + Math.round(width * value / 100.0F), y + 23, COLOR_ACCENT);
     }
@@ -924,8 +925,8 @@ public final class CodexLaptopScreen extends Screen {
                 graphics.fill(itemX, itemY, itemX + 3, itemY + 25, appColor(apps[index]));
             }
             graphics.fill(itemX + 9, itemY + 8, itemX + 18, itemY + 17, appColor(apps[index]));
-            graphics.drawString(font, menuTitle(apps[index]), itemX + 25, itemY + 8,
-                    hovered ? COLOR_TEXT : COLOR_MUTED, false);
+            graphics.drawString(font, fit(menuTitle(apps[index]).getString(), 102 - 31),
+                    itemX + 25, itemY + 8, hovered ? COLOR_TEXT : COLOR_MUTED, false);
         }
 
         int powerY = menuY + menuHeight - 29;
@@ -1613,7 +1614,30 @@ public final class CodexLaptopScreen extends Screen {
     }
 
     private void drawTrimmed(GuiGraphics graphics, Component text, int x, int y, int maxWidth, int color) {
-        graphics.drawString(font, font.plainSubstrByWidth(text.getString(), maxWidth), x, y, color, false);
+        graphics.drawString(font, fit(text.getString(), maxWidth), x, y, color, false);
+    }
+
+    /**
+     * Cut a string to the given width, marking it with an ellipsis when something was dropped.
+     * Translations vary a lot in length, so nearly every label in Rift OS goes through here
+     * rather than trusting that it happens to fit its container.
+     */
+    private String fit(String text, int maxWidth) {
+        if (maxWidth <= 0 || font.width(text) <= maxWidth) {
+            return text;
+        }
+        return font.plainSubstrByWidth(text, Math.max(0, maxWidth - font.width("..."))) + "...";
+    }
+
+    /**
+     * A label on the left with its value right-aligned. The label is clamped against the value,
+     * which is what used to overlap whenever a translation ran long.
+     */
+    private void drawLabelValue(GuiGraphics graphics, Component label, String value,
+                                int x, int y, int width, int labelColor, int valueColor) {
+        int valueWidth = font.width(value);
+        graphics.drawString(font, fit(label.getString(), width - valueWidth - 8), x, y, labelColor, false);
+        graphics.drawString(font, value, x + width - valueWidth, y, valueColor, false);
     }
 
     private void drawScrollingTitle(GuiGraphics graphics, Component text, int x, int y, int maxWidth, int color) {
