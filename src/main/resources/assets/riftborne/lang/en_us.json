@@ -517,5 +517,9 @@
   "primitive.riftborne.v1_tempo_read": "Tempo reading",
   "primitive.riftborne.v2_phase_entry": "Phase entry",
   "primitive.riftborne.v3_tempo_shift": "Tempo shift",
-  "primitive.riftborne.v4_phase_hold": "Phase hold"
+  "primitive.riftborne.v4_phase_hold": "Phase hold",
+  "hud.riftborne.power.result.no_anchor": "No anchor: time has nothing to rest on",
+  "hud.riftborne.power.result.no_phase": "Not in phase: enter the flow first",
+  "message.riftborne.power.tempo_active": "%s: flow is running",
+  "message.riftborne.power.tempo_inert": "%s: flow is inert"
 }

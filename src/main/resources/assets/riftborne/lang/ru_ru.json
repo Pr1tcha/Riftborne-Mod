@@ -515,5 +515,9 @@
   "primitive.riftborne.v1_tempo_read": "Считывание темпа",
   "primitive.riftborne.v2_phase_entry": "Фазовый вход",
   "primitive.riftborne.v3_tempo_shift": "Смещение темпа",
-  "primitive.riftborne.v4_phase_hold": "Удержание фазы"
+  "primitive.riftborne.v4_phase_hold": "Удержание фазы",
+  "hud.riftborne.power.result.no_anchor": "Нет якоря: времени не на что опереться",
+  "hud.riftborne.power.result.no_phase": "Нет фазы: сначала войдите в поток",
+  "message.riftborne.power.tempo_active": "%s: поток идёт",
+  "message.riftborne.power.tempo_inert": "%s: поток инертен"
 }
