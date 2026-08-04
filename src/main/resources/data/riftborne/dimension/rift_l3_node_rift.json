@@ -1,16 +1,11 @@
 {
   "type": "riftborne:rift_dimension",
   "generator": {
-    "type": "minecraft:flat",
-    "settings": {
-      "biome": "minecraft:the_void",
-      "features": false,
-      "lakes": false,
-      "layers": [
-        { "block": "minecraft:bedrock", "height": 1 },
-        { "block": "minecraft:blackstone", "height": 80 },
-        { "block": "minecraft:polished_blackstone", "height": 1 }
-      ]
+    "type": "minecraft:noise",
+    "settings": "riftborne:rift_l3_node_rift",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "riftborne:rift_l3_node_rift"
     }
   }
 }

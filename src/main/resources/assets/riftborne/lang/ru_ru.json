@@ -560,5 +560,20 @@
   "item.riftborne.iron_plate": "Железная пластина",
   "item.riftborne.resonant_steel": "Резонансная сталь",
   "item.riftborne.resonance_circuit": "Резонансная плата",
-  "item.riftborne.shielded_casing": "Экранированный корпус"
+  "item.riftborne.shielded_casing": "Экранированный корпус",
+  "block.riftborne.rift_l1_stone": "Камень Поверхностного осколка",
+  "block.riftborne.rift_l1_crust": "Корка Поверхностного осколка",
+  "block.riftborne.rift_l1_vein": "Жила Поверхностного осколка",
+  "block.riftborne.rift_l2_stone": "Камень Смещённого слоя",
+  "block.riftborne.rift_l2_crust": "Корка Смещённого слоя",
+  "block.riftborne.rift_l2_vein": "Жила Смещённого слоя",
+  "block.riftborne.rift_l3_stone": "Камень Узлового разлома",
+  "block.riftborne.rift_l3_crust": "Корка Узлового разлома",
+  "block.riftborne.rift_l3_vein": "Жила Узлового разлома",
+  "block.riftborne.rift_l4_stone": "Камень Глубинного разлома",
+  "block.riftborne.rift_l4_crust": "Корка Глубинного разлома",
+  "block.riftborne.rift_l4_vein": "Жила Глубинного разлома",
+  "block.riftborne.rift_l5_stone": "Камень Предельного среза",
+  "block.riftborne.rift_l5_crust": "Корка Предельного среза",
+  "block.riftborne.rift_l5_vein": "Жила Предельного среза"
 }

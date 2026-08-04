@@ -94,6 +94,21 @@ public class ModContent {
                     .strength(3.2F, 7.0F)
                     .lightLevel(state -> state.getValue(ResonanceStabilizerBlock.WORKING) ? 8 : 2)
                     .requiresCorrectToolForDrops()));
+    public static final Supplier<Block> RIFT_L1_STONE = riftLevelBlock("rift_l1_stone", 0);
+    public static final Supplier<Block> RIFT_L1_CRUST = riftLevelBlock("rift_l1_crust", 0);
+    public static final Supplier<Block> RIFT_L1_VEIN = riftLevelBlock("rift_l1_vein", 3);
+    public static final Supplier<Block> RIFT_L2_STONE = riftLevelBlock("rift_l2_stone", 0);
+    public static final Supplier<Block> RIFT_L2_CRUST = riftLevelBlock("rift_l2_crust", 0);
+    public static final Supplier<Block> RIFT_L2_VEIN = riftLevelBlock("rift_l2_vein", 3);
+    public static final Supplier<Block> RIFT_L3_STONE = riftLevelBlock("rift_l3_stone", 2);
+    public static final Supplier<Block> RIFT_L3_CRUST = riftLevelBlock("rift_l3_crust", 2);
+    public static final Supplier<Block> RIFT_L3_VEIN = riftLevelBlock("rift_l3_vein", 5);
+    public static final Supplier<Block> RIFT_L4_STONE = riftLevelBlock("rift_l4_stone", 3);
+    public static final Supplier<Block> RIFT_L4_CRUST = riftLevelBlock("rift_l4_crust", 3);
+    public static final Supplier<Block> RIFT_L4_VEIN = riftLevelBlock("rift_l4_vein", 6);
+    public static final Supplier<Block> RIFT_L5_STONE = riftLevelBlock("rift_l5_stone", 6);
+    public static final Supplier<Block> RIFT_L5_CRUST = riftLevelBlock("rift_l5_crust", 6);
+    public static final Supplier<Block> RIFT_L5_VEIN = riftLevelBlock("rift_l5_vein", 9);
     public static final Supplier<Block> RIFT_PORTAL = BLOCKS.register("rift_portal",
             () -> new RiftPortalBlock(BlockBehaviour.Properties.of()
                     .noCollission()
@@ -228,6 +243,21 @@ public class ModContent {
             () -> new RiftwalkerArmorItem(ArmorItem.Type.LEGGINGS, new Item.Properties().stacksTo(1).fireResistant()));
     public static final Supplier<Item> RIFTWALKER_BOOTS = ITEMS.register("riftwalker_boots",
             () -> new RiftwalkerArmorItem(ArmorItem.Type.BOOTS, new Item.Properties().stacksTo(1).fireResistant()));
+    public static final Supplier<Item> RIFT_L1_STONE_ITEM = blockItem("rift_l1_stone", RIFT_L1_STONE);
+    public static final Supplier<Item> RIFT_L1_CRUST_ITEM = blockItem("rift_l1_crust", RIFT_L1_CRUST);
+    public static final Supplier<Item> RIFT_L1_VEIN_ITEM = blockItem("rift_l1_vein", RIFT_L1_VEIN);
+    public static final Supplier<Item> RIFT_L2_STONE_ITEM = blockItem("rift_l2_stone", RIFT_L2_STONE);
+    public static final Supplier<Item> RIFT_L2_CRUST_ITEM = blockItem("rift_l2_crust", RIFT_L2_CRUST);
+    public static final Supplier<Item> RIFT_L2_VEIN_ITEM = blockItem("rift_l2_vein", RIFT_L2_VEIN);
+    public static final Supplier<Item> RIFT_L3_STONE_ITEM = blockItem("rift_l3_stone", RIFT_L3_STONE);
+    public static final Supplier<Item> RIFT_L3_CRUST_ITEM = blockItem("rift_l3_crust", RIFT_L3_CRUST);
+    public static final Supplier<Item> RIFT_L3_VEIN_ITEM = blockItem("rift_l3_vein", RIFT_L3_VEIN);
+    public static final Supplier<Item> RIFT_L4_STONE_ITEM = blockItem("rift_l4_stone", RIFT_L4_STONE);
+    public static final Supplier<Item> RIFT_L4_CRUST_ITEM = blockItem("rift_l4_crust", RIFT_L4_CRUST);
+    public static final Supplier<Item> RIFT_L4_VEIN_ITEM = blockItem("rift_l4_vein", RIFT_L4_VEIN);
+    public static final Supplier<Item> RIFT_L5_STONE_ITEM = blockItem("rift_l5_stone", RIFT_L5_STONE);
+    public static final Supplier<Item> RIFT_L5_CRUST_ITEM = blockItem("rift_l5_crust", RIFT_L5_CRUST);
+    public static final Supplier<Item> RIFT_L5_VEIN_ITEM = blockItem("rift_l5_vein", RIFT_L5_VEIN);
     public static final Supplier<Item> RNA_INTERSPACE_STONE_ITEM = blockItem("rna_interspace_stone", RNA_INTERSPACE_STONE);
     public static final Supplier<Item> RNA_INTERSPACE_SURFACE_ITEM = blockItem("rna_interspace_surface", RNA_INTERSPACE_SURFACE);
     public static final Supplier<Item> RNA_INTERSPACE_VEIN_ITEM = blockItem("rna_interspace_vein", RNA_INTERSPACE_VEIN);
@@ -294,6 +324,21 @@ public class ModContent {
                                 output.accept(CODEX_LAPTOP_ITEM.get());
                                 output.accept(CODEX_DOCK_ITEM.get());
                                 output.accept(CODEX_DIAGNOSTIC_CAPSULE_ITEM.get());
+                                output.accept(RIFT_L1_STONE_ITEM.get());
+                                output.accept(RIFT_L1_CRUST_ITEM.get());
+                                output.accept(RIFT_L1_VEIN_ITEM.get());
+                                output.accept(RIFT_L2_STONE_ITEM.get());
+                                output.accept(RIFT_L2_CRUST_ITEM.get());
+                                output.accept(RIFT_L2_VEIN_ITEM.get());
+                                output.accept(RIFT_L3_STONE_ITEM.get());
+                                output.accept(RIFT_L3_CRUST_ITEM.get());
+                                output.accept(RIFT_L3_VEIN_ITEM.get());
+                                output.accept(RIFT_L4_STONE_ITEM.get());
+                                output.accept(RIFT_L4_CRUST_ITEM.get());
+                                output.accept(RIFT_L4_VEIN_ITEM.get());
+                                output.accept(RIFT_L5_STONE_ITEM.get());
+                                output.accept(RIFT_L5_CRUST_ITEM.get());
+                                output.accept(RIFT_L5_VEIN_ITEM.get());
                                 output.accept(RESONANCE_STABILIZER_ITEM.get());
                                 output.accept(RNA_TRAINING_ANCHOR_ITEM.get());
                                 output.accept(POCKET_CODEX.get());
@@ -327,6 +372,14 @@ public class ModContent {
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(RIFT_SPLINTER.get(), RiftSplinterEntity.createAttributes().build());
+    }
+
+    /** Rock of a rift level: harder the deeper it sits, and faintly lit from within. */
+    private static Supplier<Block> riftLevelBlock(String name, int lightLevel) {
+        return BLOCKS.register(name, () -> new Block(BlockBehaviour.Properties.of()
+                .lightLevel(state -> lightLevel)
+                .strength(5.0F, 12.0F)
+                .requiresCorrectToolForDrops()));
     }
 
     private static Supplier<Block> interspaceBlock(String name, int lightLevel) {

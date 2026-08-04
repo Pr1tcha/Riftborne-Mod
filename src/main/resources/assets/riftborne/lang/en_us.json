@@ -562,5 +562,20 @@
   "item.riftborne.iron_plate": "Iron Plate",
   "item.riftborne.resonant_steel": "Resonant Steel",
   "item.riftborne.resonance_circuit": "Resonance Circuit",
-  "item.riftborne.shielded_casing": "Shielded Casing"
+  "item.riftborne.shielded_casing": "Shielded Casing",
+  "block.riftborne.rift_l1_stone": "Surface Shard Stone",
+  "block.riftborne.rift_l1_crust": "Surface Shard Crust",
+  "block.riftborne.rift_l1_vein": "Surface Shard Vein",
+  "block.riftborne.rift_l2_stone": "Shifted Layer Stone",
+  "block.riftborne.rift_l2_crust": "Shifted Layer Crust",
+  "block.riftborne.rift_l2_vein": "Shifted Layer Vein",
+  "block.riftborne.rift_l3_stone": "Node Rift Stone",
+  "block.riftborne.rift_l3_crust": "Node Rift Crust",
+  "block.riftborne.rift_l3_vein": "Node Rift Vein",
+  "block.riftborne.rift_l4_stone": "Deep Rift Stone",
+  "block.riftborne.rift_l4_crust": "Deep Rift Crust",
+  "block.riftborne.rift_l4_vein": "Deep Rift Vein",
+  "block.riftborne.rift_l5_stone": "Limit Slice Stone",
+  "block.riftborne.rift_l5_crust": "Limit Slice Crust",
+  "block.riftborne.rift_l5_vein": "Limit Slice Vein"
 }
