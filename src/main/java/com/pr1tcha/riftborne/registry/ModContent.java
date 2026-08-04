@@ -15,6 +15,8 @@ import com.pr1tcha.riftborne.codex.block.CodexDiagnosticCapsuleBlockEntity;
 import com.pr1tcha.riftborne.codex.item.CodexLaptopItem;
 import com.pr1tcha.riftborne.codex.item.PocketCodexItem;
 import com.pr1tcha.riftborne.riftwalker.item.RiftwalkerArmorItem;
+import com.pr1tcha.riftborne.material.ResonanceStabilizerBlock;
+import com.pr1tcha.riftborne.material.ResonanceStabilizerBlockEntity;
 import com.pr1tcha.riftborne.rna.power.anchor.RnaTrainingAnchorBlock;
 import com.pr1tcha.riftborne.rna.power.anchor.RnaTrainingAnchorBlockEntity;
 import java.util.function.Supplier;
@@ -87,6 +89,11 @@ public class ModContent {
                     .strength(3.6F, 8.0F)
                     .lightLevel(state -> 5)
                     .noOcclusion()));
+    public static final Supplier<Block> RESONANCE_STABILIZER = BLOCKS.register("resonance_stabilizer",
+            () -> new ResonanceStabilizerBlock(BlockBehaviour.Properties.of()
+                    .strength(3.2F, 7.0F)
+                    .lightLevel(state -> state.getValue(ResonanceStabilizerBlock.WORKING) ? 8 : 2)
+                    .requiresCorrectToolForDrops()));
     public static final Supplier<Block> RIFT_PORTAL = BLOCKS.register("rift_portal",
             () -> new RiftPortalBlock(BlockBehaviour.Properties.of()
                     .noCollission()
@@ -149,6 +156,12 @@ public class ModContent {
     public static final Supplier<BlockEntityType<RiftPortalBlockEntity>> RIFT_PORTAL_BE_TYPE =
             BLOCK_ENTITIES.register("rift_portal",
                     () -> BlockEntityType.Builder.of(RiftPortalBlockEntity::new, RIFT_PORTAL.get()).build(null));
+    public static final Supplier<BlockEntityType<ResonanceStabilizerBlockEntity>> RESONANCE_STABILIZER_BE_TYPE =
+            BLOCK_ENTITIES.register("resonance_stabilizer",
+                    () -> BlockEntityType.Builder.of(
+                            ResonanceStabilizerBlockEntity::new,
+                            RESONANCE_STABILIZER.get()
+                    ).build(null));
     public static final Supplier<BlockEntityType<RnaTrainingAnchorBlockEntity>> RNA_TRAINING_ANCHOR_BE_TYPE =
             BLOCK_ENTITIES.register("rna_training_anchor",
                     () -> BlockEntityType.Builder.of(
@@ -158,6 +171,14 @@ public class ModContent {
 
     public static final Supplier<Item> RIFT_SHARD = ITEMS.register("rift_shard",
             () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> RESONANCE_CORE = ITEMS.register("resonance_core",
+            () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> RNA_CONDUCTOR = ITEMS.register("rna_conductor",
+            () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> DAMAGED_CODEX_LAPTOP = ITEMS.register("damaged_codex_laptop",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final Supplier<Item> RESONANCE_STABILIZER_ITEM =
+            blockItem("resonance_stabilizer", RESONANCE_STABILIZER);
 
     public static final Supplier<Item> CONTOUR_STONE_ITEM = ITEMS.register("contour_stone",
             () -> new BlockItem(CONTOUR_STONE.get(), new Item.Properties()));
@@ -222,6 +243,9 @@ public class ModContent {
                     .icon(() -> new ItemStack(CONTOUR_VEIN.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(RIFT_SHARD.get());
+                        output.accept(RESONANCE_CORE.get());
+                        output.accept(RNA_CONDUCTOR.get());
+                        output.accept(DAMAGED_CODEX_LAPTOP.get());
                         output.accept(CONTOUR_STONE_ITEM.get());
                         output.accept(CONTOUR_SURFACE_ITEM.get());
                         output.accept(CONTOUR_TRACE_ITEM.get());
@@ -255,6 +279,7 @@ public class ModContent {
                                 output.accept(CODEX_LAPTOP_ITEM.get());
                                 output.accept(CODEX_DOCK_ITEM.get());
                                 output.accept(CODEX_DIAGNOSTIC_CAPSULE_ITEM.get());
+                                output.accept(RESONANCE_STABILIZER_ITEM.get());
                                 output.accept(RNA_TRAINING_ANCHOR_ITEM.get());
                                 output.accept(POCKET_CODEX.get());
                                 output.accept(CODEX_FLASH_DRIVE.get());

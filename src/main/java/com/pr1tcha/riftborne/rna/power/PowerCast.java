@@ -29,6 +29,7 @@ public final class PowerCast {
     private static final int ANCHOR_DURATION = 1200;
     private static final int PHASE_DURATION = 400;
     private static final float STABILIZE_RELIEF = 3.0F;
+    private static final int STABILIZE_REFINE_TICKS = 120;
 
     private PowerCast() {
     }
@@ -197,8 +198,25 @@ public final class PowerCast {
         return Result.OK;
     }
 
-    /** P5 Стабилизация: damp the rollback — steadies the architecture and props up the anchor. */
+    /**
+     * P5 Стабилизация: damp the rollback — steadies the architecture and props up the anchor.
+     * Aimed at a working Resonance Stabilizer it also drives the refinement forward, which is
+     * where the power system feeds back into production.
+     */
     private static Result stabilizeEffect(ServerPlayer player) {
+        BlockHitResult aim = rayTrace(player);
+        if (aim.getType() == HitResult.Type.BLOCK
+                && player.serverLevel().getBlockEntity(aim.getBlockPos())
+                        instanceof com.pr1tcha.riftborne.material.ResonanceStabilizerBlockEntity stabilizer
+                && stabilizer.accelerate(STABILIZE_REFINE_TICKS)) {
+            ServerLevel level = player.serverLevel();
+            Vec3 at = Vec3.atCenterOf(aim.getBlockPos());
+            level.sendParticles(ParticleTypes.END_ROD, at.x, at.y + 0.6D, at.z,
+                    14, 0.3D, 0.3D, 0.3D, 0.01D);
+            level.playSound(null, aim.getBlockPos(), SoundEvents.AMETHYST_BLOCK_CHIME,
+                    SoundSource.BLOCKS, 0.6F, 1.1F);
+            return Result.OK;
+        }
         PowerApi.reduceMetaWear(player, STABILIZE_RELIEF);
         PowerFieldState.extendAnchor(player, ANCHOR_DURATION / 2);
         ServerLevel level = player.serverLevel();

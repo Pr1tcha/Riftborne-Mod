@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CNC",
+    "KDK",
+    "III"
+  ],
+  "key": {
+    "D": {
+      "item": "riftborne:damaged_codex_laptop"
+    },
+    "N": {
+      "item": "riftborne:resonance_core"
+    },
+    "K": {
+      "item": "riftborne:rna_conductor"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "riftborne:codex_laptop",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "working=false": {
+      "model": "riftborne:block/resonance_stabilizer"
+    },
+    "working=true": {
+      "model": "riftborne:block/resonance_stabilizer_working"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "riftborne:add_item",
+  "conditions": [
+    {
+      "condition": "minecraft:location_check"
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.3
+    }
+  ],
+  "item": "riftborne:damaged_codex_laptop",
+  "target_table": "minecraft:chests/ancient_city"
+}

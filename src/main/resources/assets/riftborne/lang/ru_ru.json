@@ -547,5 +547,13 @@
   "screen.riftborne.codex.physical_step_high": "Высокая ступень",
   "screen.riftborne.codex.physical_step_low": "Низкая ступень",
   "screen.riftborne.codex.physical_step_none": "Ниже порога роста",
-  "hud.riftborne.power.cast_info_full": "%s · Г%s · %s"
+  "hud.riftborne.power.cast_info_full": "%s · Г%s · %s",
+  "item.riftborne.resonance_core": "Резонансное ядро",
+  "item.riftborne.rna_conductor": "РНА-проводник",
+  "item.riftborne.damaged_codex_laptop": "Повреждённый полевой ноутбук",
+  "block.riftborne.resonance_stabilizer": "Резонансный стабилизатор",
+  "message.riftborne.stabilizer.full": "Камера заполнена.",
+  "message.riftborne.stabilizer.loaded": "Осколков загружено: %s/%s",
+  "message.riftborne.stabilizer.status": "В очереди: %s · передел %s%%",
+  "message.riftborne.stabilizer.collected": "Ядра забраны."
 }

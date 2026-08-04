@@ -2,29 +2,26 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "IAI",
-    "CNC",
-    "IBI"
+    " A ",
+    "KNK",
+    "III"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
     "A": {
       "item": "minecraft:amethyst_shard"
-    },
-    "C": {
-      "item": "minecraft:copper_ingot"
     },
     "N": {
       "item": "riftborne:resonance_core"
     },
-    "B": {
-      "item": "minecraft:redstone_block"
+    "K": {
+      "item": "riftborne:rna_conductor"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
     }
   },
   "result": {
-    "id": "riftborne:rna_training_anchor",
+    "id": "riftborne:pocket_codex",
     "count": 1
   }
 }

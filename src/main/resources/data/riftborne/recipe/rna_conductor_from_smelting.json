@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": {
+    "item": "riftborne:rna_interspace_vein"
+  },
+  "result": {
+    "id": "riftborne:rna_conductor",
+    "count": 1
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

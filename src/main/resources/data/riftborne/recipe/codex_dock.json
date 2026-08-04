@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IKI",
+    "INI",
+    "III"
+  ],
+  "key": {
+    "N": {
+      "item": "riftborne:resonance_core"
+    },
+    "K": {
+      "item": "riftborne:rna_conductor"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "riftborne:codex_dock",
+    "count": 1
+  }
+}

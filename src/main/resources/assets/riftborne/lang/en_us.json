@@ -549,5 +549,13 @@
   "screen.riftborne.codex.physical_step_high": "High step",
   "screen.riftborne.codex.physical_step_low": "Low step",
   "screen.riftborne.codex.physical_step_none": "Below the growth threshold",
-  "hud.riftborne.power.cast_info_full": "%s · L%s · %s"
+  "hud.riftborne.power.cast_info_full": "%s · L%s · %s",
+  "item.riftborne.resonance_core": "Resonance Core",
+  "item.riftborne.rna_conductor": "RNA Conductor",
+  "item.riftborne.damaged_codex_laptop": "Damaged Field Laptop",
+  "block.riftborne.resonance_stabilizer": "Resonance Stabilizer",
+  "message.riftborne.stabilizer.full": "The chamber is full.",
+  "message.riftborne.stabilizer.loaded": "Shards loaded: %s/%s",
+  "message.riftborne.stabilizer.status": "Queued: %s · refining %s%%",
+  "message.riftborne.stabilizer.collected": "Cores collected."
 }
