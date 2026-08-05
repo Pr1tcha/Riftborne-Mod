@@ -282,15 +282,6 @@ public class ModContent {
                     .title(Component.translatable("itemGroup.riftborne.blocks"))
                     .icon(() -> new ItemStack(CONTOUR_VEIN.get()))
                     .displayItems((parameters, output) -> {
-                        output.accept(RIFT_SHARD.get());
-                        output.accept(COPPER_WIRE.get());
-                        output.accept(IRON_PLATE.get());
-                        output.accept(RESONANT_STEEL.get());
-                        output.accept(RESONANCE_CIRCUIT.get());
-                        output.accept(SHIELDED_CASING.get());
-                        output.accept(RESONANCE_CORE.get());
-                        output.accept(RNA_CONDUCTOR.get());
-                        output.accept(DAMAGED_CODEX_LAPTOP.get());
                         output.accept(CONTOUR_STONE_ITEM.get());
                         output.accept(CONTOUR_SURFACE_ITEM.get());
                         output.accept(CONTOUR_TRACE_ITEM.get());
@@ -303,6 +294,37 @@ public class ModContent {
                         output.accept(RIFTWALKER_INTERSPACE_STONE_ITEM.get());
                         output.accept(RIFTWALKER_INTERSPACE_SURFACE_ITEM.get());
                         output.accept(RIFTWALKER_INTERSPACE_VEIN_ITEM.get());
+                        output.accept(RIFT_L1_STONE_ITEM.get());
+                        output.accept(RIFT_L1_CRUST_ITEM.get());
+                        output.accept(RIFT_L1_VEIN_ITEM.get());
+                        output.accept(RIFT_L2_STONE_ITEM.get());
+                        output.accept(RIFT_L2_CRUST_ITEM.get());
+                        output.accept(RIFT_L2_VEIN_ITEM.get());
+                        output.accept(RIFT_L3_STONE_ITEM.get());
+                        output.accept(RIFT_L3_CRUST_ITEM.get());
+                        output.accept(RIFT_L3_VEIN_ITEM.get());
+                        output.accept(RIFT_L4_STONE_ITEM.get());
+                        output.accept(RIFT_L4_CRUST_ITEM.get());
+                        output.accept(RIFT_L4_VEIN_ITEM.get());
+                        output.accept(RIFT_L5_STONE_ITEM.get());
+                        output.accept(RIFT_L5_CRUST_ITEM.get());
+                        output.accept(RIFT_L5_VEIN_ITEM.get());
+                    })
+                    .build());
+
+    public static final Supplier<CreativeModeTab> RIFTBORNE_MATERIALS_TAB = CREATIVE_MODE_TABS.register("materials",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.riftborne.materials"))
+                    .icon(() -> new ItemStack(RIFT_SHARD.get()))
+                    .displayItems((parameters, output) -> {
+                        output.accept(RIFT_SHARD.get());
+                        output.accept(COPPER_WIRE.get());
+                        output.accept(IRON_PLATE.get());
+                        output.accept(RESONANT_STEEL.get());
+                        output.accept(RESONANCE_CIRCUIT.get());
+                        output.accept(SHIELDED_CASING.get());
+                        output.accept(RESONANCE_CORE.get());
+                        output.accept(RNA_CONDUCTOR.get());
                     })
                     .build());
 
@@ -324,25 +346,11 @@ public class ModContent {
                                 output.accept(CODEX_LAPTOP_ITEM.get());
                                 output.accept(CODEX_DOCK_ITEM.get());
                                 output.accept(CODEX_DIAGNOSTIC_CAPSULE_ITEM.get());
-                                output.accept(RIFT_L1_STONE_ITEM.get());
-                                output.accept(RIFT_L1_CRUST_ITEM.get());
-                                output.accept(RIFT_L1_VEIN_ITEM.get());
-                                output.accept(RIFT_L2_STONE_ITEM.get());
-                                output.accept(RIFT_L2_CRUST_ITEM.get());
-                                output.accept(RIFT_L2_VEIN_ITEM.get());
-                                output.accept(RIFT_L3_STONE_ITEM.get());
-                                output.accept(RIFT_L3_CRUST_ITEM.get());
-                                output.accept(RIFT_L3_VEIN_ITEM.get());
-                                output.accept(RIFT_L4_STONE_ITEM.get());
-                                output.accept(RIFT_L4_CRUST_ITEM.get());
-                                output.accept(RIFT_L4_VEIN_ITEM.get());
-                                output.accept(RIFT_L5_STONE_ITEM.get());
-                                output.accept(RIFT_L5_CRUST_ITEM.get());
-                                output.accept(RIFT_L5_VEIN_ITEM.get());
                                 output.accept(RESONANCE_STABILIZER_ITEM.get());
                                 output.accept(RNA_TRAINING_ANCHOR_ITEM.get());
                                 output.accept(POCKET_CODEX.get());
                                 output.accept(CODEX_FLASH_DRIVE.get());
+                                output.accept(DAMAGED_CODEX_LAPTOP.get());
                             })
                             .build());
 
