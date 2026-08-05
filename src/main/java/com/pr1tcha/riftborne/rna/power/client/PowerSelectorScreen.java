@@ -26,6 +26,7 @@ public final class PowerSelectorScreen extends Screen {
     private static final int SPOKE_BOX_W = 104;
     private static final int SPOKE_BOX_H = 18;
 
+    private static final int COLOR_BACKDROP = 0xC0060910;
     private static final int COLOR_PANEL = 0xE00A0F16;
     private static final int COLOR_BORDER = 0xFF2A3340;
     private static final int COLOR_BORDER_SEL = 0xFF9B87F5;
@@ -47,7 +48,10 @@ public final class PowerSelectorScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderTransparentBackground(graphics);
+        // A flat dark backdrop instead of the vanilla screen background: the default path runs the
+        // blur post-effect over the world, which read as a mushy, out-of-focus mess behind the
+        // spokes. The selector has no child widgets, so it draws everything itself.
+        graphics.fill(0, 0, width, height, COLOR_BACKDROP);
 
         int cx = width / 2;
         int cy = height / 2;
@@ -67,7 +71,6 @@ public final class PowerSelectorScreen extends Screen {
         }
 
         drawCentre(graphics, profile, window, cx, cy);
-        super.render(graphics, mouseX, mouseY, partialTick);
     }
 
     private void drawSpoke(GuiGraphics graphics, Primitive primitive, RNAProfile profile, float window,
