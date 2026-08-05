@@ -435,16 +435,23 @@ public final class CodexLaptopScreen extends Screen {
                         + snapshot.diagnosticFormationPath().toLowerCase(Locale.ROOT)),
                 cardX + 10, cardY + 101, cardTextWidth, COLOR_TEXT);
 
+        // The card is laid out with a running cursor: the technique notice wraps to an unknown
+        // number of lines, so a fixed offset for the block below it either overlaps or overflows.
+        int cardBottom = cardY + windowHeight - 46;
+        int cursorY = cardY + 130;
         if (!snapshot.diagnosticNotice().isBlank()) {
             drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.technique"),
-                    cardX + 10, cardY + 130, cardTextWidth, COLOR_MUTED);
-            int lineY = cardY + 145;
-            for (var line : font.split(Component.translatable(snapshot.diagnosticNotice()), cardWidth - 20)) {
-                graphics.drawString(font, line, cardX + 10, lineY, COLOR_ACCENT, false);
-                lineY += 11;
+                    cardX + 10, cursorY, cardTextWidth, COLOR_MUTED);
+            cursorY += 15;
+            for (var line : font.split(Component.translatable(snapshot.diagnosticNotice()), cardTextWidth)) {
+                graphics.drawString(font, line, cardX + 10, cursorY, COLOR_ACCENT, false);
+                cursorY += 11;
             }
+            cursorY += 8;
         }
-        renderProgressionSummary(graphics, cardX + 10, cardY + 185, cardWidth - 20);
+        // Never let the summary hang below the card, however long the notice ran.
+        int progressionY = Math.min(cursorY, cardBottom - PROGRESSION_HEIGHT - 6);
+        renderProgressionSummary(graphics, cardX + 10, progressionY, cardTextWidth);
 
         int contentX = cardX + cardWidth + 12;
         int contentWidth = windowX + windowWidth - 12 - contentX;
@@ -601,36 +608,39 @@ public final class CodexLaptopScreen extends Screen {
         return String.format(Locale.ROOT, "%.1f", value);
     }
 
+    /** Height the progression summary occupies, used to keep it inside the card. */
+    private static final int PROGRESSION_HEIGHT = 68;
+
     private void renderProgressionSummary(GuiGraphics graphics, int x, int y, int width) {
         drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.primitive_profile"),
                 x, y, width, COLOR_MUTED);
         List<String> primitives = CodexNetwork.split(snapshot.techniqueProgress());
         if (primitives.isEmpty()) {
             drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.primitive_profile.empty"),
-                    x, y + 14, width, COLOR_MUTED);
+                    x, y + 11, width, COLOR_MUTED);
         } else {
             graphics.drawString(font, fit(primitiveLine(primitives), width),
-                    x, y + 14, COLOR_ACCENT, false);
+                    x, y + 11, COLOR_ACCENT, false);
         }
 
         drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.axis_practice"),
-                x, y + 26, width, COLOR_MUTED);
+                x, y + 24, width, COLOR_MUTED);
         List<String> practice = CodexNetwork.split(snapshot.techniqueReadiness());
         Component practiceLine = practice.isEmpty()
                 ? Component.translatable("screen.riftborne.codex.axis_practice.empty")
                 : Component.literal(practiceLine(practice));
         graphics.drawString(font, fit(practiceLine.getString(), width),
-                x, y + 38, practice.isEmpty() ? COLOR_MUTED : COLOR_CYAN, false);
+                x, y + 35, practice.isEmpty() ? COLOR_MUTED : COLOR_CYAN, false);
 
         drawTrimmed(graphics, Component.translatable("screen.riftborne.codex.facet"),
-                x, y + 50, width, COLOR_MUTED);
+                x, y + 48, width, COLOR_MUTED);
         String facet = snapshot.aspectResonance();
         Component facetLine = facet == null || facet.isBlank()
                 ? Component.translatable("screen.riftborne.codex.facet.empty")
                 : Component.translatable("screen.riftborne.codex.facet.value",
                         Component.translatable("facet.riftborne." + facet));
         graphics.drawString(font, fit(facetLine.getString(), width),
-                x, y + 62, facet == null || facet.isBlank() ? COLOR_MUTED : COLOR_ACCENT, false);
+                x, y + 59, facet == null || facet.isBlank() ? COLOR_MUTED : COLOR_ACCENT, false);
     }
 
     /** Top primitives by execution level, e.g. "Shift 3 · Reading 2". */
